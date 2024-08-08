@@ -1623,6 +1623,10 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
   text-decoration: underline;
 }
 
+.btn-copy {
+  display: none !important;
+}
+
 @media screen and (max-width: 768px) {
   .header {
     padding-top: 30px !important;
