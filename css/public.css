@@ -2469,7 +2469,7 @@ display: none !important;
   background-color: #455364;
 }
 .code-toolbar pre::-webkit-scrollbar-thumb:active {
-  background-color: #515f74;
+  background-color: #515f7400;
 }
 .code-toolbar .toolbar-item:first-child span {
   color: #fff !important;
