@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>配置hadoop | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `配置hadoop`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">配置hadoop</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/%E6%B5%8B%E8%AF%95%E5%8C%BA/">测试区</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：1999-01-01 00:00:00</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <h2 id="配置虚拟机集群环境"><a href="#配置虚拟机集群环境" class="headerlink" title="配置虚拟机集群环境"></a>配置虚拟机集群环境</h2><h3 id="修改主机名，获取IP地址"><a href="#修改主机名，获取IP地址" class="headerlink" title="修改主机名，获取IP地址"></a>修改主机名，获取IP地址</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# hostnamectl set-hostname hadoop01</span><br><span class="line">[root@localhost ~]# ifconfig</span><br><span class="line">ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 192.168.213.128  netmask 255.255.255.0  broadcast 192.168.213.255</span><br><span class="line">        inet6 fe80::3422:fe22:194f:42dd  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 00:0c:29:39:5b:d4  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 20228  bytes 28822793 (27.4 MiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 5069  bytes 310726 (303.4 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# systemctl stop firewalld.service</span><br><span class="line">[root@localhost ~]# systemctl disable firewalld.service</span><br><span class="line">Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.</span><br><span class="line">Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.</span><br><span class="line">[root@localhost ~]# systemctl status firewalld.service</span><br><span class="line">● firewalld.service - firewalld - dynamic firewall daemon</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)</span><br><span class="line">   Active: inactive (dead)</span><br><span class="line">     Docs: man:firewalld(1)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="新建工作目录"><a href="#新建工作目录" class="headerlink" title="新建工作目录"></a>新建工作目录</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir /opt/packages</span><br><span class="line">[root@localhost ~]# mkdir /opt/programs</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装和配置JDK"><a href="#安装和配置JDK" class="headerlink" title="安装和配置JDK"></a>安装和配置JDK</h3><ul>
+<li>卸载掉原有的JDK<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -qa|grep openjdk</span><br><span class="line">java-1.8.0-openjdk-headless-1.8.0.262.b10-1.el7.x86_64</span><br><span class="line">java-1.7.0-openjdk-headless-1.7.0.261-2.6.22.2.el7_8.x86_64</span><br><span class="line">java-1.8.0-openjdk-1.8.0.262.b10-1.el7.x86_64</span><br><span class="line">java-1.7.0-openjdk-1.7.0.261-2.6.22.2.el7_8.x86_64</span><br><span class="line">[root@localhost ~]# rpm -e --nodeps </span><br><span class="line">rpm: no packages given for erase</span><br><span class="line">[root@localhost ~]# rpm -e --nodeps java-1.8.0-openjdk-headless-1.8.0.262.b10-1.el7.x86_64</span><br><span class="line">[root@localhost ~]# rpm -e --nodeps java-1.7.0-openjdk-headless-1.7.0.261-2.6.22.2.el7_8.x86_64</span><br><span class="line">[root@localhost ~]# rpm -e --nodeps java-1.8.0-openjdk-1.8.0.262.b10-1.el7.x86_64</span><br><span class="line">[root@localhost ~]# rpm -e --nodeps java-1.7.0-openjdk-1.7.0.261-2.6.22.2.el7_8.x86_64</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>-重新进行安装，在&#x2F;etc&#x2F;profile中添加环境变量后刷新，进行验证是否安装成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 ~]# rpm -qa|grep openjdk</span><br><span class="line">[root@hadoop01 ~]# tar -zxvf /opt/packages/jdk-8u211-linux-x64.tar.gz -C /opt/programs/</span><br><span class="line">[root@hadoop01 ~]# vim /etc/profile</span><br><span class="line">[root@hadoop01 ~]# source /etc/profile</span><br><span class="line">[root@hadoop01 ~]# java -version</span><br><span class="line">java version &quot;1.8.0_211&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_211-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.211-b12, mixed mode)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/opt/programs/jdk1.8.0_211</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="克隆虚拟机"><a href="#克隆虚拟机" class="headerlink" title="克隆虚拟机"></a>克隆虚拟机</h3><p>在&#x2F;etc&#x2F;hosts文件修改如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4</span><br><span class="line">::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</span><br><span class="line">192.168.213.128   hadoop01</span><br><span class="line">192.168.213.129   hadoop02</span><br><span class="line">192.168.213.130   hadoop03</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="配置集群各节点SSH免密码登录"><a href="#配置集群各节点SSH免密码登录" class="headerlink" title="配置集群各节点SSH免密码登录"></a>配置集群各节点SSH免密码登录</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br><span class="line">ssh-copy-id hadoop01</span><br><span class="line">ssh-copy-id hadoop02</span><br><span class="line">ssh-copy-id hadoop03</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="安装与部署ZooKeeper"><a href="#安装与部署ZooKeeper" class="headerlink" title="安装与部署ZooKeeper"></a>安装与部署ZooKeeper</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf /opt/packages/zookeeper-3.4.12.tar.gz -C /opt/programs/</span><br><span class="line">[root@hadoop01 ~]# cd /opt/programs/zookeeper-3.4.12/</span><br><span class="line">[root@hadoop01 zookeeper-3.4.12]# mkdir data logs</span><br><span class="line">[root@hadoop01 zookeeper-3.4.12]# cd data</span><br><span class="line">[root@hadoop01 data]# echo &#x27;1&#x27;&gt;myid</span><br><span class="line">[root@hadoop01 data]# cd ../conf</span><br><span class="line">[root@hadoop01 conf]# cp zoo_sample.cfg zoo.cfg</span><br><span class="line">[root@hadoop01 conf]# vim zoo.cfg </span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/zookeeper-3.4.12/ root@hadoop02:/opt/programs/</span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/zookeeper-3.4.12/ root@hadoop03:/opt/programs/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dataDir=/opt/programs/zookeeper-3.4.12/data</span><br><span class="line"></span><br><span class="line">dataLogDir=/opt/programs/zookeeper-3.4.12/logs</span><br><span class="line">server.1=hadoop01:2888:3888</span><br><span class="line">server.2=hadoop02:2888:3888</span><br><span class="line">server.3=hadoop03:2888:3888</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 conf]# ssh hadoop02</span><br><span class="line">Last login: Fri Mar 31 03:43:51 2023 from hadoop01</span><br><span class="line">[root@hadoop02 ~]# echo &#x27;2&#x27;&gt;/opt/programs/zookeeper-3.4.12/data/myid</span><br><span class="line">[root@hadoop02 ~]# ssh hadoop03</span><br><span class="line">Last login: Fri Mar 31 03:43:57 2023 from hadoop02</span><br><span class="line">[root@hadoop03 ~]# echo &#x27;3&#x27;&gt;/opt/programs/zookeeper-3.4.12/data/myid</span><br><span class="line">[root@hadoop01 conf]# zkServer.sh start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export ZOOKEEPER_HOME=/opt/programs/zookeeper-3.4.12</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin:$ZOOKEEPER_HOME/bin</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 ~]# tar -zxvf /opt/packages/hadoop-2.7.6.tar.gz -C /opt/programs/</span><br><span class="line">[root@hadoop01 ~]# cd /opt/programs/hadoop-2.7.6/etc/hadoop/</span><br><span class="line">[root@hadoop01 hadoop]# vim core-site.xml</span><br><span class="line">[root@hadoop01 hadoop]# vim hdfs-site.xml </span><br><span class="line">[root@hadoop01 hadoop]# mv mapred-site.xml.template mapred-site.xml</span><br><span class="line">[root@hadoop01 hadoop]# vim mapred-site.xml </span><br><span class="line">[root@hadoop01 hadoop]# vim yarn-site.xml </span><br><span class="line">[root@hadoop01 hadoop]# vim slaves</span><br><span class="line">[root@hadoop01 hadoop]# vim hadoop-env.sh </span><br><span class="line">[root@hadoop01 hadoop]# vim mapred-env.sh </span><br><span class="line">[root@hadoop01 hadoop]# vim yarn-env.sh </span><br><span class="line">[root@hadoop01 hadoop]# scp -r /opt/programs/hadoop-2.7.6/ root@hadoop02:/opt/programs/ </span><br><span class="line">[root@hadoop01 hadoop]# scp -r /opt/programs/hadoop-2.7.6/ root@hadoop03:/opt/programs/ </span><br><span class="line"></span><br><span class="line">[root@hadoop01 hadoop]# vim /etc/profile</span><br><span class="line">[root@hadoop01 hadoop]# source /etc/profile</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/opt/programs/jdk1.8.0_211</span><br><span class="line"></span><br><span class="line">export HADOOP_HOME=/opt/programs/hadoop-2.7.6</span><br><span class="line">export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 hadoop]# hadoop-daemon.sh start journalnode</span><br><span class="line">starting journalnode, logging to /opt/programs/hadoop-2.7.6/logs/hadoop-root-journalnode-hadoop01.out</span><br><span class="line">[root@hadoop01 hadoop]# ssh hadoop02</span><br><span class="line">Last login: Fri Mar 31 04:15:59 2023 from hadoop01</span><br><span class="line">[root@hadoop02 ~]# hadoop-daemon.sh start journalnode</span><br><span class="line">starting journalnode, logging to /opt/programs/hadoop-2.7.6/logs/hadoop-root-journalnode-hadoop02.out</span><br><span class="line">[root@hadoop02 ~]# ssh hadoop03</span><br><span class="line">Last login: Fri Mar 31 04:16:33 2023 from hadoop02</span><br><span class="line">[root@hadoop03 ~]# hadoop-daemon.sh start journalnode</span><br><span class="line">starting journalnode, logging to /opt/programs/hadoop-2.7.6/logs/hadoop-root-journalnode-hadoop03.out</span><br><span class="line">[root@hadoop01 hadoop]# hdfs namenode -format</span><br><span class="line">...</span><br><span class="line">23/03/31 04:19:26 INFO common.Storage: Storage directory /opt/programs/hadoop-2.7.6/tmp/dfs/name has been successfully formatted.</span><br><span class="line">...</span><br><span class="line">[root@hadoop01 hadoop]# cd /opt/programs/hadoop-2.7.6/</span><br><span class="line">[root@hadoop01 hadoop-2.7.6]# scp -r tmp/ root@hadoop02:/opt/programs/hadoop-2.7.6/</span><br><span class="line">[root@hadoop01 hadoop-2.7.6]# hdfs zkfc -formatZK</span><br><span class="line">[root@hadoop01 hadoop-2.7.6]# start-dfs.sh</span><br><span class="line">[root@hadoop01 hadoop-2.7.6]# start-yarn.sh</span><br><span class="line"></span><br><span class="line">[root@hadoop01 zookeeper-3.4.12]# jps</span><br><span class="line">2692 QuorumPeerMain</span><br><span class="line">3045 DataNode</span><br><span class="line">3224 JournalNode</span><br><span class="line">3387 DFSZKFailoverController</span><br><span class="line">2941 NameNode</span><br><span class="line">3549 ResourceManager</span><br><span class="line">3662 NodeManager</span><br><span class="line">3775 Jps</span><br><span class="line">[root@hadoop01 zookeeper-3.4.12]# ssh hadoop02</span><br><span class="line">Last login: Fri Mar 31 05:11:46 2023</span><br><span class="line">[root@hadoop02 ~]# jps</span><br><span class="line">2770 NameNode</span><br><span class="line">2917 JournalNode</span><br><span class="line">2840 DataNode</span><br><span class="line">3144 NodeManager</span><br><span class="line">3321 Jps</span><br><span class="line">2635 QuorumPeerMain</span><br><span class="line">3005 DFSZKFailoverController</span><br><span class="line">[root@hadoop02 ~]# ssh hadoop03</span><br><span class="line">Last login: Fri Mar 31 05:11:42 2023</span><br><span class="line">[root@hadoop03 ~]# jps</span><br><span class="line">2789 JournalNode</span><br><span class="line">3077 Jps</span><br><span class="line">2712 DataNode</span><br><span class="line">2586 QuorumPeerMain</span><br><span class="line">2910 NodeManager</span><br><span class="line">[root@hadoop03 ~]# </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 ~]# tar -zxvf /opt/packages/scala-2.11.8.tgz -C /opt/programs/</span><br><span class="line">[root@hadoop01 ~]# source /etc/profile</span><br><span class="line">[root@hadoop01 ~]# scala -version</span><br><span class="line">Scala code runner version 2.11.8 -- Copyright 2002-2016, LAMP/EPFL</span><br><span class="line">[root@hadoop01 ~]# tar -zxvf /opt/packages/spark-2.3.3-bin-hado.tgz -C /opt/programs/</span><br><span class="line"></span><br><span class="line">[root@hadoop01 ~]# cd /opt/programs/spark-2.3.3-bin-hadoop2.7/conf</span><br><span class="line">[root@hadoop01 conf]# cp spark-env.sh.template spark-env.sh</span><br><span class="line">[root@hadoop01 conf]# vim spark-env.sh</span><br><span class="line">[root@hadoop01 conf]# cp slaves.template slaves</span><br><span class="line">[root@hadoop01 conf]# vim slaves</span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/spark-2.3.3-bin-hadoop2.7 root@hadoop02:/opt/programs/</span><br><span class="line"></span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/spark-2.3.3-bin-hadoop2.7 root@hadoop03:/opt/programs/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">export SCALA_HOME=/opt/programs/scala-2.11.8</span><br><span class="line">export PATH=$PATH:$SCALA_HOME/bin</span><br><span class="line"></span><br><span class="line">export JAVA_HOME=/opt/programs/jdk1.8.0_211</span><br><span class="line">export SCALA_HOME=/opt/programs/scala-2.11.8</span><br><span class="line">export HADOOP_HOME=/opt/programs/hadoop-2.7.6</span><br><span class="line">export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop</span><br><span class="line">export SPARK_MASTER_HOST=hadoop01</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 ~]# tar -zxvf /opt/packages/hbase-2.0.2-bin.tar.gz -C /opt/programs/</span><br><span class="line">[root@hadoop01 ~]# cd /opt/programs/hbase-2.0.2/conf/</span><br><span class="line">[root@hadoop01 conf]# vim hbase-env.sh </span><br><span class="line">[root@hadoop01 conf]# vim hbase-site.xml </span><br><span class="line">[root@hadoop01 conf]# vim regionservers </span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/hbase-2.0.2/ root@hadoop02:/opt/programs/</span><br><span class="line">[root@hadoop01 conf]# scp -r /opt/programs/hbase-2.0.2/ root@hadoop03:/opt/programs/</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/opt/programs/jdk1.8.0_211</span><br><span class="line">export HBASE_MANAGES_ZK=false</span><br><span class="line"></span><br><span class="line">export HBASE_HOME=/opt/programs/hbase-2.0.2</span><br><span class="line">export PATH=$PATH:$HBASE_HOME/bin</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 conf]# jps</span><br><span class="line">3392 ResourceManager</span><br><span class="line">3089 JournalNode</span><br><span class="line">3250 DFSZKFailoverController</span><br><span class="line">3506 NodeManager</span><br><span class="line">2803 NameNode</span><br><span class="line">7748 HRegionServer</span><br><span class="line">2540 QuorumPeerMain</span><br><span class="line">2909 DataNode</span><br><span class="line">7613 HMaster</span><br><span class="line">7807 Jps</span><br><span class="line">[root@hadoop01 conf]# ssh hadoop02</span><br><span class="line">Last login: Fri Mar 31 19:07:15 2023 from hadoop01</span><br><span class="line">[root@hadoop02 ~]# jps</span><br><span class="line">4292 HRegionServer</span><br><span class="line">1977 DataNode</span><br><span class="line">4442 Jps</span><br><span class="line">1899 NameNode</span><br><span class="line">1788 QuorumPeerMain</span><br><span class="line">2317 NodeManager</span><br><span class="line">2062 JournalNode</span><br><span class="line">2175 DFSZKFailoverController</span><br><span class="line">[root@hadoop02 ~]# ssh hadoop03</span><br><span class="line">Last login: Fri Mar 31 19:03:58 2023 from hadoop02</span><br><span class="line">[root@hadoop03 ~]# jps</span><br><span class="line">1970 JournalNode</span><br><span class="line">1783 QuorumPeerMain</span><br><span class="line">3753 HRegionServer</span><br><span class="line">3913 Jps</span><br><span class="line">2093 NodeManager</span><br><span class="line">1887 DataNode</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop01 spark-2.3.3-bin-hadoop2.7]# tar -zxvf /opt/packages/kafka_2.11-2.0.0.tgz -C /opt/programs/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/This-article-is-used-to-test-the-style/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">配置虚拟机集群环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%BB%E6%9C%BA%E5%90%8D%EF%BC%8C%E8%8E%B7%E5%8F%96IP%E5%9C%B0%E5%9D%80"><span class="toc-number">1.1.</span> <span class="toc-text">修改主机名，获取IP地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">1.2.</span> <span class="toc-text">关闭防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-number">1.3.</span> <span class="toc-text">新建工作目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEJDK"><span class="toc-number">1.4.</span> <span class="toc-text">安装和配置JDK</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%8B%E9%9A%86%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">1.5.</span> <span class="toc-text">克隆虚拟机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E9%9B%86%E7%BE%A4%E5%90%84%E8%8A%82%E7%82%B9SSH%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95"><span class="toc-number">1.6.</span> <span class="toc-text">配置集群各节点SSH免密码登录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2ZooKeeper"><span class="toc-number">2.</span> <span class="toc-text">安装与部署ZooKeeper</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/java-wjyl/">键盘输值</a>
+            </p>
+           
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/This-article-is-used-to-test-the-style/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

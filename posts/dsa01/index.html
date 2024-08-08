@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>第一章  线性表 | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `第一章  线性表`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">第一章  线性表</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/Data-Structure-and-Algorithm/">Data Structure and Algorithm</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：2022-03-29 19:27:50</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <p>数据结构可视化：<br><a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html">https://www.cs.usfca.edu/~galles/visualization/Algorithms.html</a><br><a target="_blank" rel="noopener" href="https://visualgo.net/en">https://visualgo.net/en</a><br>Python可视化<br><a target="_blank" rel="noopener" href="https://pythontutor.com/">https://pythontutor.com/</a></p>
+<p>程序, 等于数据结构与算法. 在本标签下, 会讲述有关于数据结构 (逻辑结构, 存储结构和运算) 的基本知识. 逻辑结构分为线性结构 (线性表) 和非线性结构 (树, 与图) 的讲述. 存储结构包括 (顺序存储, 链式存储, 索引存储与散列存储) . 而有关于处理这些数据的基本技术即运算则 (如查找于排序) 在算法标签下讲述.</p>
+<h2 id="1-线性表"><a href="#1-线性表" class="headerlink" title="1. 线性表"></a>1. 线性表</h2><p>线性表是指由有限个同类元素组成的, 且相邻元素之间有序偶关系. </p>
+<h2 id="2-线性表的存储"><a href="#2-线性表的存储" class="headerlink" title="2. 线性表的存储"></a>2. 线性表的存储</h2><p>线性表的存储有顺序存储和链表存储两种方式.<br>顺序存储按顺序依次存储, 列表和元组可以实现顺序表.<br>链表存储除了原有的数据外, 还有存放后继元素地址的指针域.<br>顺序表的操作会引起大量数据移动, 效率很低, 根本原因是数据的逻辑关系是通过物理关系来表示的; 链式存储不要求物理上相邻 (毕竟指针也不是吃干饭的) , 这就使链表相比顺序表效率更高. </p>
+<h2 id="3-线性表的操作"><a href="#3-线性表的操作" class="headerlink" title="3. 线性表的操作"></a>3. 线性表的操作</h2><h2 id="1-顺序表操作"><a href="#1-顺序表操作" class="headerlink" title="1) 顺序表操作"></a>1) 顺序表操作</h2><p>参阅列表与元组的操作即可.</p>
+<h2 id="3-单链表操作"><a href="#3-单链表操作" class="headerlink" title="3. 单链表操作"></a>3. 单链表操作</h2><details ><summary>点击显/隐线性表的操作</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;节点类, 有一个参数&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, node</span>):</span><br><span class="line">        self.node = node  <span class="comment"># 参数 1: 用于接收节点</span></span><br><span class="line">        self.<span class="built_in">next</span> = <span class="literal">None</span>  <span class="comment"># 指针域, 初始化为空, 该指针域代表后继元素的地址信息</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SingleLinkList</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, node=<span class="literal">None</span></span>):</span><br><span class="line">        self.__head = node  <span class="comment"># 将接收到的节点传入头节点, 若未指定, 默认为空</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_empty</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;判断是否为空&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.__head == <span class="literal">None</span>  <span class="comment"># 若头节点为空, 返回 True, 反之则反</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">length</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取链表长度&quot;&quot;&quot;</span></span><br><span class="line">        cur, count = self.__head, <span class="number">0</span>  <span class="comment"># cur 游标, 用来遍历节点, count 计数器</span></span><br><span class="line">        <span class="keyword">while</span> cur != <span class="literal">None</span>:  <span class="comment"># 当节点不为空, 即遍历未完时</span></span><br><span class="line">            count, cur = count + <span class="number">1</span>, cur.<span class="built_in">next</span>  <span class="comment"># 计数器 +1, 游标移向下一个节点</span></span><br><span class="line">        <span class="keyword">return</span> count  <span class="comment"># 返回计数结果</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    得: 下代码是遍历全局所需代码</span></span><br><span class="line"><span class="string">    cur = self.__head    # cur 游标, 用来遍历节点</span></span><br><span class="line"><span class="string">        while cur != None:    # 当节点不为空, 即遍历未完时</span></span><br><span class="line"><span class="string">            cur = cur.next    # 游标移向下一个节点</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;增 - 头插法&quot;&quot;&quot;</span></span><br><span class="line">        new_node = Node(node)  <span class="comment"># 将新元素传递到节点里, 用 new_node 接收</span></span><br><span class="line">        <span class="comment"># 将原本的头节点赋给该节点的指针域, 将新节点赋给已经空下来的头节点</span></span><br><span class="line">        new_node.<span class="built_in">next</span>, self.__head = self.__head, new_node</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">append</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;增 - 尾增法 1.0&quot;&quot;&quot;</span></span><br><span class="line">        cur, new_node = self.__head, Node(node)  <span class="comment"># cur 游标, 用来遍历节点, 将新元素传递到节点里, 用 new_node 接收</span></span><br><span class="line">        <span class="keyword">while</span> cur != <span class="literal">None</span>:  <span class="comment"># 当节点不为空, 即遍历未完时</span></span><br><span class="line">            cur = cur.<span class="built_in">next</span>  <span class="comment"># 游标移向下一个节点</span></span><br><span class="line">        cur.<span class="built_in">next</span> = new_node  <span class="comment"># 最后一个节点的指针域存放该新增节点</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">append</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;增 - 尾增法 2.0, 在原有基础上添加了判定列表为空的情况&quot;&quot;&quot;</span></span><br><span class="line">        cur, new_node = self.__head, Node(node)  <span class="comment"># cur 游标, 用来遍历节点, 将新元素传递到节点里, 用 new_node 接收</span></span><br><span class="line">        <span class="keyword">if</span> self.__head == <span class="literal">None</span>:  <span class="comment"># 如果节点为空</span></span><br><span class="line">            self.__head = new_node  <span class="comment"># 将该节点添加到头节点里</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">while</span> cur.<span class="built_in">next</span> != <span class="literal">None</span>:  <span class="comment"># 当节点指针域不为空, 即遍历未完时</span></span><br><span class="line">                cur = cur.<span class="built_in">next</span>  <span class="comment"># 游标移向下一个节点</span></span><br><span class="line">            cur.<span class="built_in">next</span> = new_node  <span class="comment"># 最后一个节点的指针域存放该新增节点</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">insert</span>(<span class="params">self, index, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;增 - 指定下标位置插入&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> index &lt;= <span class="number">0</span>:  <span class="comment"># 若下标小于 0, 按头插法插入</span></span><br><span class="line">            self.add(node)</span><br><span class="line">        <span class="keyword">elif</span> index &gt; self.length() - <span class="number">1</span>:  <span class="comment"># 若下标大于长度减一, 按尾增法插入</span></span><br><span class="line">            self.append(node)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            cur, count, new_node = self.__head, <span class="number">0</span>, Node(node)  <span class="comment"># cur 游标, count 计数器, new_node 新节点</span></span><br><span class="line">            <span class="keyword">while</span> count != index - <span class="number">1</span>:  <span class="comment"># 当计数的下标不为所指定下标减一, 即所需要插入的下标前一个数据时, 进行循环</span></span><br><span class="line">                count, cur = count + <span class="number">1</span>, cur.<span class="built_in">next</span>  <span class="comment"># 计数加一, 游标移向下一个节点</span></span><br><span class="line">            new_node.<span class="built_in">next</span>, cur.<span class="built_in">next</span> = cur.<span class="built_in">next</span>, new_node  <span class="comment"># 将新节点赋给游标的下一个节点, 原游标的指针域赋给新节点的指针域</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">remove</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;删除节点 1.0&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 遍历, 若遍历的某个节点与需要删除的节点相同, 将需要删除的节点的指针域赋给需要删除的节点的上一个节点的指针域</span></span><br><span class="line">        cur, prior = self.__head, <span class="literal">None</span>  <span class="comment">#</span></span><br><span class="line">        <span class="keyword">while</span> cur.node != node:  <span class="comment"># 当遍历的逐个元素不等于需要删除的节点的话</span></span><br><span class="line">            prior, cur = cur, cur.<span class="built_in">next</span>  <span class="comment"># 将原有的 cur 移至 prior, cur.next 移至 cur, 等于全体向前挪动一格</span></span><br><span class="line">        <span class="keyword">else</span>:  <span class="comment"># 但若遍历的这个元素恰好等于需要删除的这个节点的话</span></span><br><span class="line">            prior.<span class="built_in">next</span> = cur.<span class="built_in">next</span>  <span class="comment"># 本来 prior应该指向 cur, 但现在应该将这一节点跳过去, 所以直接指向 cur.next</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">remove</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;删除节点 2.0, 增加了考虑删除的节点是否为头节点, 并在第四行改变了代码使得&quot;&quot;&quot;</span></span><br><span class="line">        cur, prior = self.__head, <span class="literal">None</span>  <span class="comment">#</span></span><br><span class="line">        <span class="keyword">while</span> cur != <span class="literal">None</span>:  <span class="comment"># 全局遍历</span></span><br><span class="line">            <span class="keyword">if</span> cur.node != node:  <span class="comment"># 当遍历的逐个元素不等于需要删除的节点的话</span></span><br><span class="line">                prior, cur = cur, cur.<span class="built_in">next</span>  <span class="comment"># 将原有的 cur 移至 prior, cur.next 移至 cur, 等于全体向前挪动一格</span></span><br><span class="line">            <span class="keyword">else</span>:  <span class="comment"># 但若遍历的这个元素恰好等于需要删除的这个节点的话</span></span><br><span class="line">                <span class="keyword">if</span> cur == self.__head:  <span class="comment"># 如果一开始扫描到的就是头节点</span></span><br><span class="line">                    self.__head = cur.<span class="built_in">next</span>  <span class="comment"># 本来头节点应该对等 cur, 但现在应该将这一节点跳过去, 所以直接指向 cur.next</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    prior.<span class="built_in">next</span> = cur.<span class="built_in">next</span>  <span class="comment"># 本来 prior 应该指向 cur, 但现在应该将这一节点跳过去, 所以直接指向 cur.next</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">self, node</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;查询节点是否存在&quot;&quot;&quot;</span></span><br><span class="line">        cur = self.__head  <span class="comment"># 游标, 遍历全局</span></span><br><span class="line">        <span class="keyword">while</span> cur != <span class="literal">None</span>:  <span class="comment">#</span></span><br><span class="line">            <span class="keyword">if</span> cur.node == node:  <span class="comment"># 如果此刻游标的节点与需要查找的节点相同, 那么返回 True</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cur = cur.<span class="built_in">next</span>  <span class="comment"># 否则游标移向下一个节点</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span>  <span class="comment"># 直到遍历结束若无则返回 False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">travel</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;遍历节点&quot;&quot;&quot;</span></span><br><span class="line">        cur = self.__head</span><br><span class="line">        <span class="keyword">while</span> cur != <span class="literal">None</span>:</span><br><span class="line">            <span class="built_in">print</span>(cur.node, end=<span class="string">&quot; &quot;</span>)</span><br><span class="line">            cur = cur.<span class="built_in">next</span></span><br><span class="line">        <span class="built_in">print</span>()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    node = Node(<span class="number">5</span>)</span><br><span class="line">    <span class="built_in">list</span> = SingleLinkList(node)</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">list</span>.is_empty())</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">list</span>.length())</span><br><span class="line">    <span class="built_in">list</span>.append(<span class="number">3</span>)</span><br><span class="line">    <span class="built_in">list</span>.add(<span class="number">999</span>)</span><br><span class="line">    <span class="built_in">list</span>.insert(-<span class="number">3</span>, <span class="number">110</span>)</span><br><span class="line">    <span class="built_in">list</span>.insert(<span class="number">99</span>, <span class="number">111</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">list</span>.is_empty())</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">list</span>.length())</span><br><span class="line">    <span class="built_in">list</span>.travel()</span><br><span class="line">    <span class="built_in">list</span>.remove(<span class="number">110</span>)</span><br><span class="line">    <span class="built_in">list</span>.travel()</span><br><span class="line"></span><br></pre></td></tr></table></figure></div></details>
+
+
+<h2 id="2-栈"><a href="#2-栈" class="headerlink" title="2. 栈"></a>2. 栈</h2><p>栈是一种增删操作都在表尾 (称栈顶) 操作的线性表. 具有先进后出的特性. </p>
+<details ><summary>点击显/隐栈的操作</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Stack</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;栈类, 由函数 push() 与 pop() 可知栈的元素为后进先出&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.items = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_empty</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;判断是否为空&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.items == []    <span class="comment"># 当空列表时返回 True, 反之则反</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">length</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取栈长度&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(self.items)    <span class="comment"># len() 函数获取列表长度</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">push</span>(<span class="params">self, item</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;入栈&quot;&quot;&quot;</span></span><br><span class="line">        self.items.append(item)    <span class="comment"># 尾部追加</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">pop</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;出栈&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.items.pop()    <span class="comment"># 尾部弹出</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">peek</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取栈顶元素&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.items[<span class="built_in">len</span>(self.items) - <span class="number">1</span>]    <span class="comment"># 栈顶元素为列表最后一个元素</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    stack = Stack()</span><br><span class="line">    <span class="built_in">print</span>(stack.is_empty()); <span class="built_in">print</span>(stack.length())    <span class="comment"># 无元素, 列表为空, 返回 True, 长度为 0</span></span><br><span class="line">    stack.push(<span class="number">1</span>); <span class="built_in">print</span>(stack.peek())    <span class="comment"># 1 入栈, 此刻栈顶元素为 1</span></span><br><span class="line">    stack.push(<span class="number">2</span>); <span class="built_in">print</span>(stack.peek())    <span class="comment"># 2 入栈, 此刻栈顶元素为 2</span></span><br><span class="line">    stack.push(<span class="number">3</span>); <span class="built_in">print</span>(stack.peek())    <span class="comment"># 3 入栈, 此刻栈顶元素为 3</span></span><br><span class="line">    <span class="built_in">print</span>(stack.items)    <span class="comment"># 获取此刻栈所有元素: [1, 2, 3]</span></span><br><span class="line">    <span class="built_in">print</span>(stack.is_empty()); <span class="built_in">print</span>(stack.length())  <span class="comment"># 3 元素, 列表不为空, 返回 False, 长度为 3</span></span><br><span class="line">    stack.pop(); <span class="built_in">print</span>(stack.peek())    <span class="comment"># 3 出栈, 此刻栈顶元素为 2</span></span><br><span class="line">    stack.pop(); <span class="built_in">print</span>(stack.peek())    <span class="comment"># 2 出栈, 此刻栈顶元素为 1</span></span><br><span class="line">    stack.pop()    <span class="comment"># 全部出栈</span></span><br><span class="line">    <span class="built_in">print</span>(stack.is_empty()); <span class="built_in">print</span>(stack.length())    <span class="comment"># 列表为空, 返回 True, 长度为 0</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></div></details>
+
+
+<h2 id="3-队列"><a href="#3-队列" class="headerlink" title="3. 队列"></a>3. 队列</h2><p>队列经典例子是 “排队” , 但刚好与其相反. 队列的插入采用头插法, 删除采用尾删法. </p>
+<details ><summary>点击显/隐队列的操作</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Queue</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;队列类, 由函数 en() 与 de() 可知队列为先进先出&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.items = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_empty</span>(<span class="params">self</span>):    <span class="comment"># 判断是否为空</span></span><br><span class="line">        <span class="keyword">return</span> self.items == []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">length</span>(<span class="params">self</span>):    <span class="comment"># 获取队列长度</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(self.items)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">en</span>(<span class="params">self, items</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;入队&quot;&quot;&quot;</span></span><br><span class="line">        self.items.insert(<span class="number">0</span>, items)    <span class="comment"># 头插法</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">de</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;出队&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.items.pop()    <span class="comment"># 尾部删除</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    queue = Queue()</span><br><span class="line">    <span class="built_in">print</span>(queue.is_empty()); <span class="built_in">print</span>(queue.length())    <span class="comment"># 无元素, 列表为空, 返回 True, 长度为 0</span></span><br><span class="line">    queue.en(<span class="number">1</span>)    <span class="comment"># 1 入队, 此刻队列元素为 [1]</span></span><br><span class="line">    queue.en(<span class="number">2</span>)    <span class="comment"># 2 入队, 此刻队列元素为 [2, 1]</span></span><br><span class="line">    queue.en(<span class="number">3</span>)    <span class="comment"># 3 入队, 此刻队列元素为 [3, 2, 1]</span></span><br><span class="line">    <span class="built_in">print</span>(queue.de())    <span class="comment"># 1 出队, 此刻队列元素为 [3, 2]</span></span><br><span class="line">    <span class="built_in">print</span>(queue.de())    <span class="comment"># 2 出队, 此刻队列元素为 [3]</span></span><br><span class="line">    <span class="built_in">print</span>(queue.de())    <span class="comment"># 3 出队, 此刻队列无元素</span></span><br><span class="line">    <span class="built_in">print</span>(queue.is_empty()); <span class="built_in">print</span>(queue.length())    <span class="comment"># 全部出队, 列表为空, 返回 True, 长度为 0</span></span><br></pre></td></tr></table></figure></div></details>
+
+<h2 id="4-字符串"><a href="#4-字符串" class="headerlink" title="4. 字符串"></a>4. 字符串</h2><p>字符串是由 n 多字符组成的有限序列. </p>
+<details ><summary>点击显/隐字符串的操作</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">String</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.items = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_empty</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.items == <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">length</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(self.items)</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">CreatString</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;创造字符串&quot;&quot;&quot;</span></span><br><span class="line">        <span class="built_in">str</span> = <span class="built_in">input</span>(<span class="string">&#x27;please input string: &#x27;</span>)</span><br><span class="line">        self.items = <span class="built_in">str</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ConcatString</span>(<span class="params">self, need_concat_str</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;连接字符串&quot;&quot;&quot;</span></span><br><span class="line">        self.items = self.items + need_concat_str</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">SubString</span>(<span class="params">self, index, length</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取字串&quot;&quot;&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(self.items[index:index + length])</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    string = String()</span><br><span class="line">    <span class="built_in">print</span>(string.is_empty())</span><br><span class="line">    <span class="built_in">print</span>(string.length())</span><br><span class="line">    string.CreatString()</span><br><span class="line">    string.ConcatString(<span class="string">&quot;123&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(string.length())</span><br><span class="line">    <span class="built_in">print</span>(string.items)</span><br><span class="line">    string.SubString(<span class="number">1</span>, <span class="number">4</span>)</span><br></pre></td></tr></table></figure></div></details>
+
+<h2 id="5-综合案例"><a href="#5-综合案例" class="headerlink" title="5. 综合案例"></a>5. 综合案例</h2><ol>
+<li>模式匹配</li>
+</ol>
+<p>给定一个子串, 要求在字符串中找到与子串相同的所有子串, 如在 “BBC ABCDAB ABCDABCDABDE” 中找到 “ABCDABD” .</p>
+<details ><summary>a. 点击显/隐 BF 算法的代码</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># BF (Brute Force) 算法,</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">BF</span>(<span class="params">String, SubString, begin_index = <span class="number">0</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Brute Force 算法, 我称它为暴力算法.</span></span><br><span class="line"><span class="string">    将子串的第一个字符与目标串进行匹配, 若不一样则跳过, 若一样则继续比较第二个, 第三...直至完全匹配</span></span><br><span class="line"><span class="string">    :param String: 需要被匹配的字符串</span></span><br><span class="line"><span class="string">    :param SubString: 需要进行匹配的子串</span></span><br><span class="line"><span class="string">    :param begin_index: 需要匹配的起始长度, 默认为 0</span></span><br><span class="line"><span class="string">    :return: 返回匹配成功的起始下标, 若匹配不成功, 返回 😶</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    i, j = begin_index, <span class="number">0</span>    <span class="comment"># 默认i = 0, j = 0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; <span class="built_in">len</span>(String) - <span class="number">1</span> <span class="keyword">and</span> j &lt;= <span class="built_in">len</span>(SubString) - <span class="number">1</span>:    <span class="comment"># 仅当字符串及其子串的下标 i 不大于其本身的下标时, 进行循环</span></span><br><span class="line">        <span class="keyword">if</span> String[i] == SubString[j]:    <span class="comment"># 如果字符相同</span></span><br><span class="line">            i, j = i + <span class="number">1</span>, j + <span class="number">1</span>    <span class="comment"># 两者均往后一格, 继续判断下一个字符</span></span><br><span class="line">        <span class="keyword">else</span>:    <span class="comment"># 如果字符不相同</span></span><br><span class="line">            i, j = i - j + <span class="number">1</span>, <span class="number">0</span>    <span class="comment"># i 应该回滚 i - j , 再往后一格重新进行匹配, j 重新初始化</span></span><br><span class="line">    <span class="keyword">if</span> j &gt; <span class="built_in">len</span>(SubString) - <span class="number">1</span>:    <span class="comment"># 如果 j (子串的下标) 大于子串的下标长度,</span></span><br><span class="line">        <span class="keyword">return</span> i - <span class="built_in">len</span>(SubString)    <span class="comment"># 返回匹配成功的起始下标</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;😶‍&quot;</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    s1 = <span class="string">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span></span><br><span class="line">    s2 = <span class="string">&quot;ABCDABD&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(BF(s1,s2))</span><br></pre></td></tr></table></figure></div></details>
+
+<details ><summary>b. 点击显/隐 KMP 算法的代码 [未完成]</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_next</span>(<span class="params">String</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;部分匹配函数&quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">next</span>, i, j = [-<span class="number">1</span>] * <span class="built_in">len</span>(String), <span class="number">0</span>, -<span class="number">1</span>  <span class="comment"># 要返回的 next 数组和分别指向主串和一开始指向模式串的指针</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; <span class="built_in">len</span>(String) - <span class="number">1</span>:  <span class="comment"># next[0] = -1, 只需求后面的 m-1 个值即可</span></span><br><span class="line">        <span class="keyword">if</span> j == -<span class="number">1</span> <span class="keyword">or</span> String[i] == String[j]:</span><br><span class="line">            i, j = i + <span class="number">1</span>, j + <span class="number">1</span>    <span class="comment"># 当匹配成功时, 往下继续匹配</span></span><br><span class="line">            <span class="comment"># next[i] = j    # 将该行加个判断条件, 改为下面四行</span></span><br><span class="line">            <span class="keyword">if</span> String[i] == String[j]:    <span class="comment"># 如果字符重复则跳过, 这样若 AAAAB, 直接可从第四个 A 开始判断</span></span><br><span class="line">                <span class="built_in">next</span>[i] = <span class="built_in">next</span>[j]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">next</span>[i] = j</span><br><span class="line">        <span class="keyword">else</span>:  <span class="comment"># 匹配不成功则在前面的子串中继续寻找, 直至找不到</span></span><br><span class="line">            j = <span class="built_in">next</span>[j]</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">next</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">kmp</span>(<span class="params">String, SubString, begin_index=<span class="number">0</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    KMP 算法则在上述的基础上做了些许改进. 具体体现在本函数的第 27 行与第 30 行.</span></span><br><span class="line"><span class="string">    :param String: 需要被匹配的字符串</span></span><br><span class="line"><span class="string">    :param SubString: 需要进行匹配的子串</span></span><br><span class="line"><span class="string">    :param begin_index: 需要匹配的起始长度, 默认为 0</span></span><br><span class="line"><span class="string">    :return: 返回匹配成功的起始下标, 若匹配不成功, 返回 😶</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    i, j = begin_index, <span class="number">0</span>  <span class="comment"># 默认i = 0, j = 0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; <span class="built_in">len</span>(String) <span class="keyword">and</span> j &lt; <span class="built_in">len</span>(SubString):  <span class="comment"># 仅当字符串及其子串的下标 i 不大于其本身的下标时, 进行循环</span></span><br><span class="line">        <span class="keyword">if</span> String[i] == SubString[j] <span class="keyword">or</span> j == -<span class="number">1</span>:  <span class="comment"># KMP 算法补充: 如果字符相同或 j == -1</span></span><br><span class="line">            i, j = i + <span class="number">1</span>, j + <span class="number">1</span>  <span class="comment"># 两者均往后一格, 继续判断下一个字符</span></span><br><span class="line">        <span class="keyword">else</span>:  <span class="comment"># 如果字符不相同</span></span><br><span class="line">            j = get_next(SubString)[j]  <span class="comment"># KMP 算法补充: i 不需要回溯, j 获取跳跃点</span></span><br><span class="line">    <span class="keyword">if</span> j == <span class="built_in">len</span>(SubString):  <span class="comment"># 如果 j (子串的下标) 大于子串的下标长度,</span></span><br><span class="line">        <span class="keyword">return</span> i - j  <span class="comment"># 返回匹配成功的起始下标</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;😶‍&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    s1 = <span class="string">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span></span><br><span class="line">    s2 = <span class="string">&quot;ABCDABDAFRDAHN&quot;</span></span><br><span class="line">    s3 = <span class="string">&quot;AW ADCBASD AD ADSAABCDABD&quot;</span></span><br><span class="line">    s4 = <span class="string">&quot;ABCDABD&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(get_next(s2))</span><br><span class="line">    <span class="built_in">print</span>(kmp(s1, s4))</span><br><span class="line">    <span class="built_in">print</span>(kmp(s2, s4))</span><br><span class="line">    <span class="built_in">print</span>(kmp(s3, s4))</span><br><span class="line"></span><br></pre></td></tr></table></figure></div></details>
+
+<ol start="2">
+<li>小猫钓鱼.</li>
+</ol>
+<p>甲和乙在玩一个扑克游戏——小猫钓鱼。游戏规则：将一副扑克牌平均分成两份，每人拿一分。甲先拿出手中第一张扑克牌放在桌上，然后乙也拿出手中第一张扑克牌，并放在甲刚才打出的扑克牌的上面，两人交替出牌。出牌时，如果某人打出的牌与桌上某张牌的牌面相同，可将两张相同的牌及其中间所夹的牌全部拿走，并依次放到自己手中牌的末尾。当任意一人手中当牌出完时，游戏结束，对方获胜。</p>
+<details ><summary>点击显/隐小猫钓鱼的代码</summary><div class="fold-content"><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">q1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]  <span class="comment"># 小猫钓鱼主程序，初始化，以各自三张牌为例分牌：甲方（q1）牌为1,2,3 乙方（q2）牌为2,5,1</span></span><br><span class="line">q2 = [<span class="number">2</span>, <span class="number">5</span>, <span class="number">1</span>]</span><br><span class="line">s = []</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">先分析一波: 玩家手牌为队列, 桌子为栈. 因此流程为 甲出队列 - 牌入栈 - 乙出队列 - 牌入栈</span></span><br><span class="line"><span class="string">胜利结果为: 一人手牌为空</span></span><br><span class="line"><span class="string">有个特殊情况: 若有相同牌, 需全部出栈并加入队列, 反之仅仅牌入栈</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">i = <span class="number">0</span>  <span class="comment"># 计数器, 用来记录是当前是谁出了牌</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pai_ru_zhan</span>(<span class="params">n</span>):</span><br><span class="line">    <span class="keyword">global</span> q1, q2, s, i</span><br><span class="line">    i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> n <span class="keyword">in</span> s:  <span class="comment"># 若有相同牌</span></span><br><span class="line">        s.append(n)  <span class="comment"># 牌需先入栈</span></span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">2</span> == <span class="number">1</span>:  <span class="comment"># 根据出牌计数器来判断是谁出的牌</span></span><br><span class="line">            q1 = s[s.index(n):] + q1  <span class="comment"># 将两数及其中间的牌全部出栈并加入队列</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            q2 = s[s.index(n):] + q2  <span class="comment"># 将两数及其中间的牌全部出栈并加入队列</span></span><br><span class="line">        s = s[:s.index(n)]  <span class="comment"># 牌被拿走后所剩下的牌</span></span><br><span class="line">    <span class="keyword">else</span>:  <span class="comment"># 反之仅仅牌入栈</span></span><br><span class="line">        s.append(n)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    pai_ru_zhan(q1.pop())  <span class="comment"># 甲出队列后调用牌入栈函数</span></span><br><span class="line">    pai_ru_zhan(q2.pop())  <span class="comment"># 甲出队列后调用牌入栈函数</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(q1) == <span class="number">0</span> <span class="keyword">or</span> <span class="built_in">len</span>(q2) == <span class="number">0</span>:  <span class="comment"># 胜利结果为: 一人手牌为空</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(q1) &gt; <span class="built_in">len</span>(q2):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;胜利结果为: 甲胜利, 此刻甲手牌为<span class="subst">&#123;q1&#125;</span>, 乙手牌为<span class="subst">&#123;q2&#125;</span>, 桌上牌为<span class="subst">&#123;s&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;胜利结果为: 乙胜利, 此刻乙手牌为<span class="subst">&#123;q2&#125;</span>, 甲手牌为<span class="subst">&#123;q1&#125;</span>, 桌上牌为<span class="subst">&#123;s&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></div></details>
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/dsa01/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%BA%BF%E6%80%A7%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">1. 线性表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BA%BF%E6%80%A7%E8%A1%A8%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">2.</span> <span class="toc-text">2. 线性表的存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%BA%BF%E6%80%A7%E8%A1%A8%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">3. 线性表的操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%BA%E5%BA%8F%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">1) 顺序表操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8D%95%E9%93%BE%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="toc-number">5.</span> <span class="toc-text">3. 单链表操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%A0%88"><span class="toc-number">6.</span> <span class="toc-text">2. 栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%98%9F%E5%88%97"><span class="toc-number">7.</span> <span class="toc-text">3. 队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">8.</span> <span class="toc-text">4. 字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B"><span class="toc-number">9.</span> <span class="toc-text">5. 综合案例</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/py02/">第二章  函数</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/posts/dsa02/">第二章  树和二叉树</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/dsa01/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

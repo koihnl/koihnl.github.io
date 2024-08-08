@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>『SQL Server』考二 | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `『SQL Server』考二`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">『SQL Server』考二</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/SqlServer/">SqlServer</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：2022-07-18 19:08:39</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <p>没有8，9，至10（含）</p>
+<h2 id="第一套"><a href="#第一套" class="headerlink" title="第一套"></a>第一套</h2><p>商品表（商品号，商品名，单价）<br>销售表（销售单据号，商品号，销售时间，销售数量，销售单价）。<br>商品号，单价，销售数量，销售单价均为整型<br>请编写查询某年某商品的销售总毛利的存储过程，毛利&#x3D;销售数量<em>（销售单价-单价）<br>要求商品号和年份为输入参数，总毛利用输出参数返回。<br>CREATE PROC p_name @商品号 int,@年份 int,@毛利 int output<br>AS<br>DECLARE @销售量 int,@单价 int,@销售单价 int<br>BEGIN<br>SELECT @单价 &#x3D; 单价 FROM 商品表 WHERE 商品号&#x3D;@商品号<br>SELECT @销售单价&#x3D; 销售单价, @销售量&#x3D; sum(销售数量)FROM 销售表 WHERE<br>@商品号&#x3D;商品号 AND 销售时间&#x3D;@年份<br>IF @单价 IS NULL THEN  &#x2F;<em>有？</em>&#x2F;<br>  ROLLBACK;<br>  RETURN;<br>END IF<br>IF @销售单价 IS NULL THEN&#x2F;<em>卖？</em>&#x2F;<br>  ROLLBACK;<br>  RETURN;<br>END IF<br>SET @毛利&#x3D;(@销售单价-@单价)</em>@销售量<br>end</p>
+<h2 id="第二套"><a href="#第二套" class="headerlink" title="第二套"></a>第二套</h2><p>在SQL Server 2008中，设某数据库中有商品表（商品号，商品名，进货价格)，商品号为主码;销售表（商品号，销售时间，销售数量，销售价格，本次利润)，商品号和销售时间为主码，销售价格为本次销售商品的单价。现要求每当在销售表中插入前4列数据时（假设—次只插入一行数据)，系统自动计算本次销售产生的利润，并将该利润赋给销售表的第5列”本次利润”。请编写实现上述功能的后触发型触发器代码。(10分)<br>CREATE TRIGGER tri_name ON 销售表 FOR INSERT<br>  AS<br>   DECLARE @进价 money, @销量 int,@售价 money,@利润 money<br>   SElECT @进价 &#x3D; 进货价格 FROM 商品表<br>   SELECT @销量 &#x3D; 销售数量,@售价 &#x3D; 销售价格 FROM inserted<br>   SET @利润 &#x3D; @销量*(@售价-@进价)<br>   UPDATE 销售表 SET 本次利润 &#x3D; @利润<br>   WHERE 商品号 IN(SELECT 商品号 FROM inserted)<br>   AND 销售时间 IN(SELECT 销售时间 FROM inserted)<br>END</p>
+<h2 id="第三套"><a href="#第三套" class="headerlink" title="第三套"></a>第三套</h2><p>设在SQL Server 2008某数据库中，已建立了四个文件组: fg1、fg2、fg3和fg4，以及一个分区函数RangePF1。RangePF1的定义代码如下:<br>CREATE PARTITION FUNCTION RangePF1(int)AS RANGE LEFT FOR VALUES(100,200,300)<br>(1)请基于RangePF1创建一个分区方案RangePS1，每个分区对应一个文件组。(5分)<br>(2）请使用RangePS1创建一个分区表PartitionT(Gid, GoodName, Price)，该表基于Gid列创建分区。其中Gid: int类型，取值大于等于1; GoodName:统一字符编码可变长类型，最多可存储20个汉字;Price:定点小数类型，小数部分1位，整数部分到千位。(5分)<br>[][创建分区方案 方案名 as 分区 函数名 to （文件组）]<br>[][CREATE TABLE tb_name （）on 方案名（Gid）]<br>1:<br>create partition scheme RangePS1<br>as partition RangePF1<br>to(fg1,fg2,fg3,fg4)<br>2:<br>create table orders<br>(<br>GID int identity(1,1) primary key,<br>GoodName varchar(40),<br>Price numeric(5,1)<br>)<br>on RangePS1(GID)</p>
+<h2 id="第五套"><a href="#第五套" class="headerlink" title="第五套"></a>第五套</h2><p>设有图书管理数据库，包含三张表:图书明细表(图书编号，图书类别，图书名称，作者，出版社，出版日期，定价);读者表（借书证号，姓名，系别，办证日期);借出信息表（借出编号，借书证号，图书编号，借书日期);完成下列操作:(10分)定义一个多语句表值函数，用于查询学生借书情况，只需提供参数:借书证号，就可以通过调用函数返回此学生的借书情况，若有借书籍，则返回所借书籍的编号、书籍名称、定价和借书日期;若没有在借书籍，则返回记录为空。设函数名为: f_BorrowBook(@jszh char(20))。</p>
+<p>CREATE FUNCTION f_BorrowBook(@jszh char(20))<br>RETURNS @jsqkb TABLE(书籍编号 char(20),书籍名称 char(50),定价 float,借书日期 datetime)<br>AS<br>BEGIN<br>INSERT INTO @jsqkb<br>SELECT图书明细表.图书编号,图书名称,定价,借出信息表.借书日期 FROM 借出信息表,图书明细表<br>WHERE 借出信息表.图书编号&#x3D;图书明细表.图书编号 AND 借出信息表.借书证号&#x3D;@jszh<br>RETURN<br>END</p>
+<h2 id="第七套"><a href="#第七套" class="headerlink" title="第七套"></a>第七套</h2><p>BORROWER：<br>借书证号  姓名  系名  班级<br>12011106 张三 计算机 12-1<br>12011107 李四 计算机 12-1<br>12012113 王五 语文 12-2</p>
+<p>LOANS??<br>借书证号  图书馆登记号  借书日期<br>12011106 T001001 2012.01.02<br>12012113 T001026 2013.02.06</p>
+<p>BOOKS??<br>索书号 书名  作者 图书登记号 出版社 价格<br>TP311.1 数据库 李明 T001001 人民 19.00<br>TP311.2 二级C语言 王珊 T001026 科学 32.00<br>1.检索至少借了五本书的同学借书证号，姓名，系名，借书数量<br>2.检索借书和王五同学所借图书的任意一本相同的学牲姓名，系名，书名和借书日期<br>SELECT LOANS.借书证号,姓名,系名,COUNT(<em>) AS 借书数量<br>FROM BORROWER,LOANS<br>WHERE BORROWER.借书证号&#x3D;LOANS.借书证号<br>GROUP BY LOANS.借书证号,姓名,系名<br>HAVING COUNT(</em>)&gt;&#x3D;5;</p>
+<p>SELECT 姓名,系名,书名,借书日期<br>FROM  BORROWER,LOANS , BOOKS<br>WHERE<br> BORROWER.借书证号&#x3D;LOANS.借书证号 AND LOANS.图书馆登记号&#x3D;BOOKS.图书馆登记号<br>AND 索书号 IN<br>(SELECT 索书号 FROM BORROWER,LOANS,BOOKS<br>WHERE BORROW.借书证号&#x3D;LOANS.借书证号<br>AND LOANS.图书馆登记号&#x3D;BOOKS.图书馆登记号<br>AND 姓名&#x3D;”王五”)<br>group by 姓名,系名,书名,借书日期<br>having 姓名 !&#x3D;’王五’</p>
+<h2 id="塢-洢"><a href="#塢-洢" class="headerlink" title="??????????????????????????????????????塢?????????????????? ?洢????"></a>??????????????????????????????????????塢?????????????????? ?洢????</h2><p>CREATE TABLE 商品表(<br>商品号 char(10) PRIMARY KEY,<br>商品名 varchar(40),<br>类别 varchar(20),<br>进货单价 int,<br>销售总量 int default 0)<br>CREATE TABLE 销售表(<br>商品号 char(10) REFERENCES 商品表(商品号),<br>销售时间 datetime,<br>销售数量 int,<br>销售单价 int,<br>PRIMARY KEY(商品号,销售时间))<br>9.12.创建存储过程:指定类别的每种商品今年的销售总数量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create proc p_name @lb varchar(20)</span><br><span class="line">as</span><br><span class="line">select 商品名, (select sum(销售数量) from 销售表 a </span><br><span class="line">where a.商品号=b.商品号 and year(销售时间)=year(getdate())) as 销售总数量</span><br><span class="line">from 商品表 b</span><br><span class="line">where b.类别=@lb</span><br></pre></td></tr></table></figure>
+<p>8.11.创建存储过程:指定类别的每种商品今年的销售总金额</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create proc p_name @lb varchar(20)</span><br><span class="line">as</span><br><span class="line">select 商品名, (select sum(销售数量*销售单价) from 销售表 a</span><br><span class="line">where a.商品号=b.商品号 and year(销售时间)=year(getdate())) as 销售总金额</span><br><span class="line">from 商品表 b</span><br><span class="line">where b.类别=@lb</span><br></pre></td></tr></table></figure>
+<p>13.创建存储过程:指定类别的每种商品去年的销售总数量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create proc p_name @lb varchar(20)</span><br><span class="line">as</span><br><span class="line">select a.商品号,商品名,sum(销售数量) as 销售总数量</span><br><span class="line">from 商品表 a join 销售表 b</span><br><span class="line">on a.商品号=b.商品号</span><br><span class="line">where year(销售时间)=year(dateadd(year,-1,getdate()))</span><br><span class="line">and 类别=@lb</span><br><span class="line">group by a.商品号,商品名</span><br></pre></td></tr></table></figure>
+<p>17.创建存储过程:指定日期范围每种商品的销售总数量,包括未销售的商品.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create proc p1 @start_date date, @end_date date</span><br><span class="line">as</span><br><span class="line">select 商品表.商品号,sum(销售数量) from 商品表</span><br><span class="line">left join 销售表 on 商品表.商品号=销售表.商品号</span><br><span class="line">where 销售时间 between @start_date and @end_date</span><br><span class="line">group by 商品表.商品号</span><br></pre></td></tr></table></figure>
+<p>19.创建存储过程:指定商品号的商品销售总数量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create proc p1 @model varchar(10),@total int output</span><br><span class="line">as</span><br><span class="line">set @total=(select sum(销售数量) from 销售表 s </span><br><span class="line">join 商品表 c on s.商品号=c.商品号</span><br><span class="line">where 商品号=@model)</span><br></pre></td></tr></table></figure>
+<p>14.创建存储过程:指定类别的每个商品的销售总利润,包括未销售的(值为0)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">create proc p_Profit @lb char(10)</span><br><span class="line">as</span><br><span class="line">select 商品表.商品号,</span><br><span class="line">case</span><br><span class="line">when 销售表.商品号 is null then 0</span><br><span class="line">else sum((销售单价-进货单价)*数量)</span><br><span class="line">end as 销售总利润</span><br><span class="line">from 商品表 left join 销售表 on 商品表.商品号=销售表.商品号</span><br><span class="line">where 类别=@lb</span><br><span class="line">group by 商品表.商品号</span><br></pre></td></tr></table></figure>
+<p>16.标量函数:指定商品号返回销售总金额</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create function dbo.f_TotalQty(@GoodID char)</span><br><span class="line">returns int</span><br><span class="line">as</span><br><span class="line">begin</span><br><span class="line">return(select sum(销售数量*销售单价)from 商品表 join 销售表</span><br><span class="line">on 商品表.商品号=销售表.商品号</span><br><span class="line">where 商品号=@GoodID)</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>4.多语句表值函数: 返回类别参数的每种商品在2012年的销售总利润,并降序输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">create function f_Profit(@lb char(10))</span><br><span class="line">returns @ProfitTable table(商品号 char(10),总利润 int)</span><br><span class="line">as</span><br><span class="line">begin</span><br><span class="line">insert into @ProfitTable</span><br><span class="line">select a.商品号,sum(销售数量*(销售单价-进货单价)) as 总利润</span><br><span class="line">from 销售表 a join 商品表 b on a.商品号=b.商品号</span><br><span class="line">where a.商品号 in(select 商品号 from 商品表 where 类别=@lb)</span><br><span class="line">group by a.商品号</span><br><span class="line">order by 总利润 desc</span><br><span class="line">return @ProfitTable</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>10.6.多语句表值函数：统计指定年份中每个商品的销售总额</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">create function fun_name(@year int)</span><br><span class="line">returns @fun_name table(商品号 char(10),销售总金额 int)</span><br><span class="line">as</span><br><span class="line">begin</span><br><span class="line">insert into @fun_name</span><br><span class="line">select a.商品号,sum(a.销售单价*b.销售数量) from 商品表 a</span><br><span class="line">join 销售表 b on a.商品号=b.商品号</span><br><span class="line">where year(b.销售时间)=@year</span><br><span class="line">group by a.商品号</span><br><span class="line">return</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>15.18.创建触发器:每当在销售表中插入一条销售记录, 修改商品表中对应商品的销售总量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create trigger tri_name on 销售表 for insert</span><br><span class="line">as</span><br><span class="line">update 商品表</span><br><span class="line">set 销售总量=商品表.销售总量+(select 销售数量 from inserted)</span><br><span class="line">where 商品号 in(select 商品号 from inserted)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create trigger tri_name on 销售表 after insert</span><br><span class="line">as</span><br><span class="line">declare @Sales_Amount int</span><br><span class="line">set @Sales_Amount=(select 销售数量 from inserted)</span><br><span class="line">update 商品表 set 销售总量=商品表.销售总量+@Sales_Amount</span><br><span class="line">where 商品号 in (select 商品号 from inserted)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+<h2 id="第二十套"><a href="#第二十套" class="headerlink" title="第二十套"></a>第二十套</h2><p>CREATE TABLE 出租表(<br>房屋号 char(10),<br>出租日期 datetime,<br>租期 int not null, –月数<br>到期日期 datetime,<br>PRIMARY KEY(房屋号,出租日期));<br>创建触发器:每当在出租表插入一行数据(房屋号,出租日期,租期),自动计算到期日期<br>CREATE TRIGGER tri ON 出租表 FOR insert<br>AS<br>update 出租表 SET 到期日期 &#x3D; dateadd(month,租期,出租日期)<br>WHERE 房屋号 &#x3D; (SELECT 房屋号 FROM inserted )<br>and 出租日期&#x3D;(select 出租日期 from inserted)</p>
+<h2 id="洢"><a href="#洢" class="headerlink" title="?????????????? ????????洢????"></a>?????????????? ????????洢????</h2><p>create table 房屋表(<br>房屋号 char(10) primary key,<br>房屋地址 char(20) not null,<br>面积 int,<br>月租金 int<br>)<br>create table 租贷表(<br>房屋号 char(10),<br>租贷日期 datetime,<br>租贷月数 int not null,<br>本次总租金 int,<br>primary key(房屋号,租贷日期),<br>foreign key(房屋号) references 房屋表(房屋号)<br>)<br>创建触发器:每当在租贷表插入一行数据（房屋号，租贷日期，租贷月数），计算本次月租金</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create trigger tri_name on 租贷表 for insert</span><br><span class="line">as</span><br><span class="line">declare @x int </span><br><span class="line">set @x=(select 月租金 from 房屋表 where 房屋号=</span><br><span class="line">(select 房屋号 from inserted))</span><br><span class="line">update 租贷表 set 本次月租金=租贷月数*@x</span><br><span class="line">from 租贷表 a join 房屋表 b on a.房屋号=b.房屋号</span><br><span class="line">and a.租贷日期=b.租贷日期</span><br></pre></td></tr></table></figure>
+<p>创建存储过程：输入房屋号，计算历史租金总和</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create proc p1 @room char(10),@total int output</span><br><span class="line">as</span><br><span class="line">set @total=(select sum(租贷月数*月租金) from 房屋表</span><br><span class="line">join 租贷表 on 房屋表.房屋号=租贷表.房屋号</span><br><span class="line">where a.房屋号=@room)</span><br></pre></td></tr></table></figure>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/sqlserver2/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%A5%97"><span class="toc-number">1.</span> <span class="toc-text">第一套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%A5%97"><span class="toc-number">2.</span> <span class="toc-text">第二套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%A5%97"><span class="toc-number">3.</span> <span class="toc-text">第三套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E5%A5%97"><span class="toc-number">4.</span> <span class="toc-text">第五套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E5%A5%97"><span class="toc-number">5.</span> <span class="toc-text">第七套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A1%A2-%E6%B4%A2"><span class="toc-number">6.</span> <span class="toc-text">??????????????????????????????????????塢?????????????????? ?洢????</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%A5%97"><span class="toc-number">7.</span> <span class="toc-text">第二十套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%A2"><span class="toc-number">8.</span> <span class="toc-text">?????????????? ????????洢????</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/sqlserver3/">『SQL Server』考三</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/posts/sqlserver12/">『SQL Server』第十二章  备份与恢复数据库</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/sqlserver2/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

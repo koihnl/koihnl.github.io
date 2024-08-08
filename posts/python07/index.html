@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>第七章  文件和数据格式化 | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `第七章  文件和数据格式化`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">第七章  文件和数据格式化</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/Python/">Python</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：2022-07-27 08:45:51</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <p>7.1文件的使用<br>文件是存储在辅助存储器上的一组数据序列，可以包含任何数据内容。概念上，文件是数据的集合和抽象。文件包括文本文件和二进制文件两种类型。<br>7.1.1文件的类型<br>文本文件一般由单一特定编码的字符组成，如UTF-8编码，内容容易统一展示和阅读。大部分文本文件都可以通过文本编辑软件或文字处理软件创建、修改和阅读。由于文本文件<br>存在编码,所以，它也可以被看作是存储在磁盘上的长字符串，如一个txt 格式的文本文件<br>二进制文件直接由比特О和比特1组成，没有统一的字符编码，文件内部数据的组织格<br>式与文件用途有关。二进制是信息按照非字符但有特定格式形式的文件，如png格式的图片文件、avi格式的视频文件。二进制文件和文本文件最主要的区别在于是否有统一的这符编码。二进制文件没有统一的字符编码，只能当作字节流，而不能看作是字符串<br>无论文件创建为文本文件或者是二进制文件，都可以用“文本文件方式”和“二进制文件方式”打开，但打开后的操作不同。<br>一个文本文件 a.txt，其内容为“全国计算机等级考试”，采用文本方式打开。这里需要将文本文件与Python程序文件放在同一个目录中。<br>采用文本方式读入文件，文件经过编码形成字符串，打印出有含义的字符;采用二进制方式打开文件,文件被解析为字节流。由于存在编码,字符串中的一个字符由多个字节表示。<br>7.1.2文件的打开和关闭<br>Python对文本文件和二进制文件采用统一的操作步骤，即“打开—操作—关闭”，操作系统中的文件默认处于存储状态，首先需要将其打开，使用得当前程序有权操作这个文件，打开不存在的文件系统可以创建这个文件。打开后的文件处于占用状态，此时，另一个进程不能操作这个文件。可以通过一组方法读取文件的内容或向文件写入内容，操作之后需要将文件关闭，关闭将释放对文件的控制使用文件恢复成存储状态，此时，另一进程能够操作这个文件。<br>Python通过open()函数打开一个文件，并返回一个操作这个文件的变量。语法结构:<br>变量名&#x3D;open(文件路径及文件名,打开模式)<br>open()函数有两个参数:文件名和打开模式。文件名可以是文件的实际名字，也可以是包含完整路径的名字。打开模式用于控制使用何种方式打开文件，open()函数提供了7种基本的打开模式。<br>文件的打开模式<br>r 只读模式，如果文件不存在，返回异常FileNotFoundError，默认值<br>w 覆盖写模式，文件不存在则创建，存在则完全覆盖原文件<br>x 创建写模式，文件不存在则创建，存在则返回异常FileExistsError<br>a 追加写模式，文件不存在则创建，存在则在原文件最后追加内容<br>b 二进制文件模式<br>t 文本文件模式，默认值</p>
+<ul>
+<li>与r&#x2F;w&#x2F;x&#x2F;a一同使用，在原功能基础上增加同时读写功能<br>打开模式使用字符串方式表示，根据字符串定义，单引号或者双引号均可。上述打开模式中，r,w,x,a或以和 b,t,+组合使用，形成既表达读写又表达文件模式的方式。</li>
+</ul>
+<p>7.1.3文件的读写<br>根据打开方式不同，文件读写也会根据文本文件或二进制打开方式有所不同。<br>f.read(size&#x3D;-1)：从文件中读入整个文件内容。参数可选，如果给出，读入前size长度的字符串或字节流。<br>f.readline(size&#x3D;-1)：从文件中读入一行内容。参数可选，如果给出，读入该行前size长度的字符串或字节流。<br>f.readlines(hint&#x3D;-1)：从文件中读入所有行，以每行为元素形成一个列表。参数可选，如果给出，读入hint行。<br>f.seek(offset)：改变当前文件操作指针的位置，offset的值:o为文件开头;2为文件结尾。<br>如果文件以文本文件方式打开，则读入字符串;如果文件以二进制方式打开，则读入字节流。<br>如果文件不大，可以一次性将文件内容读入，保存到程序内部变量中。f.read()是最常用的一次性读入文件的函数．其结果是一个字符串。<br>f.write(s)：向文件写入一个字符串或字节流<br>f.writelines(lines)：将一个元素为字符串的列表整体写入文件<br>f.write(s)向文件写入字符串 s，每次写入后，将会记录一个写入指针。该方法可以反复调用，在写入指针后分批写入内容，直至文件被关闭。<br>使用f.write(s)时，要显示地使用”\n”对写入文本进行分行，如果不进行分行，每次写入的字符串会被连接起来。<br>f.writelines(lines)直接将列表类型的各元素连接起来写入文件f。<br>7.2数据组织的维度<br>一组数据在被计算机处理前需要进行一定的组织，表明数据之间的基本关系和逻辑，进而形成“数据的维度”。根据数据的关系不同，数据组织可以分为:一维数据、二维数据和高维数据。<br>7.2.1一维数据<br>一维数据由对等关系的有序或无序数据构成，采用线性方式组织，对应于数学中数组的概念。例如，中国的直辖市列表即可表示为一维数据，一维数据具有线性特点。<br>维数据十分常见，任何表现为序列或集合的内容都可以看作是一维数据。<br>7.2.2二维数据<br>二维数据，也称表格数据，由关联关系数据构成，采用二维表格方式组织，对应于数学中的矩阵，常见的表格都属于二维数据。<br>例如，国家统计局发布的居民消费价格数是二维数据。表格横向包括“指标”“2014年”“2015年”“2016年”，分别表示项目和时间维度，表格纵向为具体指标点，形成了二维数据关系。其中，第一行为说明部分，可以看作是与其他行一致的二维数据一行，也可以看作具数据外的数明部分<br>7.2.3高维数据<br>高维数据由键值对类型的数据构成，采用对象方式组织，可以我层嵌套。<br>高维数据在Web系统中十分常用，作另当今Internet组织内容的主要方式，高维数据衍生出HTML、XML、JSON等具体数据组织的语法结构。<br>以JSON格式为例，下面给出了描述“本书”的高维数据表示形式，其中冒号(:）形成一个键值对，逗号(,）分隔键值对，JSON格式中[]组织各键值对成为一个整体，与“本书”形成高层次的键值对。高维数据相比一维数据和二维数据能表达更加灵活和复杂的数据产系。<br>7.3.1一维数据的表示<br>一维数据是最简单的数据组织类型，幽于是线性结构，在Python 语言中主要采用列表形式表示。例如，中国的直辖市数据可以采用一个列表变量表示。<br>采用列表类型表示一维数据的时候需要注意每个数据的数据类型。7.3.2一维数据的存储<br>一维数据的文件存储有多种方式，总体思路是采用特殊字符分隔各数据。采用存储方法包括如下4种。<br>(1）采用空格分隔元素，列如:<br>(2)采用逗号分隔元素，例如:<br>(3）使用换行分隔元素，例如:<br>(4)  其他特殊符号分割<br>这4种方法中，逗号分隔的存储格式叫作csv格式(Comma-Separated Values，即逗号分隔值)，它是一种通用的、相对简单的文件格式，在商业和科学上广泛应用，大部分编辑器都支持直接读入或保存文件为CSv格式，如 Windows平台上的记事本或微软Office Excel等。存储的文件一般采用.csv为扩展名。<br>一维数据保存成CSV格式后，各元素采用逗号分隔，形成一行，这里的逗号是英文逗号。从Python表示到数据存储，需要将列表对象输出为CSV格式以及CSV格式读入成列表对象。<br>列表对象输出为CSV格式文件方法如下，采用字符串的join()方法最为方便。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">list=[]</span><br><span class="line">f=open()</span><br><span class="line">f.write(&#x27;,&#x27;.join(list)+&#x27;\n&#x27;)</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure>
+<p>7.3.3一维数据的处理<br>对一维数据进行处理首先需要从CSV格式文件读入一维数据,并将其表示为列表对象。需要注意，从CSV文件中获得内容时，最后一个元素后面包含了一个换行符(“‘n”)。对于数据的表达和使用来说，这个换行是多余的，需要采用字符串的strip()方法去掉数据尾部的换行符，进一步使用split()方法以逗号进行分隔。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f=open()</span><br><span class="line">list=f.read().strip(&#x27;\n&#x27;).split(&#x27;,&#x27;)</span><br><span class="line">f.close()</span><br><span class="line">print(list)</span><br></pre></td></tr></table></figure>
+<p>7.4二维数据的处理<br>7.4.1二维数据的表示<br>二维数据由多个一维数据构成，可以看作是一维数据的组合形式。因此，二维数据可以采用二维列表来表示,即列表的每个元素对应二维数据的一行,这个元素本身也是列表类型,其内部各元素对应这行中的各列值。<br>提示:二维数据的数据类型<br>二维数据一般采用相同的数据类型存储数据，便于操作。<br>尽管在二维数据中存在大量数值，但由于本例中数值所在行或列不都是数字，存在字符文本，因此，将数值统一表示为字符串形式。<br>7.4.2二维数据的存储<br>二维数据由一维数据组成，用CSV格式文件存储。CSV文件的每一行是一维数据，整个CSV文件是一个二维数据。存储以下数据为.csv文件，名称为cpi.csv。<br>二维数据存储为CSV格式，需要将二维列表对象写入CSV格式文件以及将CSV格式读成二维列表对象。<br>二维列表对象输出为CSV格式文件方法如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">list=</span><br><span class="line">f=o</span><br><span class="line">for row in list:</span><br><span class="line">    f.write(&#x27;,&#x27;.join(row)+&#x27;\n&#x27;)</span><br><span class="line">f.c</span><br></pre></td></tr></table></figure>
+<p>7.4.3二维数据的处理<br>对二维数据进行处理首先需要从CSV格式文件读入二维数据，并将其表示为二维列表对象。读取CSV格式文件方法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">f=o</span><br><span class="line">list=[]</span><br><span class="line">for line in f:</span><br><span class="line">    list.append(line.strip(&#x27;\n&#x27;).split(&#x27;,&#x27;))</span><br><span class="line">f.c</span><br><span class="line">print(list)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/python07/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/sqlservers/">三级考试(数据库篇)错题整理(选择题, 填空题篇)</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/posts/python08/">第八章  计算生态</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/python07/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

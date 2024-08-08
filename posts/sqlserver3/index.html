@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>『SQL Server』考三 | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `『SQL Server』考三`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">『SQL Server』考三</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/SqlServer/">SqlServer</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：2022-07-19 19:19:20</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <h2 id="第一套-性能优化"><a href="#第一套-性能优化" class="headerlink" title="第一套  性能优化"></a>第一套  性能优化</h2><p>设某全国性的运输企业创建了大型OLTP系统，并在该系统之上创建了数据仓库。OLTP系统和数据仓库中有以下数据表：<br>运输明细表(运输单ID，发送站ID，终到站ID，货物ID，货物重量，运输价格，发货日期)<br>汇总表1(发送站ID，终到站ID，货物ID，发货日期，总重，总运价)<br>汇总表2(发送站ID，终到地区ID，货物ID，发货日期，总重，总运价)<br>汇总表3(发送站ID，终到站ID，货物ID，发货月份，总重，总运价)<br>汇总表4(发送地区ID，终到地区ID，货物类别ID，发货日期，总重，总运价)<br>该企业管理的货运站约有100个，货物约有500种共10类，各汇总表都建有主码，且各表有合理的维护策略，在每次维护后数据能保持一致。设有视图V，该视图的访问频率很高，其查询结果模式为(发送地区ID，终到站ID，发货月份，总重，总运价)，该视图现以汇总表1为计算数据源。经监控发现，汇总表1的被访问频率太高，致使系统总体性能降低，而其它汇总表被访问频率较低。在不增长汇总表和索引的状况下，请给出一个改善系统服务性能的优化方案，并简要说明理由。</p>
+<p>【解题思路】<br>　　计算机系统中存在着两类不同的数据处理工作：操作型处理和分析型处理，也称作OLTP(联机事务处理)和OLAP(联机分析处理)。操作型处理也叫事务处理，是指对数据库联机的日常操作，通常是对一个或一组纪录的查询或修改，例如火车售票系统、银行通存通兑系统、税务征收管理系统等。这些系统要求快速响应用户请求，对数据的完全性、完整性以及事务吞吐量要求很高。结合本题中存在的问题，视图本身的访问量很高，而又仅仅以汇总表1为计算数据源，而其它汇总表访问率低，导致了资源利用不合理。因此本题考察了联机事务处理中的资源调度问题。<br>【参考答案】<br>　　由于汇总表1和视图的模式访问频率都很高，而且视图的数据源来自汇总表1，又因为其他汇总表的访问率较低，所以只需要将视图的数据源绑定为汇总表3，因为汇总表3也可以满足视图的输出模式。这样不仅提升了汇总表3的数据访问率，而且降低了汇总表1的数据访问率，系统性能和服务性能得到了很大的优化。又因为货物约有500种，共10类， 可以再建立一个视图绑定数据源为汇总表4，这样就可以充分利用汇总表4的数据信息，从而可以进一步优化系统性能。</p>
+<h2 id="第二套-性能优化-索引"><a href="#第二套-性能优化-索引" class="headerlink" title="第二套  性能优化 索引"></a>第二套  性能优化 索引</h2><p>在进行某学校教务管理系统的数据库设计时，数据库设计人员设计了如下几个关系模式：<br>系(系号，系名)，系号为主码<br>学生(学号，姓名，所在系号)，学号为主码<br>课程(课程号，课程名，开课系号)，课程号为主码<br>选课(学号，课程号，选课时间)，学号和课程号为主码<br>开发人员在将关系模式实施到SQL Server 2008的“教务”数据库时，使用了如下表结构定义语句：<br>CREATE TABLE系(<br>系号varchar(10)NOT NULL，<br>系名varchar(100)<br>)</p>
+<p>CREATE TABLE学生(<br>学号varchar(50)NOT NULL，<br>姓名varchar(50)，<br>所在系号varchar(10)<br>)<br>CREATE TABLE课程(<br>课程号varchar(50)NOT NULL，<br>课程名varchar(100)，<br>开课系号varchar(10)<br>)<br>CREATE TABLE选课(<br>学号varchar(50)NOT NULL，<br>课程号varchar(50)NOT NULL，<br>选课时间datetime<br>)<br>在执行如下查询语句时发现执行效率很低：<br>SELECT *FROM选课JOIN学生0N学生.学号&#x3D;选课.学号<br>JOIN系ON系.系号&#x3D;学生.所在系号<br>JOIN课程0N课程.课程号&#x3D;选课.课程号<br>WHERE系.系号&#x3D;ˊ012 ˊ<br>AND convert(vvarchar(10)，选课时间，120)&gt;&#x3D;ˊ2010-01-01ˊ<br>(1)在查找原因时发现建表语句有问题。请指出问题并说明该问题是否会影响此查询语句的执行效率。(4分)<br>(2)设已在“选课”表的“选课时间”列及“学生”表的“所在系号”列上建立了索引。请问这两个索引是否能够提高该查询语句的执行效率?如果不能，请说明原因。(4分)</p>
+<p>4、建表时没有设置主键，也没有说明外键，但不会影响此查询语句的执行效率。<br>[解析]本题中查询语句的功能是得到12系全体学生在2010年1月1日后的选课情况的汇总表。在每个数据表的定义时都必须严格定义表中的完整性约束条件，包括主键的设置，否则之后会出现主键有相同值的情况，破坏了数据的完整性。<br>5、”选课”表的”选课时间”可以建立索引，从而提高查询效率，而”学生w表的”所在系号w建立索引不会提高查询效率。索引的意义就是将记录按目标关键字顺序排列，这样查找某个目标关键字的对应值的位置就缩小了查找范围。”选课时间”的重复率低，所以可以作为索引，而学生”所在系号”的重复率太高，则不会提高查询效率。<br>[解析]”选课”表的”选课时间”列上建立了索引，从而能够提高执行效率。经常出现在where子句中的字段，特别是大表的字段，应该建立索引。索引的作用就类似于书的目录，即会按照章节的顺序排列。因此如果在一本数百页的书里面查找某个章节位置的时候，就可以只扫描书的目录。扫描的范围缩了n倍，查询的效率自然就会提高。另外，在sQL Server内存够用的情况下，索引会被放到内存中，在内存中查找自然又会提高效率，所以必须合理利用索引。</p>
+<h2 id="第三套-性能优化"><a href="#第三套-性能优化" class="headerlink" title="第三套  性能优化"></a>第三套  性能优化</h2><p>某商场商品经营管理系统使用SQL Server 2008数据库管理系统，此系统上线运行1年后，业务人员使用某统计功能（此功能每月使用一次)时发现速度很慢。该统计功能主要执行的SQL语句如下:<br>SELECT商品号,SUM(销售数量<em>销售价格)销售额FROM销售明细<br>GROUP BY商品号;<br>该销售明细表的建表语句如下:CREATE TABLE销售明细(<br>序列号intlIDENTITY(1,1) NOT NULL,商品号intNOT NULL,<br>销售日期datetime NULL,销售数量intNOT NULL,销售价格intNOT NULL);<br>并在销售明细表上建有如下索引:<br>CREATE index ix_销售明细_商品号on销售明细(商品号);某技术人品提出涌过执行下述语句以提高此杳询的运行效率:<br>CREATE VIEW商品销售额视图<br>WITH SCHEMABINDINGAS<br>SELECT商品号,SUM(销售数量</em>销售价格)销售额,COUNT_BIG(*) cnt<br>FROM dbo.销售明细GROUP BY商品号;<br>CREATE UNIQUE CLUSTERED INDEX ix_商品销售额ON商品销售额视图(商品号);(10分)<br>(1）请分析该技术人员给出的语句功能以及对原有查询语句的性能影响，并给出原因。<br>(2）此商场的销售量很大，每天有大量数据插入到销售明细表中。请从数据库整体性能角度分析，此技术人员提出的优化方法是否合适，并给出原因。</p>
+<p>语句功能:建立包含(商品号，销售额，该商品表中出现次数)带索引的视图，并建立按商品号对应销售额UNIQUE聚簇排序的索引，大大缩小」含询语可的食诩汇围，提高了查询效率。原因:税图中将间按相大周2小了推索空间，同时建商品号，销售数量，销售价格）转换成了目标属性列，减少了搜索空间;同时建立UNIQUE CLUSTERED索引，使查询商品号的数据记录唯一，降低了搜索范围，提高了搜索效率。</p>
+<p>不合适，每天大量的插入操作使得在修改表的同时也要对视图进行修改，增加了系统的负担，然而该统计功能一个月才用一次，这样导致系统的利用率也较为低下。</p>
+<h2 id="第四套-性能优化"><a href="#第四套-性能优化" class="headerlink" title="第四套  性能优化"></a>第四套  性能优化</h2><p>某教务管理系统使用SQL Server 2008数据库管理系统，数据库软硬件配置信息如下：<br>Ⅰ．数据库运行在两路Intel Xeon E5-2609 2.4GHz CPU(每路CPU4核心)，128GB内存、2块300GB 15000转SAS硬盘(RAID 1)的服务器上；<br>Ⅱ．服务器操作系统为Windows 2003 32位企业版，安装SP2补丁；<br>Ⅲ．数据库为SQL Server 2008 Enterprise(32 位)，数据库中总数据量近130GB。<br>近一个学期以来，用户反映系统运行缓慢，经程序员定位，确定为数据库服务器响应缓慢，需要进行调优。</p>
+<p>根据SQL Server 2008数据库的特性以及题目中的条件，综合给出以下的调优方案。<br>(1）表结构优化:重新优化数据库设计结构，规范数据库逻辑设计;设计主键和外键;设计合适大小的字段。<br>(2）硬件优化:购买一块同样大小的硬盘，将硬盘做成RAID5,用以提高数据库读写速度;增加服务器<br>CPU<br>个数;扩大服务器的内存。<br>(3）索引优化:采用对经常作为条件查询的列设计索引，在查W中经吊尺到的入操作的表不要建立过多的繁进行范围查询、排序、分组的列上建立.策族索引，对了有从系选i索引。<br>(4)采用视图:合理使用视图和分区视图，在需要更新和刎陈探作个夕、亘闲抹止十从乐PB长向拉一的再句兹(5)sQL语句优化:选择运算应尽可能先做，开仕X问一个衣应1多件想出数据较小的信息，再在这些信息在前面，较弱的选择条件写在后面，这样就可以无根伯权加充询，把子奋询转换成联结来实现。字段中根据后面较弱的条件得到满足条件的信息。应避免使用相关子查询，把子查询转换成联结来实现。字段<br>提取按照”需多少，提多少”的原则，避免”SELECT *”，”SELECT *”需要数据库返回相应表的所有列信息，这对于一个列较多的表无疑是一项费时的操作，采用存储过程，使用存储过程提高数据处理速度。</p>
+<h2 id="第五套-性能优化"><a href="#第五套-性能优化" class="headerlink" title="第五套  性能优化"></a>第五套  性能优化</h2><p>某采购中心采购了一套商品批发查询管理系统，此系统采用SQL Server 2008数据库管理系统，该系统需要经常处理百万级以上的数据查询。同时该系统提供了第三方人员开发的SQL接口，第三方人员可以根据自己的需要开发自己的应用程序来访问数据库中的相关数据。<br>(1)系统在使用的过程中，业务人员反应系统操作速度很慢。经过工程师检查测试后，数据库系统本身及网络传输过程中存在着一些问题，请给出针对数据库系统本身及网络传输过程中可能的一些调优方案。<br>(2)工程师在完成数据库系统本身和网络问题的优化后，发现第三方开发人员的SQL查询语句存在很多没有优化的问题，请从第三方开发人员角度给出一些优化方案。</p>
+<p>①把数据、日志、索引放到不同的I&#x2F;0设备上，增加读取速度，数据量（尺寸)越大，提高I&#x2F;0越重要。②纵向、横向分割表，减少表的尺寸。<br>③升级硬件，扩大服务器的内存 ,Windows 2000和SQL Server 2000能支持4-8G的内存。配置虚拟内存，虚拟内存大小应基于计算机上并发运行的服务进行配置。增加服务器CPU个数。<br>分布式分区视图可用于实现数据库服务器联合体。<br>联合体是一组分开管理的服务器，但它们相互协作<br>分担系统的处理负荷。这种通过分区数据形成数据库服务器联合体的机制能够扩大一组服务器，以支持大型的多层Web 站点的处理需要。<br>⑤重建索引: DBCC REINDEX ,DBCC INDEXDEFRAG;收缩数据和日志:DBCC SHRINKDB,DBCC SHRINKFILE。设置自动收缩日志，对于大的数据库不要设置数据库自动增长，它会降低服务器的性能。<br>优化锁结构。<br>2)<br>①对查询进行优化，尽量避免全表扫描，首先应考虑在<br>where 及 order by 涉及的列上建立索引。<br>②应尽量避免在 where子句中使用!&#x3D;或&lt;&gt;操作符，否则引擎将放弃使用索引而进行全表扫描。③任何地方都不要使用select * from进行全表扫描<br>，用具体的字段列代替”*”，不要返回冗余字段。<br>④避免频繁创建和删除临时表，以减少系统表资源的消耗。<br>⑤尽量避免使用游标，因为游标的效率较差，如果游标操作的数据超过1万行，那么就应该考虑改写。⑥尽量避免大事务操作，提高系统并发能力。</p>
+<h2 id="第六套-恢复-性能优化"><a href="#第六套-恢复-性能优化" class="headerlink" title="第六套  恢复  性能优化"></a>第六套  恢复  性能优化</h2><p>某网上商城因为业务发展，原有的系统不能很好的满足需要，因此采用了一套新的经营管理系统，此系统使用SQL Server 2008数据库管理系统。此系统上线运行前，需将商场原有的数据导入到新系统中。原有系统使用SQL Server 2000，数据结构与新系统不完全一致。<br>因此需要把数据从SQL Server 2000导入到SQL Server 2008中，为了保证数据一致性，数据导人过程中要求暂停业务且必须在3小时内完成。<br>(1)在原有数据导入新系统的过程中，实施人员发现原有数据量很大，导人数据需要四小时，业务无法接受。经分析某工程师认为，数据导入过程中的数据库I／O很高，但导人数据的程序本身对系统资源占用率很低。该工程师建议将数据导人过程中的数据恢复模式从“完整”模式改为“简单”模式以提高数据导入速度；而另一位工程师则认为此方法未必能提高数据导人速度，而且还可能导致数据丢失，不建议使用此方法。<br>请分析此方法是否能够提高数据导入速度并给出理由，同时分析此操作的数据丢失风险。<br>(2)在成功导入历史数据后，此系统顺利上线运行。在上线运行的第一周，发现数据库服务器的CPU使用率很高，达到近90％，高峰期间达到100％，且系统内存占用率达到90％，但系统I／O很轻。业务人员反应系统操作速度很慢。为了提高系统运行速度。<br>在不修改应用程序的前提下，两位工程师提出了不同的解决办法：<br>Ⅰ 为服务器增加2颗CPU，缓解CPU使用率很高的问题；<br>Ⅱ 为服务器增加一倍内存，缓解内存使用率很高的问题。<br>考虑成本，现阶段只能按照一种方案实施。请指出在现有情况下，哪种方案更合理并给出理由。 </p>
+<p>(1）此方法能够提高数据导入速度。<br>原因:此系统I&#x2F;o很高，修改恢复模式后，系统最大限度减少日志开销，可提高导入速度。由于仅在数据导入过程中修改恢复模式，所以并无数据丢失风险。<br>(2）第一种方案比较合理。原因:SQL Server 2008采用将数据缓冲在内存的方式，因此内存的使用率比较高是正常情况，且现阶段Ⅰ&#x2F;O并不存在问题，表明内存满足需求。此阶段CPU使用率很高，表明CPU计算资源不足，因此增加CPU数量对解决问题有效。</p>
+<h2 id="第八套-性能优化"><a href="#第八套-性能优化" class="headerlink" title="第八套  性能优化"></a>第八套  性能优化</h2><p>设某超市经营管理系统使用SQL Server 2008数据库管理系统，此数据库服务器有2颗CPU、16GB内存、2TB磁盘。上线运行1年后，用户在生成每天每个销售人员及每个收银台的总销售额报表时速度缓慢。经技术人员分析，发现速度缓慢的原因为销售单据表和销售单据明细表数据量合计已经达到60GB。已知这两个表结构如下：<br>销售单据表(销售单据编号，销售时间，销售人员编号，收银台编号)<br>销售单据明细表(销售单据编号，商品编号，单价，数量)<br>在进行此报表计算时数据库服务器CPU消耗非常高。为了优化此操作，某工程师建议在销售单据表中增加”付款总金额”属性，取值由触发器自动计算。请从磁盘空间使用、销售操作时对数据库服务器的影响、数据一致性以及对总销售额计算速度影响方面分析此方案优劣。请判断此方案是否可行，并从时空代价和优化效果方面分析原因。</p>
+<p>此方案不可行。<br>①触发器可以通过数据库中的相关表进行层叠更改，这比直接把代码写在前<br>台的做法更安全合理，保证了数据的一致性，但同时增加了磁盘空间的消耗。在超市经营中要批量操作、多次触发的情况下，触发器的效率低，因为<br>它相当于每次都执行一段SQL语句，使CPU的消耗更高。因而从时空代价角度来说并不能达到优化的效果。<br>②在数据单据表中增加”付款总金额”不是正确的优化方法，应该在数据单据明细表中增加”付款总金额”，这样才能提高查询效率<br>【解题思路】<br>在数据库设计阶段，主要强调的是高效率利用存储空间，减少数据的冗余，减少数据的不一致性，这个过程也就是规范化的过程。但是在数据库运行阶段要考虑到高效率的进行数据处理。<br>完全规划化的数据库会产生很多表，对于一个频繁使用的查询，如果它要求操作多个相关表中的数据，则每次为生成需要的查询结果而在连接多个表中相关行时，数据库管理系统就会消耗更多的计算资源，因为连接操作非常耗时。<br>而反规范化是将规范化的关系转换为非规范化的关系的过程，目的是提高查询的效率。常见的方法有增加派生冗余列，增加冗余列，重新组表，分割表和新增汇总表等方法。<br>该题解决的方式就是增加派生冗余列–”付款总金额”。派生性冗余列是指表中增加的列由表中的一些数据项经过计算而成，它的作用是查询时减少连接操作，避免使用聚合函数。例如销售单据明细表（销售单据编号，商品编号，单价，数量)中增加”付款总金额”，因为付款总金额&#x3D;单价*数量得到，说明”付款总金额”是派生性冗余列。如果不要该字段，那么每次使用总价时，都要先执行代码计算后才能使用，如果商品数量较多，而且要频繁使用”付款总金额”时，计算”付款总金额”时执行的次数也会随着增加，这显然会影响数据库的执行效率。若增加”付款总金额”这个派生性冗余字段，虽然破坏了规范化原则，但只要执行一次计算”付款总金额”就可以把商品金额存在数据库中，以后不管什么时候使用”付款总金额”字段，只需要提取其值就可以了，不必在执行代码了。因此增加”付款总金额”，虽然提高了磁盘空间的使用，但是可以提高系统执行的效率，达到以空间换时间的目的。</p>
+<h2 id="第十一套-性能优化"><a href="#第十一套-性能优化" class="headerlink" title="第十一套  性能优化"></a>第十一套  性能优化</h2><p>3.设某超市经营管理系统(C&#x2F;S结构)使用SQL Server 2008数据库管理系统。系统上线运行1年后，用户反映系统运行速度不稳定，不定期会出现速度变慢的问题。<br>数据库管理员在数据库服务器上采集了一段时间系统运行状态数据，情况如下：<br>CPU最高使用率：30%<br>内存最高使用率：80%<br>磁盘IO很低<br>同时，数据库管理员在客户端使用ping命令对数据库服务器进行测试，结果如下<br>192.168.1.100 的Ping统计信息：<br>    数据包：已发送&#x3D;100，已接收&#x3D;90，丢失&#x3D;10<br>往返行程的估计时间（以毫秒为单位）：<br>    最短&#x3D;10ms，最长&#x3D;502ms，平均&#x3D;100ms<br>(5分)请根据以上数据，判断最有可能的问题，并给出判断的理由。<br>在以上问题解决后，用户反映每日的定时统计汇总SQL语句仍然速度比较慢。数据库管理员在系统无任何人员使用时运行该语句，同时在数据库服务器上采集系统运行状态数据，情况如下：<br>CPU最高使用率：12.5%(CPU配置：2路4核，共8核，关闭超线程)<br>内存最高使用率：80%(内存配置：128GB<br>磁盘IO很低(磁盘配置：5块300GB磁盘，RAID5)<br>(5分)请分析在进行统计汇总时，数据库服务器最有可能的瓶颈是CPU、内存还是磁盘，并给出判断的理由。</p>
+<p>【参考答案】<br>(1）产生掉线的最有可能的原因是网络产生问题。因为通过ping命令测试，发现丢包率达到10%。而CPU，内存、磁盘I&#x2F;O使用率没有达到100%，说明还是有—定的富余，引起网络掉线的可能性较小。<br>(2）数据库服务器最有可能的瓶颈是内存。因为内存的使用率在无任何操作的情况下达到80%，使用率较高。说明内存容量不足以完全支持服务器活动。<br>对于一台数据库服务器来说，如果其在业务空闲时使用率超过90%，说明服务器缺乏CPU资源;如果高峰时CPU使用率仍然很低，则说明服务器CPU资源充足。据此，可以判断一个数据库系统CPU的使用情况。本题中CPU的最高使用率只有12.5%，说明CPU不可能是数据库服务器的瓶颈。磁盘&#x2F;O很低，说明也不可能是服务器的瓶颈。<br>【解题思路】<br>数据库系统运行需要依赖服务器、操作系统、存储、网络等多种因素。当这些数据库环境出现瓶颈时就会导致数据库运行变慢，甚至是无法完成正常业务。<br>一般情况下，数据库访问代价模型由四部分组成:CPU处理数据的时间(即CPU代价)，磁盘读取的时间(即I&#x2F;O代价)，查询的内存开销(即内存代价)，对于网络中的数据库还要加上数据在网络上传输的时间(即通信代价)。因此数据库访问的代价模型是:总代价&#x3D;CPU代价+l&#x2F;O代价+内存代价+通信的代价。<br>(1) CPU。当数据库操作对CPU性能的要求超过数据库服务器的CPU性能时，数据库性能就会受到CPU的限制。对于一台数据库服务器来说，如果其在业务空闲时使用率超过90%，说明服务器缺乏CPU资源;如果高峰时CPU使用率仍然很低，则说明服务器CPU资源充足。据此，可以判断一个数据库系统CPU的使用情况。解决的方法是为服务器适当增加CPU的数量或者终止需要许多资源的进程。<br>(2）数据库性能优劣的一个重要度量是响应时间，而I&#x2F;O时间是响应时间的最大组成部分。因此，可以通过令I&#x2F;O时间最小化，减少磁盘上的文件竞争带来的瓶颈等方法来改善数据库系统的性能。<br>(3)通过调整相关参数控制数据库的内存分配，也可以在很大程度上改善数据库系统的性能。<br>(4)大量的SQL数据在网络上传输会导致网速变慢。网卡、交换机、集线器等网络设备的性能对网络的影响很明显，所以，通过调整网络设备，也可以在—定程度上提高数据库系统的性能。</p>
+<h2 id="第十三套-性能优化"><a href="#第十三套-性能优化" class="headerlink" title="第十三套  性能优化"></a>第十三套  性能优化</h2><p>设某学校选课系统使用SQL Server 2008数据库管理系统，在学生选课期间，用户反映速度缓慢，大部分时间内，学生无法正常选课（选课学生近1万人）。经技术人员分析，发现速度缓慢的原因为数据库服务器响应缓慢。在选课期间，数据库服务器CPU使用率为100%，内存使用率95%，磁盘IO占用10%，网络带宽占用20%。在进—步分析后发现，学生在选课过程中需要在每次选定课程前校验相关课程的成绩信息，而校验成绩的SQL语句在业务不繁忙时仍需要1-2分钟才能执行完成。现有服务器硬件情况如下:CPU:两颗英特尔至强处理器E5-2640 2.50GHz内存:128GB，主频1600MHz 磁盘:6块600GB 15000转6Gbps SAS硬盘，RAID5网卡:千兆网卡<br>为了保证系统稳定运行，现有如下优化方案:(1)将CPU更换为两颗英特尔至强处理器E5-2690 2.90GHz。(2）将内存提高到256GB，主频1600MHz。(3）将磁盘更换为6块800GB读取密集型MLC 6Gpbs硬盘，保持RAID5。(4）将网卡更换为万兆网卡。<br>(5)优化校验成绩SQL语句并建立相关索引，校验完成时间降低到1秒。根据题目描述，请从是否能解决选课运行速度缓慢问题的角度逐个评价以上5个方案并给出原因。</p>
+<p>【参考答案】<br>(1)）提高CPU的主频，可以稍微缓解选课速度慢的问题。因为CPU主频提高，单位时间内处理的数据多一些，但不能根本解决服务器响应慢的问题。本题中的CPU在选课期间使用率达到100%，增加CPU的频率不能从根本解决问题。大量的SQL数据在网络上传输可能会导致网速变慢。<br>(2)内存提高，可以改善选课速度慢的问题，内存的增加可以从一定程度上提高数据处理的效率。本题中，选课期间内存使用率达到95%，说明内存没有完全使用，因此内存容量不是产生服务器响应慢的原因。<br>(3) SAS的特点是成本高、容量小、速度快，而MLC的特点是容量大、成本低,但是速度慢。因此替换原有的SAS硬盘不能提高数据存取的速度，不能解决选课运行速度慢的问题。<br>(4）更换网卡不能解决选课运行速度慢的问题，因为本题中网络带宽的使用率占用20%，说明网络问题不是选课慢的主要原因。<br>(5）可以从根本上解决选课慢的问题。原有校验成绩的SQL语句需要1-2分钟才能执行完成，当大量的学生选课时，CPU和内存主要用于处理SQL语句，大量的资源被消耗，引起服务器反应减慢。本题中，SQL语句的效率低下，是产生服务器响应慢的根本原因，应当对SQL语句优化。一般来说，效率低下的SQL语句常常是系统效率不佳的主要原因。<br>【解题思路】<br>数据库系统运行需要依赖服务器、操作系统、存储、网络等因素。当这些数据库环境出现瓶颈时会导致数据库运行缓慢，甚至无法完成业务。一般来说，可以从外部环境、调整内存分布、调整磁盘&#x2F;O、调整资源竞争等几方面来改变数据库的参数，提高其性能。<br>(1)外部调整包括CPU调整和网络调整。当数据库操作对CPU性能的要求超过数据库服务器的CPU性能时，数据库性能就受到CPU的限制，使数据库操作变慢。<br>(2)通过调整相关参数控制数据库的内存分配，也可以在很大程度上改善数据库系统的性能。<br>(3）调整磁盘&#x2F;O。数据库性能优劣的一个重要度量是响应时间，而I&#x2F;O时间是响应时间的最大组成部分。因此，可以通过令I&#x2F;O时间最小化，减少磁盘上的文件竞争带来的瓶颈等方法来改善数据库系统的性能。<br>(4)调整竞争。多个进程对相同的资源发出申请时，导致了竞争的发生，从而引起服务器的反应缓慢。<br>(5）效率低下的SQL语句常常是系统效率不佳的主要原因。因此采用高效率的SQL语句，可以显著减少服务器的反应时间，提高服务器处理的速度。<br>本题中，SQL语句的效率低下是产生服务器响应慢的根本原因，提高SQL语句的执行效率，可以有效提高服务器的响应速度。</p>
+<h2 id="第十四套-索引-性能优化"><a href="#第十四套-索引-性能优化" class="headerlink" title="第十四套  索引 性能优化"></a>第十四套  索引 性能优化</h2><p>在数据库中存在销售单据明细表，其建表语句为:<br>CREATE TABLE销售单据明细表 (<br>销售单据编号 varchar(20),<br>商品编号 varchar(8),<br>单价 money,<br>数量 int,<br>总价 money<br>);<br>为了保持数据一致性，此表中存在如下触发器：<br>CREATE TRIGGER AutoCountSum<br>ON 销售单据明细表 FOR INSERT,UPDATE<br>AS<br>DECLARE @UnitPrice money,@Quantity int,@Amount money<br>SELECT @UnitPrice &#x3D; 单价,@Quantity &#x3D; 数量 FROM inserted<br>SET @Amount&#x3D;@UnitPrice * @Quantity<br>UPDATE 销售单据明细表 SET 总价&#x3D;@Amount<br>WHERE 销售单据编号&#x3D;(SELECT 销售单据编号 FROM inserted)<br>AND 商品编号&#x3D;(SELECT 商品编号 FROM inserted)<br>在系统运行一段时间后，此表中有近千万条数据，此时发现对此表以“销售单据编号”和“商品编号”为条件，对其他字段进行修改时操作速度很慢。请分析原因，并在不改变硬件和SQL语句的前提下，给出优化方法。<br>在解决了①中的问题系统平稳运行3年后，用户反映系统速度很慢，管理员考虑更换硬件。经过一段时间的监控，系统资源使用情况如下:CPU使用率一般不超过70%内存使用率95%磁盘IO使用率高峰期90%-95%，主要为读操作请根据以上数据，说明在此次更换硬件过程中，应该着重提高哪方面硬件性能，并给出原因。</p>
+<p>(1）对字段修改时操作速度很慢的原因是大量数据的查询速度慢，从而引起修改慢。优化的方法是在“销售单据编号”和“商品编号”上建立索引。(2）更换硬件时应该提高内存容量，磁盘在经济条件许可的条件下才有RAID10磁盘阵列。</p>
+<p>(1）索引技术是一种快速数据访问技术，建立索引的目的就是为了提高查询的效率。查询的性能在很大程度上取决于存在什么样的索引来加快选择和联接的处理。对于大星数据，只有快速的定位、减少查询的时间就会增加修改的速度。(2)对于CPU、内存、磁盘等硬件设备在空闲时使用率超过90%，说明硬件资源匮乏。如果在高峰时使用率小于90%说明硬件资源充足。本题中，内存和磁盘的使用率都高于90%，而CPU的使用率不高于70%，说明内存、硬盘的资源匮乏，需要调整，而CPU的资源充足不需要调整。因此在硬件调整时，应提高内存的容量和硬盘的访问效率。使用RAID时，可以将基本表和建立在表上的索引分别放在不同的磁盘上，这样访问基本表时，存放数据和存放索引的磁盘驱动器并行工作，可以得到较快的文件读写速度;类似的，日志文件与数据对象（表、索引等)也可分别存放在不同磁盘上以改善系统的I&#x2F;O性能。在RAID中，RAID10是一个RAIDO与RAID1的组合体，它继承了RAIDO的快速和RAID1的安全，同时读写速度均提高。</p>
+<h2 id="第十五套-分区-性能优化"><a href="#第十五套-分区-性能优化" class="headerlink" title="第十五套  分区 性能优化"></a>第十五套  分区 性能优化</h2><p>某学校网络计费系统使用SQL Server 2008作为数据库管理系统，系统中需保存每个用户的每次登录和退出时间，该表的结构如下：<br>CREATE TABLE 登录日志表(<br>    序列号       int identity(1,1),<br>    帐号         varchar(8),<br>    登录时间     datetime,<br>    退出时间     datetime,<br>    本次上网费用 real<br>);<br>在系统运行一段时间后，此表中有近5千万条数据。此时，用户按照登录时间查询自己近期上网情况时速度缓慢。为了提高用户体验，某工程师提出建议对此表进行分区，请分析其建议合理性（若合理请给出最优的分区方案），并说明原因。<br>在解决了①中的问题系统平稳运行3年后，管理员考虑升级硬件。经过监控，系统资源使用情况如下：<br>•CPU使用率一般不超过50%<br>•内存使用率90%<br>•磁盘IO使用率高峰期90%-95%，主要为读操作<br>某工程师给出两种升级后的硬件配置方案：<br>•配置一：2颗处理器，6核心，主频2.4GHz；64GB内存；300GB 10K转SAS硬盘，3块，RAID0<br>•配置二：2颗处理器，6核心，主频1.9GHz；128GB内存；800GB 固态硬盘 SAS 读取密集型 MLC，2块，RAID1<br>请根据以上数据，在不考虑费用因素的前提下，说明哪种配置更合理，并给出原因。</p>
+<p>【参考答案】<br>(1）因为操作仅限于查询，建立分区表可以有效的提高查询效率。对登录日志表中在登录时间列上以月为单位创建右侧分区函数，将登陆日志表分成12个分区，每个分区对应一年中一个月的值。<br>(2）采用方案2。对于内存、磁盘等硬件设备在空闲时使用率超过90%，说明硬件资源匮乏。如果在高峰时使用率小于90%说明硬件资源充足。本题中，内存和磁盘的使用率都高于90%，而CPU的使用率不高于50%，说明内存、硬盘的资源匮乏，需要调整，而CPU的资源充足不需要调整。因此在硬件调整时，应提高内存的容量和硬盘的访问效率。RAID1相对于RAIDO来说提高了读速度，加强了系统的可靠性，但是写效率没有提高。<br>【解题思路】<br>本题考查的是分区表的相关知识和数据库运行环境和参数调整知识。<br>(1）分区表是将表中的数据按照水平方式分成不同的子集，这些数据子集存储在数据库的一个或多个文件组中。合理使用分区会在很大程度上提高数据库的性能。是否创建分区表主要取决于表当前的数据星大小以及将来数据星大小，同时还取决于对表中数据进行的操作特点。通常，如果某个大型表同时满足下列条件，则比较适合于进行分区∶①该表包含(或将包含)以多种不同形式使用的大星数据，②数据是分段的，比如数据以年份分隔。然而，数据量大并不是创建分区表的唯一条件，如果表中大星的数据都是经常使用的数据，而且他们的操作方式基本是一样的，则最好不要使用分区表。而对数据的操作只涉及一部分数据而不是所有数据时，可以考虑建立分区表。<br>(2)对于CPU、内存、磁盘等硬件设备在空闲时使用率超过90%，说明硬件资源匮乏。如果在高峰时使用率小于90%说明硬件资源充足。<br>对于分区表来说，如果对某表中当前分段数据，经常进行的操作是添加、修改、删除、查询，而对于其他的数据，则几乎不操作，或者操作仅限于查询，那么就可以对表进行分区。<br>使用RAID时，可以将基本表和建立在表上的索引分别放在不同的磁盘上，这样访问基本表时，存放数据和存放索引的磁盘驱动器并行工作，可以得到较快的文件读写速度;类似的，日志文件与数据对象（表、索引等)也可分别存放在不同磁盘上以改善系统的I&#x2F;O性能。RAID1相对于RAIDO来说提高了读速度，加强了系统的可靠性，但是写效率没有提高。在RAID中，如果不考虑价格因素，其实RAID10最适合的，它是一个RAIDO与RAID1的组合体，它继承了RAIDO的快速和RAID1的安全，同时读写速度均提高。但题目中主要考查的读能力，因此RAID1RAIDO更适合些。</p>
+<h2 id="第十七套-索引-性能优化"><a href="#第十七套-索引-性能优化" class="headerlink" title="第十七套  索引 性能优化"></a>第十七套  索引 性能优化</h2><p>设在SQL Server 2008某数据库中存在销售单据明细表，其建表语句为：<br>CREATE TABLE 销售单据明细表(销售单据编号 varchar(10),商品编号 varchar(8),是否有效 varchar(4),单价 money,数量 int,总价 money)<br>在系统运行一段时间后，此表中有近千万条数据。该系统中存在如下操作：<br>       select * from 销售单据明细表<br>         where 销售单据编号 &#x3D; ‘135671445’ and 商品编号 &#x3D; ‘021’ and 是否有效 &#x3D; ‘是’;<br>在系统运行中发现此操作的效率比较低，系统工程师提出如下建议：<br>由于查询中使用了“销售单据编号”、“商品编号”和“是否有效”三个条件，因此可以分别在这三列上建立索引，提高查询效率。<br>系统工程师建议中建立的三个索引是否能够提高查询效率？请简要说明原因。<br>随着系统运行时间增长，系统运行速度逐渐变慢，经分析为磁盘IO不能满足数据库系统频繁读写的要求。工程师建议增加一块相同磁盘，将两块磁盘调整为RAID1模式。请从读写两方面分析，此操作是否能够改善磁盘IO问题。</p>
+<p>【解题,思路】<br>本题考查的是索引相关知识，如索引定义，在什么地方建立索引，建立索引的条件以及RAID1磁盘阵列的特点。<br>(1）索引的知识<br>索引技术是一种快速数据访问技术，它将一个文件的每个记录在某个或某些领域（或称为属性)上的取值与该记录的物理地址直接联系起来，提供了一种根据记录域的取值快速访问文件记录的机制。索引的使用要恰到好处，其使用原则一般如下:<br>1经常在查询中作为条件被使用的列，应为其建立索引;<br>②频繁进行排序或分组（即进行group by或order by操作）的列，应为其建立索弓3一个列的值域很大时，应为其建立索引;<br>④如果待排序的列由多个，应在这些列上建立复合索引。(2) RAID1磁盘阵列的特点<br>RAID1磁盘阵列级，是一种镜像磁盘阵列，其原理就是将一块硬盘的数据以相同位置指向另一块硬盘的位置。RAID1又称为Mirror或Miroring，它的宗旨是最大限度地保证用户数据的可用性和可修复性。RAID1的操作方式是把用户写入硬盘的数据百分之百地自动复制到另外一个硬盘上。由于对存储的数据进行百分之百的备份，在所有RAID级别中，RAID1提供最高的数据安全保障。同样，由于数据的百分之百备份，备份数据占了总存储空间的一半，因而，Mirror的磁盘空间利用率低，存储成本高。Mirror虽不能提高存储性能，但由于其具有的高数据安全性，使其尤其适用于存放重要数据，如服务器和数据库存储等领域。<br>RAID1提高了读速度，加强了系统可靠性。但其磁盘的利用率低，冗余度为50%，同时写速度并未提高。RAID1经常要求保证用户数据的可用性和可修复性场所，体现系统的可靠性，而不是读写速度。<br>RAID1是将一个两块硬盘所构成RAID磁盘阵列，其容量仅等于一块硬盘的容量<br>因为另一块只是当作数<br>据”镜像””。RAID1磁盘阵列显然是最可靠的一种阵列，因为它总是保持一份完整的数据备份。它的性能自然没有RAIDO磁盘阵列那样好，但其数据读取确实较单一硬盘来的快，因为数据会从两块硬盘中较快的一块中读出。RAID1磁盘阵列的写入速度通常较慢，因为数据得分别写入两块硬盘中并做比较。RAID1磁盘阵列一般支持”热交换”，就是说阵列中硬盘的移除或替换可以在系统运行时进行，无须中断退出系统。RAID1磁盘阵列是十分安全的，不过也是较贵一种RAID磁盘阵列解决方案，因为两块硬盘仅能提供一块硬盘的容量。RAID1磁盘阵列主要用在数据安全性很高，而且要求能够快速恢复被破坏的数据的场合。<br>【参考答案】<br>(1“销售单据编号”、“商品编号和“是否有效”都是查询的条件，因此在这三列上建立索引，可以提高查询效率。<br>原因:经常在查询中作为条件被使用的列，应为其建立索引，可提高查询效率。<br>(2):RAID1通常被称为Mirror，RAID中的硬盘分成相同而两组，互为镜像，当其中一块磁盘出现故障时，可以利用其镜像上的数据恢复，从而提高系统的容错能力。RAID1对数据的操作仍采用分块后并行传输方式。RAID1提高了读速度，加强了系统的可靠性。但其缺点是硬盘的利用率低，冗余度为50%，同时写速度并未提高。根据题意，磁盘IO不能满足数据库系统频繁读写的要求，如果增加一块相同磁盘，并调整为RAID1模式，能提高读的速度，但是写的速度并未提高，所以不能改善磁盘IO的问题。<br>或者<br>从读的方面来看：当原始数据繁忙时，可直接从镜像拷贝中读取数据，因此RAID1可以提高读取性能，也提高了磁盘的存储空间。增加一个RAID1可以提高磁盘的存储空间，在一定程度上提高了读速度，加强了系统的可靠性。但是增加RAID1，系统变成四块硬盘，同时也就增加了系统的I&#x2F;O开销，当数据量大时，并不能很好地提高系统的读的速度。<br>    从写的方面来看：RAID1磁盘阵列的写入速度通常较慢，因为数据得分别写入两块硬盘中并做比较。现在增加了一块RAID1磁盘阵列，相当于有四块硬盘，在写入数据时，可能会做两个备份，写入的速度更慢。<br>    因此从读写两个方面来说，增加一块RAID1磁盘阵列不是解决问题的好的方式，这种方法不建议使用。</p>
+<h2 id="第十八套-性能优化-索引·复合"><a href="#第十八套-性能优化-索引·复合" class="headerlink" title="第十八套  性能优化 索引·复合"></a>第十八套  性能优化 索引·复合</h2><p>在SQL Server 2008的数据库中存在如下两张关系表：<br>学生表(学号，姓名，性别，身份证号，系所号)，学号为主码<br>系所表(系所号，系所名，系所简称)，系所号为主码<br>在数据库中执行如下T-SQL代码：<br>DECLARE @DeptID varchar(10)<br>DECLARE @cnt int<br>SET @cnt&#x3D; 0<br>DECLARE cursor1 cursor FOR SELECT 系所号 FROM 系所表<br>    WHERE 系所名 LIKE ‘%电%’<br>OPEN cursor1<br>FETCH NEXT from cursor1 into @DeptID<br>WHILE @@FETCH_STATUS &#x3D; 0<br>BEGIN<br>    DECLARE @temp_cnt int<br>    SELECT @temp_cnt &#x3D; COUNT(<em>) FROM 学生表 WHERE 系所号 &#x3D; @DeptID<br>    SET @cnt &#x3D; @cnt + @temp_cnt<br>    FETCH NEXT from cursor1 into @DeptID<br>END<br>CLOSE cursor1<br>DEALLOCATE cursor1<br>SELECT @cnt AS 学生总数<br>执行过程中发现速度比较缓慢，为了解决性能问题，需在功能不变的情况下，将此T-SQL代码改为一条SQL语句：<br>  SELECT COUNT(</em>) FROM 学生表 JOIN 系所表 ON 学生表.系所号&#x3D;系所表.系所号<br>  WHERE 系所名 LIKE ‘%电%’<br>请分析此改变是否可以提高性能，并给出原因。<br>学生表的身份证号和姓名上建有一个复合索引，索引建立语句为<br>    CREATE INDEX idx_身份证号_姓名 ON 学生表 (身份证号,姓名)<br>请指出如下两个查询语句能否使用此索引并说明原因。<br>  SELECT * FROM 学生表 WHERE 身份证号 &#x3D; ‘123456789012345678’;<br>  SELECT * FROM 学生表 WHERE 姓名 &#x3D; ‘小明’;</p>
+<p>【解题思路】<br>本题考查的是T-SQL与SQL语句使用的区别，以及索引相关知识，如索引定<br>入<br>义，在什么地方建立索引，建立索引的条件等等。<br>(1)T-SQL即Transact-SQL，是SQL在Microsoft SQL Server 上的增强版，它是用来让应用程序与SQL Server沟通的主要语言。T-SQL提供标准SQL的DDL和DML功能，加上延伸的函数、系统预存程序以及程式设计结构（例如IF和WHILE)让程式设计更有弹性。<br>SQL是集DDL、DML、DCL为—体的标准关系数据库语言。其中DDL数据定义语言用于定义和管理SQL数据库中的所有对象的语言;DML数据操纵语言，SQL中处理数据等操作统称为数据操纵语言。<br>SQL作为结构化查询语言，是标准的关系型数据库通用的标准语言;T-SQL是在SQL基础上扩展的SQL Server中使用的语言。<br>(2)索引的知识<br>索引技术是—种快速数据访问技术，它将一个文件的每个记录在某个或某些领域(或称为属性)上的取值与该记录的物理地址直接联系起来，提供了一种根据记泉域的取值快速访问文件记录的机制。索引的使用要恰到好处，其使用原则—般如下:<br>①经常在查询中作为条件被使用的列，应为其建立索引;<br>②频繁进行排序或分组(即进行group by或order by操作)的列，应为其建立索引;<br>③一个列的值域很大时，应为其建立索引;<br>④如果待排序的列由多个，应在这些列上建立复合索引。【参考答案】<br>(1) SELECT COUNT(*)FROM学生表JOIN系所表ON学生表.系所号&#x3D;系所表.系所号WHERE系所名LIKE’%电%’性能更好。<br>原因:T-SQL的代码需要先扫描—遍系所表，然后根据扫描得到的每个记录重新扫描—遍学生表得出结果。使用所写的SQL语句实现同样的功能，将学生表和系所表连接之后按条件过滤，只需要扫描一遍连接之后的表即可。(2）创建的复合索引对第二条语句的查询效率提高不明显，因为其是复合索引且身份证号排在前面，对查找姓名的查询效率提高不明显，而明显会提高第—条语句的查询效率。<br>或者<br>：[1]:能够提高性能。<br>    原本的代码中使用了游标。游标是一种临时的数据库对象，常见用途就是保存查询结果，以便以后使用。游标的结果集是由SELECT语句产生的，如果处理过程需要重复使用一个记录集，那么创建一次游标而重复使用若干次，比重复查询数据库要快的多。<br>    但是，题中检索的是系所名中含有”电”字的，事实上所有学生被检索的概率理论上都是相同的，此处不符合”创建一次，使用多次”的前提条件。<br>    另外，游标使用时会对行加锁，可能会影响其他业务的正常进行。同时数据量大时，游标会导致效率低下。<br>    还有，游标其实是相当于把磁盘数据整体放入了内存中，可能会带来巨量的内存占用的情况。<br>    综上所述，一般情况下尽量不要使用游标，因为会降低效率影响性能。除非遇到特殊情况。游标在使用完毕后应及时释放销毁，以释放资源。<br>[2]:第一条select语句可以使用此索引，第二条select语句无法使用此索引。<br>    基于多个列来创建的索引是复合索引。以下列语句为例：<br>    CREATE INDEX idx_test ON 学生表 (身份证号,姓名,性别)<br>    此索引将优先对”身份证号”排序（第一顺序），若存在身份证号相同的多名学生，则对这些学生的”姓名”排序（第二顺序），若姓名也存在相同的，则按照”性别”排序（第三顺序）。</p>
+<pre><code>在使用上述示例的复合索引时，存在下列限制：
+</code></pre>
+<p>复合abc索引中，可以查询只可以a，ab，abc<br>         所以，题中第一条select语句是单独查询第一顺序的身份证号，可行；题中第二条select语句是单独查询第二顺序的姓名，无法使用该复合索引</p>
+<h2 id="第二十套-并、交、差运算-性能优化"><a href="#第二十套-并、交、差运算-性能优化" class="headerlink" title="第二十套  并、交、差运算 性能优化"></a>第二十套  并、交、差运算 性能优化</h2><p>某商品经营管理系统使用SQL Server数据库。在数据库中存在销售单据表，建表语句为：<br>CREATE TABLE 销售单据表(<br>销售单据编号 char(20),<br>付款总金额 money,<br>销售日期 datetime,<br>销售人员编号 varchar(8),<br>收银台编号 varchar(6)<br>);<br>由于该表数据量巨大，因此建立了销售单据历史表，将1年以前的数据从销售单据表转入销售单据历史表。销售单据历史表的建表语句如下：<br>CREATE TABLE 销售单据历史表(<br>销售单据编号 char(20),<br>付款总金额 money,<br>销售日期 datetime,<br>销售人员编号 varchar(8),<br>收银台编号 varchar(6)<br>);<br>其中销售单据编号为主键，在收银台编号和销售人员编号上有索引。<br>[1]在系统运行一段时间后，发现如下语句执行速度缓慢：<br>SELECT 销售单据编号,付款总金额,销售日期 FROM 销售单据表 WHERE 收银台编号&#x3D; ‘001000’<br>union<br>SELECT 销售单据编号,付款总金额,销售日期 FROM 销售单据历史表 WHERE 收银台编号&#x3D; ‘001000’<br>请给出该语句执行速度缓慢的原因，并给出SQL语句的优化方案。<br>[2]在系统运行过程中，磁盘I&#x2F;O很重，数据库数据量近200G且磁盘写入性能要求非常高。考虑对硬件进行升级，3位工程师给出了不同配置方案：<br>•方案1：CPU保持不变，内存16G，2块300GB SAS硬盘，使用硬件RAID卡做RAID1<br>•方案2：CPU保持不变，内存8G，4块300GB SAS硬盘，使用硬件RAID卡做RAID0<br>•方案3：CPU保持不变，内存16G，3块146GB SAS硬盘，使用硬件RAID卡做RAID5<br>在不考虑成本的情况下，请指出哪种方案更适合此应用并给出原因。</p>
+<p>本题考查的是sQL语言支持对查询结果在进行并、交、差运算以及不同磁盘阵列RAID的特点。<br>(1）并运算可将两个或多个查询语句的结果集合并为一个结果集，这个运算可以使用UNTON运算符直符实现。UNION是一个特殊的运算符，通过它可以实现让两个或更多的查询产生单一的结果集。<br>使用UNION谓词的语法格式为:<br>SELECT语句1<br>UNION [ALL ]SELECT语句2UNION [ALL]…<br>SELECT语句n<br>其中:ALL表示在结果集中包含所有查询语句产生的全部记录，包括重复的记录。如果没有指定ALL，则系统默认是删除合并后结果集中的重复记录。UNION和UNION ALL的区别是:UNION会自动压缩多个结果集合中的重复结果，而UNION ALL则将所有的结果全部显示出来。<br>(2）磁盘阵列RAID所采用的方法不同，可以将其分为很多级别，常见的RAID级别有RAIDO、RAID1、RAID5等。下面分别对不同级别RAID的特点进行介绍。<br>①RAID O向RAID O写入数据时，RAID将数据分成许多块，然后并行地将它们写到RAID中各个硬盘上﹔读出数据时，RAID从各个硬盘上读取数据，把这些数据恢复为原来顺序后传给主机。RAID O的优点是采用数据分块、并行传送方式，能够提高读写速度。但RAID中存储空间没有冗余，对系统的可靠性没有任何提高，任一个硬盘介质出现故障时，数据将无法恢复。<br>②RAID 1:RAID 1通常也被称为Mimor，RAID中的硬盘分为相同的两组，互为镜像，当其中一块磁盘出现故障时，可以利用其镜像上的数据恢复，从而提高系统的容错能力。RAID1对数据的操作仍然采用分块后并行传输方式。RAID 1提高了读速度，加强了系统的可靠性。但其缺点是硬盘利用率低，冗余度为50%，同时写速度并未提高。<br>③RAID 5、RAID 5可以为系统提供数据安全保障，但保障程序要比RAID 1低而磁盘空间利用率要比RAID 1高。RAID) 5具有和RAID O相近似的数据读取速度，只是多了一个奇偶校验信息，写入数据的速度比对单个磁盘进行写入操作稍慢。同时由于多个数据对应一个奇偶校验信息.，RAID 5的磁盘空间利用率要比RAID 1高，存储成本相对较低。<br>【参考答案】<br>(1)在执行完Union语句后，需要对表中数据逐个查询，该表数据量较大，所以执行速度缓慢。sQL语句的优化方案:<br>SELECT销售单据编号,付款总金额,销售日期FROM销售单据表WHERE收银台编号&#x3D;’001000’Union All<br>SELECT销售单据编号,付款总金额,销售日期FROM销售单据历史表WHERE收银台编号&#x3D;’001000<br>这个执行效率较高。在执行完Umion语句后，执行alti语句，根据由销售日期和销售人员编号建立的索引，直接查询，故效率较高。<br>(2)RAID O并行读写于多个磁盘上，具有很高的数据传输率，但它只是单纯地提高性能，并没有为数据的可靠性提供保障。RAD 1高数据可靠性，通过磁盘数据镜像实现数据冗余，在成对的独立磁盘上产生互为备份的数据。当原始数据繁忙时，可直接从镜像拷贝中读取数据，因此RAID 1可以提高读取性能，但是CPU占用率同样也很高，而磁盘的利用率比较低。RAID 5是一种存储性能、数据安全和存储成本兼顾的存储解决方案。故方案3更合适。<br>或者<br>[1]union有一个distanct的动作，需要进行并运算的数据量越大，其操作执行越慢。只需把union改为union  all，就会取消这个distanct操作，速度将会大幅增加。</p>
+<p>[2]由于题目已提及I&#x2F;O很高，方案1的RAID1方案对于I&#x2F;O没有帮助，所以否决。<br>    方案2的RAID0方案虽然对磁盘I&#x2F;O的提升最大，但是由于RAID0对于数据的可靠性没有任何帮助，暂时候选。<br>    方案3采用RAID5方案。RAID5的读取性能与RAID0接近，但写入速度比单个磁盘稍慢，而数据的可靠性高于RAID0。<br>    结合题目提及对于磁盘写入性能要求非常高，所以只能选方案2，因为方案1对读写性能没有提升，而方案3本题中十分看重的降低了写入性能。</p>
+<h2 id="第二十一套-索引-性能优化"><a href="#第二十一套-索引-性能优化" class="headerlink" title="第二十一套  索引 性能优化"></a>第二十一套  索引 性能优化</h2><p>在SQL Server某数据库中存在销售单据明细表，其建表语句为：<br>CREATE TABLE 销售单据明细表（销售单据编号 varchar(20),商品编号 varchar(8),单价 money,数量 int);<br>系统运行一段时间后，此表中有近千万条数据，程序员在数据库中执行如下SQL语句：<br>SELECT 商品编号,sum(单价*数量) FROM 销售单据明细表 WHERE 单价&gt;150 GROUP BY 商品编号<br>1.为提高此查询的执行效率，在不改变SQL语句且不进行硬件调整的情况下，请给出提高查询执行效率的方案。<br>2.在运行过程中，发现此系统数据库CPU使用率很高，达到近95%，高峰期间达到100%，且系统内存使用率达到90%，但系统I&#x2F;O很轻。业务人员反映系统操作速度慢。为了提高系统运行速度，在不修改应用程序的前提下，两位工程师提出了两种不同的解决方案：<br>方案一：为服务器增加1颗CPU<br>方案二：为服务器增加一倍内存<br>考虑成本因素，现阶段只能选择一种方案实施。请指出在现有情况下，哪种方案更合理并给出原因。</p>
+<p>【参考答案】<br>(1）在不改变SQL语句且不进行硬件调整的情况下，可以为销售单据明细表“商品编号”建立一个索引来提高查询的效率。<br>(2)方案一合理。提高数据库性能的方法，一般是从外部环境、调整内存分配、调整磁盘IO、调整竞争资源等几方面着手来改变数据库的参数。SQL Server采用将数据缓冲在内存的方式，因此在数据库系统运行的过程中会占用一定的内存，又因为IO并不存在问题, 说明内存上满足需求。CPU使用率很高，说明CPU计算能力不足，应增加CPU的数量。<br>或者<br>1、由于运行一段时间后，就有了近千万条数据，说明数据的写入量很大，这种情况下不能使用索引，因为写入量大，所以索引的维护开销将非常巨大，不仅无法提高效率，反而会降低性能，所以不适合查询优化。<br>由于题目不允许改变SQL语句，所以无法使用反规范化或使用临时表的方式，以空间换取时间。题目同样不允许硬件调整，不允许进行硬件升级。<br>本题最适合的方案是数据表的水平分割，由于商品编号有很多，所以应该按照单价区间进行水平分割<br>2、根据题目表述，两种方案都能够提高系统运行速度。但是，即便是平峰时CPU的负载也很高，高峰时甚至达到100%，而内存使用率低于CPU使用率，迫切程度低于CPU的需求。所以在成本有限的前提下，应该选择方案1，增加一颗CPU以缓解CPU的性能压力。选择此方案所得到的效果将高于方案2。</p>
+<h2 id="第二十二套-索引-触发器"><a href="#第二十二套-索引-触发器" class="headerlink" title="第二十二套  索引 触发器"></a>第二十二套  索引 触发器</h2><p>某商品经营管理系统使用SQL Server数据库管理系统。在数据库中存在销售单据明细表，其建表语句为:<br>CREATE TABLE销售单据明细表 (<br>销售单据编号 varchar(20),<br>商品编号 varchar(8),<br>单价 money,<br>数量 int,<br>总价 money<br>);<br>为了保持数据一致性，此表中存在如下触发器：<br>CREATE TRIGGER AutoCountSum ON 销售单据明细表 FOR INSERT,UPDATE<br>AS<br>DECLARE @UnitPrice money,@Quantity int<br>SELECT @UnitPrice &#x3D; 单价,@Quantity &#x3D; 数量 FROM inserted<br>UPDATE 销售单据明细表 SET 总价&#x3D;@UnitPrice * @Quantity<br>WHERE 销售单据编号&#x3D;(SELECT 销售单据编号 FROM inserted) AND 商品编号&#x3D;(SELECT 商品编号 FROM inserted)<br>在系统运行一段时间后，此表中有近一千万条数据。<br>程序员在数据库中执行如下SQL语句：<br>SELECT 商品编号,sum(数量) FROM 销售单据明细表 WHERE 单价&gt;200 GROUP BY 商品编号<br>为提高此查询的执行效率，在不改变SQL语句的情况下，请给出提高查询执行效率的方案并阐明理由。<br>对此表的插入操作速度很慢，请分析插入速度慢的原因，并在不改变数据库服务器硬件、不改变表基本结构、不清理数据的情况下，说明应如何优化此表的插入操作。</p>
+<p>【参考答案】<br>(1）在不改变SQL语句且不进行硬件调整的情况下，可以为销售单据明细表“商品编号”建立一个索引来提高查询的效率。<br>另外如果只针对本条select语句进行优化，那么还可以使用分区表的方式，将单价按照&lt;&#x3D;200和&gt;200的关系分为两张表，也可以提高检索效率。<br>(2）在一个插入或更新事务处理中，新建行被同时添加到INSERTED表和触发器表中。INSERTED表中行是触发器表中新行的副本。当表中有一千万条数据时，INSERTED表中也存储着大量的数据，而触发器要在INSERTED表中进行查询，所以插入的速度会很慢。可以通过删除INSERTED表中数据的方法来优化插入的速度,不会影响数据库服务器硬件、不改变表基本结构、不清理数据的情况下。<br>或者<br>(2)由题可知，该触发器名叫AutoCountSum，是后触发型触发器，引发触发器执行的操作是插入（insert）和更新（update）。<br>该触发器执行时，会定义两个变量@UnitPrice和@Quantity，分别用来存储刚刚插入的单价和数量（因为是inserted表），并将销售单据明细表中对应记录的总价更新为@UnitPrice * @Quantity ，即单价*数量的值。<br>触发器的缺点是会消耗系统资源，如果频繁触发，对系统性能影响将会非常大。根据题中描述，系统运行一段时间后表中有近一千万条数据，说明插入操作非常频繁，所以触发器是导致插入速度慢的直接原因。只需要使用存储过程来替代触发器即可解决此问题，优化此表的插入操作</p>
+<h2 id="第九套-备份"><a href="#第九套-备份" class="headerlink" title="第九套  备份"></a>第九套  备份</h2><p>设某超市经营管理系统使用SQL Server 2008数据库管理系统。为了保证数据库可靠运行，数据库管理员设置了每天夜间对数据库一次全备份，备份数据保留2个月的备份策略。上线运行1年后，SQL Server数据库中数据已经达到近200GB。每天夜间要运行3个小时才能将数据库进行一次全备份，影响了夜间统计等业务正常运行。同时，备份空间也非常紧张。请解释出现此现象的原因，并提出优化的方法。(10分)</p>
+<p>产生此现象的原因是系统采用了全备份策略，随着业务的开展，需要备份数据量逐渐增大，备份时间越来越长，占用了系统的资源，从而影响了其它业务。解决的方法是采用全备份+差异备份+日志备份组合策略备份数据库。全备份+差异备份+日志备份组合策略是指在全备份中加—些差异备份，比如每周日0:00进行一次全备份，然后每天0:00点进行一次差异备份，然后再两次差异备份之间增加一些日志备份。这样做备份和恢复的速度都比较快，而当系统出现故障时，丢失的数据也很少。<br>备份示意图如下:<br>目志备份1目志备份2<br>日志备份3目志备份4<br>全各份1<br>差异各份1<br>差异各份2<br>周o:oo12:0018:00周一0:0o<br>12:0018:00周二0:0o<br>如果系统在周二的差异备份之前出现故障，则应首先尝试备份活动日志（(日志尾部)，然后再按顺序恢复全备份1，差异备份1，日志备份3和日志备份4，然后再恢复备份的尾部日志。如果尾部日志备份成功，则数据库可以还原到故障点。<br>这种备份策略虽然备份频率高，但是备份时间短，占用的备份空间也小，而且不会产生数据丢失。<br>【解题思路】<br>全备份(Full Backup)就是对整个系统进行完全备份，包括系统和数据。这种备份方式的好处就是很直观，容易被人理解，当数据丢失时容易恢复。然而它也有不足之处:首先由于每天都对系统进行完全备份，因此在备份数据中有大量重复的，这些重复的数据占用大量的存储空间;其次，由于需要备份的数据量相当大，因此备份所需的时间比较长。<br>差异备份(Differential Backup)就是每次备份的数据是相对于上一次全备份之后增加和修改过的数据。它以前一次全备份为基准点，备份全备份之后变化的数据文件、日志文件以及数据库中其它被修改的内容。因此，差异备份通常比全备份占用的时间小且执行速度快，带回增加备份的复杂程度。日志备份(Log Bakup) :日志备份并不备份数据库本身，它只是备份日志记录，从而只备份上次备份之后到当前备份时间发生变化的日志内容。-般情况下，日志备份比完整备份和差异备份使用的资源少，因此可以更频繁的使用日志备份，以减少数据丢失的风险。<br>全备份+差异备份+日志备份组合策略组合了三种备份方式的优点，可以缩短备份时间、节约备份空间，提高备份的效率。</p>
+<h2 id="第十套"><a href="#第十套" class="headerlink" title="第十套"></a>第十套</h2><p>设某社交网站使用SQL Server 2008数据库管理系统，上线运行1年后，用户操作速度明显变慢，数据库服务器负荷很高。经技术人员分析，发现速度缓慢的原因为用户频繁访问网站，查看自己是否有新消息。某工程师建议利用数据库复制技术将相关数据表定期（例如1分钟)分发到另外一台服务器的只读数据库中，以便用户查询使用。请从数据─致性、用户体验、可扩展性三个方面逐一分析此方案优劣。说明此方案是否可行，并简要给出理由。</p>
+<p>优点:该方案能满足数据一致性。因为利用数据库快照复制技术，可以将相关表分发给另外一台服务器，可以满足数据的一致性。<br>数据的更新可以采用自动更新和手动更新方式。更新时间可以在建立分发数据库时设置，设置时间小于1分钟。通过这种方式可以满足用户体验。<br>数据库的分发只是在软件层面进行，对于已经建好的发布和定阅可以直接用delete按钮删除，然后重新进行设置，可扩展性强。<br>缺点:增加了一台服务器的开销。<br>对于本题，该方案可行。存放网站系统的服务器被设为发布服务器，另外一台服务器可以作为分发服务器和订阅服务器。发布服务器以事务复制的方式向分发服务器发送信息。客户端通过订阅服务器获取数据，实现信息同步更新。这种方式不会影响网站系统服务器的运行，又能保证客户端可以随时刷新信息。<br>【解题思路】<br>SQL Server主要采用发布、分发、订阅的方式来处理复制。源数据所在的服务器是发布服务器，复制发布数据。发布服务器把要发布的数据的所有改变情况复制到分发服务器，分发服务器包含一个分发数据库，可接收数据的所有改变，并保存这些改变，再把这些改变发给订阅服务器。<br>SQL Server复制技术包括快照复制、事务复制和合并复制。<br>快照复制:发布服务器会定时向订阅服务器传送数据，如果订阅服务器修改过数据，定时传递后订阅服务器的数据修改会全部丢失，全部以发布服务器为准。事务复制:发布服务器会定时检查数据是否有修改过，如果有则向订阅服务器传送数据（记录行级)。<br>合并复制:发布服务器与订阅服务器可以独立修改，会定时合并。</p>
+<p>【康解释】</p>
+<h2 id="第十二套-分割表-分区表"><a href="#第十二套-分割表-分区表" class="headerlink" title="第十二套  分割表 分区表"></a>第十二套  分割表 分区表</h2><p>设某超市经营管理系统使用SQL Server 2008数据库管理系统，上线运行一年后，用户反映速度缓慢。经技术人员分析，发现速度缓慢的原因为销售单据表和销售单据明细表数据量巨大，当进行这两个表相关查询时就会造成SQL语句执行缓慢。已知这两个表结构如下：销售单据表(销售单据编号，付款总金额，销售时间，销售人员编号，收银台编号)，销售单据明细表(销售单据编号，销售时间，商品编号，单价，数量，总价)从业务上看，程序经常会查询1个月内和最近6个月内销售相关数据。为了保证系统稳定运行，两位工程师分别给出了两种优化方案：甲工程师：按照销售时间将两张表分别拆分为每月一张表，在系统进行查询时按照给定条件到相关的表中直接查询，降低查询涉及到的数据。乙工程师：使用SQL Server 2008的分区功能，将两张表变为分区表，按照销售时间每年一个分区，降低查询涉及到的数据。请从程序修改的难易程度、查询1个月内数据的执行速度、查询最近6个月内数据的执行速度3个方面比较甲乙工程师方案。根据上述分析结果，请基于甲乙工程师的方案给出最合理的优化方案并说明理由。</p>
+<p>【康解释】<br>表分割对于所有的数据库都适用，而表分区只能用于特定的数据库;表分区属于数据库物理设计，表分割属于逻辑设计。<br>从程序修改的难易程度：甲工程师易于实现。<br>查询1个月内数据的执行速度：甲工程师速度快<br>查询最近6个月内数据的执行速度：乙工程师快</p>
+<p>采用乙工程师的优化方案比较好。因为分区表的特点是∶如果数据量大，而且数据是分段的，而且对不同段的数据使用的操作不同，则适于使用分区表。本题中对表中当前月的数据，经常进行的操作是添加、修改、删除和查询，而对于以往的数据，则几乎不需要操作，或者操作仅限于查询，那么就可以按月份对表进行分区，从而提高系统的执行效率。</p>
+<h2 id="第十六套-触发器-临时表"><a href="#第十六套-触发器-临时表" class="headerlink" title="第十六套  触发器 临时表"></a>第十六套  触发器 临时表</h2><p>某学校图书管理系统保存了能够借书的教师数据，该数据来源于人事系统(另一家开发商开发)的教师数据。现需要将教师数据自动同步到图书管理系统中，教师数据总计约1万条，每天数据修改量约20条。<br>为了实现自动数据同步，图书管理系统新上线了一数据同步程序。在同步程序上线后，数据库管理员发现每天数据备份量大幅度增加，尤其是数据库日志大幅度增加。经核查，该数据同步程序操作为每10分钟将所有从人事系统中同步的数据删除，而后将数据重新插入。<br>现需要对同步程序进行优化，某工程师提出了两套方案：<br>    ①在人事系统相关表中新增触发器，提取新增数据到增量数据表，同步程序每10分钟将增量数据表中数据同步至图书管理系统中。<br>    ②在图书管理系统中新建一临时数据库，在其中新增与人事系统结构相同的表，同步程序每10分钟将人事的数据传输到图书管理系统对应表中，在图书管理系统数据库中使用SQL语句对比图书管理系统数据，获取增量后修改图书管理系统数据。<br>请从对人事系统影响、对图书管理系统影响、系统整体运行效率、相关开发人员协调复杂度四方面比较两套方案，并给出理由。</p>
+<p>使用方案①，如果数据量大时会影响人事系统的运行，但对图书管理系统影响不大，系统整体运行效率能提高，相关开发人员协调复杂度也小。而使用方案②会影响人事系统和图书管理系统的运行，也会增加系统的开销，相关开发人员协调的复杂度，比方案①低。<br>总体而言，方案①优于方案②。<br>原因是在方案①中，只有在触发器设计时需要相关人员协调，数据量大时可能会影响人事系统的运行，而方案②只有在开发人员协调的复杂度比方案①低以外，总体来说会增加图书管理系统的开销。因为新建的数据库会占用系统的开销，影响系统整体运行的效率。<br>【解题思路】<br>触发器是―种特殊的存储过程，其特殊性在于它不需要由用户来直接调用，而是对表中的数据进行UPDATE、INSERT和DELETE操作时自动触发执行的。触发器通常用于保证业务规则和数据完成性，其主要优点是用户可以用编程的方法来实现复杂的处理逻辑和商业规则，增强了数据完整性约束的功能。触发器通常用在下列场合:完成比CHECK约束更复杂的数据约束，为保证数据库性能而维护的非规范化数据，可实现复杂的商业规则，触发器也可以评估数据修改前后的表状态，并根据差异采取对策。在方案①中，只有在触发器设计时需要相关人员协调，数据量大时可能会影响人事系统的运行，但是总体而言是比方案②优秀的。</p>
+<p>【康解释】<br>     方案1，在数据量大时会影响人事系统相关表的运行，但对图书管理系统影响不大，系统的整体效率会提高，相关开发人员协调复杂度小<br>     方案2，会影响人事系统和图书管理系统的运行，新建数据库会增加系统的开销，影响系统整体运行效率，相关人员协调的复杂度相比较方案1，更低<br>    综上所述，方案1优于方案2.因为而方案2仅仅在开发人员协调的复杂度比方案1低</p>
+<h2 id="第十九套-索引-A-S架构"><a href="#第十九套-索引-A-S架构" class="headerlink" title="第十九套  索引 A-S架构"></a>第十九套  索引 A-S架构</h2><p>在SQL Server 2008数据库中存在销售单据明细表，其建表语句为：<br>CREATE TABLE 销售单据明细表(<br>    销售单据编号 varchar(8),<br>    商品编号     varchar(8),<br>    单价         money,<br>    数量         int,<br>    总价         money<br>);<br>在系统运行一段时间后，此表中有近千万条数据，程序员在数据库中执行如下SQL语句：<br>    SELECT 商品编号, sum(总价) FROM 销售单据明细表 WHERE 单价 &gt; 50 GROUP BY 商品编号<br>为提高此查询的执行效率，需在此表中建立索引，请给出建立索引的方案。<br>为了提高系统的可靠性和性能，某工程师提出将原有单机运行的SQL Server 2008改为Active-Standby架构的数据库运行模式：在不考虑硬件性能提升因素的前提下，请分析此架构是否能够提高系统的性能和可靠性，并说明原因。</p>
+<p>本题考查的是索引相关知识，如索引定义，在什么地方建立索引，建立索引的条件等等，以及Active-Standby架构的数据库运行<br>模式的机<br>制。</p>
+<p>(1)【参考答案】<br>CREATE UNIQUE CLUSTERED INDEX ix_商品编号on销售单据明细表(商品编号)<br>(2)【参考答案】<br>此架构为数据库服务器容错架构，双机热备份方案中的双机热备模式。在不考虑硬件性能提升因素的前提下，此架构是能够提高系统的性能和可靠性，<br>原因:<br>双机热备份技术是一种软硬件结合的较高容错应用方案。该方案是由两台服务器系统和一个外接共享磁盘阵列柜及相应的双机热备份软件组成。<br>在这个容错方案中，操作系统和应用程序安装在两台服务器的本地系统盘上，整个网络系统的数据是通过磁盘阵列集中管理和数据备份的。<br>数据集中管理是通过双机热备份系统，将所有站点的数据直接从中央存储设备读取和存储，并由专业人员进行管理，极大地保护了数据的安全性和保密性。用户的数据存放在外接共享磁盘阵列中，在一台服务器出现故障时，备机主动替代主机工作，保证网络服务不间断。</p>
+<p>(2) Active-Standby架构的数据库运行模式<br>双机热备特指基于高可用系统中的两台服务器的热备(或高可用)，因两机高可用在国内使用较多，故得名双机热备，双机高可用按工作中的切换方式分为:主-备方式(Active-sStandby方式)和双主机方式(Active-Active方式)，主-备方式即指的是一台服务器处于某种业务的激活状态(即Active状态)，另一台服务器处于该业务的备用状态(即Standby状态)。而双主机方式即指两种不同业务分别在两台服务器上互为主备状态(即Active-Standby和Standby-Active状态)。<br>双机热备有两种实现方式，一种是两台服务器通过一个共享的存储设备（一般是共享的磁盘阵列或存储区域网SAN)，通过安装双机软件实现双机热备，称为共享方式。另一种方式是没有共享的存储设备，数据同时存放于各自服务器中，称为纯软件方式或软件同步数据方式。基于存储共享的实现方式是双机热备的最标准的方案，在主从模式工作中，两台服务器以一个虚拟的IP地址对外提供服务，服务请求发送给主服务器(active server) 承担。同时，两台服务器通过心跳线(heartbeat line)侦测另一台服务器的工作状况。一旦主服务器出.见故障，备服务器(standby server)根据心跳侦测的情况做出判断，在较短时间内完成切换，接管主机上的所有资源，成为新的主服务器。由于使用共享的存储设备，因此两台服务器使用的实际上是一样的数据，由双机或集群软件对其进行管理。</p>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/sqlserver3/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">第一套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E7%B4%A2%E5%BC%95"><span class="toc-number">2.</span> <span class="toc-text">第二套  性能优化 索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">第三套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">4.</span> <span class="toc-text">第四套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">第五套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E5%A5%97-%E6%81%A2%E5%A4%8D-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">第六套  恢复  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">7.</span> <span class="toc-text">第八套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%80%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">8.</span> <span class="toc-text">第十一套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%89%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">9.</span> <span class="toc-text">第十三套  性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%9B%9B%E5%A5%97-%E7%B4%A2%E5%BC%95-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">10.</span> <span class="toc-text">第十四套  索引 性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%94%E5%A5%97-%E5%88%86%E5%8C%BA-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">11.</span> <span class="toc-text">第十五套  分区 性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%83%E5%A5%97-%E7%B4%A2%E5%BC%95-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">12.</span> <span class="toc-text">第十七套  索引 性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%85%AB%E5%A5%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E7%B4%A2%E5%BC%95%C2%B7%E5%A4%8D%E5%90%88"><span class="toc-number">13.</span> <span class="toc-text">第十八套  性能优化 索引·复合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%A5%97-%E5%B9%B6%E3%80%81%E4%BA%A4%E3%80%81%E5%B7%AE%E8%BF%90%E7%AE%97-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">14.</span> <span class="toc-text">第二十套  并、交、差运算 性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E5%A5%97-%E7%B4%A2%E5%BC%95-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">15.</span> <span class="toc-text">第二十一套  索引 性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%8C%E5%A5%97-%E7%B4%A2%E5%BC%95-%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="toc-number">16.</span> <span class="toc-text">第二十二套  索引 触发器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B9%9D%E5%A5%97-%E5%A4%87%E4%BB%BD"><span class="toc-number">17.</span> <span class="toc-text">第九套  备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%A5%97"><span class="toc-number">18.</span> <span class="toc-text">第十套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%8C%E5%A5%97-%E5%88%86%E5%89%B2%E8%A1%A8-%E5%88%86%E5%8C%BA%E8%A1%A8"><span class="toc-number">19.</span> <span class="toc-text">第十二套  分割表 分区表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%85%AD%E5%A5%97-%E8%A7%A6%E5%8F%91%E5%99%A8-%E4%B8%B4%E6%97%B6%E8%A1%A8"><span class="toc-number">20.</span> <span class="toc-text">第十六套  触发器 临时表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B9%9D%E5%A5%97-%E7%B4%A2%E5%BC%95-A-S%E6%9E%B6%E6%9E%84"><span class="toc-number">21.</span> <span class="toc-text">第十九套  索引 A-S架构</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/python06/">第六章  第三方生态</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/posts/sqlserver2/">『SQL Server』考二</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/sqlserver3/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>第六章  第三方生态 | 锦鲤未离</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <link rel="stylesheet" href="/css/hlight-main.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>document.title = `第六章  第三方生态`</script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <!-- <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div> -->
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="http://example.com/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://example.com/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"⌊手机篇⌉ 将手机投屏到电脑","path":"posts/EDp-scrcpy/"},{"title":"⌊电脑篇⌉ 电脑声音无法出现","path":"posts/EDc-sound/"},{"title":"Hello World","path":"posts/3eeb/"},{"title":"小贴士~","path":"posts/tips/"},{"title":"数据库实训-Eclipse 连接 MySQL","path":"posts/EconnectM/"},{"title":"考试---可视化","path":"posts/考试---可视化/"},{"title":"第三章  程序流程控制[未完成]","path":"posts/matlab03/"},{"title":"应用篇-第一章  图形对象句柄[未完成]","path":"posts/matlab09/"},{"title":"第五章  数据分析与多项式计算[未完成]","path":"posts/matlab05/"},{"title":"应用篇-第二章  图形对用户界面设计[未完成]","path":"posts/matlabyyp02/"},{"title":"第四章 绘图[未完成]","path":"posts/matlab04/"},{"title":"程序流程控制","path":"posts/java-cxlckz/"},{"title":"消息, 继承与多态","path":"posts/java-xxjcydt/"},{"title":"第六章  数组","path":"posts/java-sz/"},{"title":"键盘输值","path":"posts/java-wjyl/"},{"title":"封装机制与访问控制","path":"posts/java-fzjzyfwkz/"},{"title":"第四章  类与对象","path":"posts/java-lydx/"},{"title":"递归调用","path":"posts/java-dgdy/"},{"title":"『SQL Server』第一章  数据库应用系统开发方法","path":"posts/sqlserver01/"},{"title":"『SQL Server』第七章  高级数据库查询","path":"posts/sqlserver07/"},{"title":"『SQL Server』第三章  系统设计","path":"posts/sqlserver03/"},{"title":"『SQL Server』第九章  安全管理","path":"posts/sqlserver09/"},{"title":"『SQL Server』第二章  需求分析","path":"posts/sqlserver02/"},{"title":"『SQL Server』第五章  UML与DBAS","path":"posts/sqlserver05/"},{"title":"『SQL Server』第八章  数据库后台编程技术","path":"posts/sqlserver08/"},{"title":"『SQL Server』第六章  数据库及其对象.md","path":"posts/sqlserver06/"},{"title":"『SQL Server』第十一章  故障管理","path":"posts/sqlserver11/"},{"title":"『SQL Server』第十三章  大规模数据库架构","path":"posts/sqlserver13/"},{"title":"『SQL Server』第十四章  数据仓库与数据挖掘","path":"posts/sqlserver14/"},{"title":"『SQL Server』第十二章  备份与恢复数据库","path":"posts/sqlserver12/"},{"title":"『SQL Server』第十章  数据库运行管理与维护","path":"posts/sqlserver10/"},{"title":"『SQL Server』第四章  应用系统功能设计","path":"posts/sqlserver04/"},{"title":"『SQL Server』考三","path":"posts/sqlserver3/"},{"title":"『SQL Server』考二","path":"posts/sqlserver2/"},{"title":"三级考试(数据库篇)错题整理(选择题, 填空题篇)","path":"posts/sqlservers/"},{"title":"第一章  操作基础","path":"posts/linux01/"},{"title":"第二章  进程管理","path":"posts/linux02/"},{"title":"第三章  存储和逻辑卷管理","path":"posts/linux03/"},{"title":"第四章  用户和组管理","path":"posts/linux04/"},{"title":"第六章  用户管理","path":"posts/linux05/"},{"title":"第六章  网络基础","path":"posts/linux06/"},{"title":"安全管理","path":"posts/linux07/"},{"title":"第十章 Shell 脚本","path":"posts/linux08/"},{"title":"第一章  操作基础","path":"posts/linuxlianxizuoye/"},{"title":"第八章  计算生态","path":"posts/python08/"},{"title":"第九章  标准库概览","path":"posts/python09/"},{"title":"第七章  文件和数据格式化","path":"posts/python07/"},{"title":"第十章  第三方库概览","path":"posts/python10/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第一章  程序基本结构","path":"posts/py01/"},{"title":"第三章  组合数据类型","path":"posts/py03/"},{"title":"第某章  random 库","path":"posts/pythonrdom/"},{"title":"第某章  PIL 库","path":"posts/py0nnnpillow/"},{"title":"第某章  turtle 库","path":"posts/py0nnn/"},{"title":"第二章  函数","path":"posts/py02/"},{"title":"第五章  文件操作","path":"posts/python05/"},{"title":"第六章  第三方生态","path":"posts/python06/"},{"title":"第一章  排序","path":"posts/dsa04/"},{"title":"第一章  线性表","path":"posts/dsa01/"},{"title":"第二章  查找","path":"posts/dsa05/"},{"title":"第三章  图","path":"posts/dsa03/"},{"title":"第二章  树和二叉树","path":"posts/dsa02/"},{"title":"绪论  聊聊需要的软件","path":"posts/hadoop00/"},{"title":"第一章  分布式文件系统（HDFS）概述","path":"posts/hadoop01/"},{"title":"第二章  磁盘I/O操作","path":"posts/hadoop02/"},{"title":"第三章  MapReduce基础","path":"posts/hadoop03/"},{"title":"第一章  数据计算（NumPy）","path":"posts/DPaA01/"},{"title":"第二章  数据分析（Pandas）","path":"posts/DPaA02/"},{"title":"第三章  数据可视化（Matplotlib）","path":"posts/DPaA03/"},{"title":"第四章  数据预处理","path":"posts/DPaA04/"},{"title":"第 4 章  抽样推断","path":"posts/as04/"},{"title":"第一章 待补充...","path":"posts/DM01/"},{"title":"第1章  时间序列分析","path":"posts/Time-Series_Analysis_ALL/"},{"title":"配置hadoop","path":"posts/This-article-is-used-to-test-the-style/"},{"title":"第4章  Spark SQL结构化数据文件处理","path":"posts/spark_04/"},{"title":"第3章  Spark RDD弹性分布式数据集","path":"posts/spark_03/"},{"title":"第5章  HBase 分布式数据库","path":"posts/spark_05/"},{"title":"第6章  Kafka分布式发布订阅消息系统","path":"posts/spark_06/"},{"title":"第7章  Spark Streaming","path":"posts/spark_07/"},{"title":"第1章  Scala语言基础.","path":"posts/spark_01/"},{"title":"第8章  Spark MLlib机器学习算法库","path":"posts/spark_08/"},{"title":"第1章  点云图","path":"posts/NPJS_2303_03/"},{"title":"第1章  深度卷积神经网络分析","path":"posts/DCNN_ALL/"},{"title":"交通大数据-代码复习","path":"posts/asdasdasdasdasdsaaa/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <style>
+
+      </style>
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">KoiNL.</p>
+        <div class="main-left--tags" style="text-align: right;">
+          <span class="main-left--tag">愿世间美好</span>
+          <span class="main-left--tag">温柔以待</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“锦鲤握运，未离我韵”</p>
+        <p>“愿好运常在”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/koinl"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>18</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>16 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>84 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>2天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>531天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v3.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <style>
+/* 代码块复制按钮 */
+.highlight {
+    /* 方便copy代码按钮（btn-copy）的定位 */
+    position: relative;
+}
+.btn-copy {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #eee;
+    background-image: linear-gradient(#fcfcfc, #eee);
+    border: 1px solid #d5d5d5;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #333;
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    padding: 2px 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    opacity: 0;
+}
+.btn-copy span {
+    margin-left: 5px;
+}
+.highlight:hover .btn-copy {
+    opacity: 1;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  background-color:#F5F5F5;
+}
+/*定义滚动条轨道
+内阴影+圆角*/
+pre::-webkit-scrollbar-track {
+  background-color:#F5F5F5;
+}
+/*定义滑块
+内阴影+圆角*/
+pre::-webkit-scrollbar-thumb {
+  background-color: rgb(69, 83, 100);
+}
+
+pre:active {
+  background-color: rgb(81, 95, 116);
+}
+pre {
+  width: 100% !important;
+	    float: left !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    /* white-space: normal !important; */
+}
+
+
+</style>
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">第六章  第三方生态</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            <a class="category-link" href="/categories/Python/">Python</a>
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">创建日期：2022-07-25 19:35:57</p>
+        </div>
+        <img src="https://t7.baidu.com/it/u=3652245443,3894439772&fm=193&f=GIF" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content">
+      <p>numpy是Python的一种开源数值计算扩展第三方库，用于处理数据类型相同的多维数组，简称”数组”。这个库可用来存储和处理大型矩阵，比Python语言提供的列表结构要高效得多。numpy提供了许多高级的数值编程工具，如矩阵计算、矢量处理、N维数据变换等。<br>PIL库是Python语言在图像处理方面的重要第三方库，支持图像存储、处理和显示，它能够处理几乎所有的图片格式，可以完成对图形的缩放、剪裁、叠加以及向图像添加线条、图形和文字等。<br>PIL库可以完成图像归档和图形处理两方面功能需求。<br>Python语言中Web开发框架第三方库有：Flask、Django、Pyramid，而mayavi是python语言中数据可视化方向的第三方库。<br>Python网络爬虫领域的第三方库：scrapy和request。<br>numpy是Python语言中数据分析方向的第三方库，openpyxl是python语言中文本处理方向的第三方库，PyQt5是Python语言中用户图形界面方向的第三方库。<br>Python语言中数据分析方向的第三方库：numpy、scipy、pandas，而PIL第三方库可以完成图像归档和图形处理两方面功能需求。pandas用于数据分析<br>属于机器学习领域：PyTorch，MXNet，Tensorflow<br>Aracde是图形库<br>scrapy是Python语言中网络爬虫方向的第三方库，而numpy、scipy和pandas是Python语言中数据分析方向的第三方库，matplotlib是数据可视化方向的第三方库，也属于数据分析领域<br>Python语言中第三方库有三种安装方式：pip工具安装、自定义安装、文件安装，而pygame、PyQt5、pyinstaller是python语言中的第三方库。<br>Python语言中机器学习方向的第三方库有Tensorflow、Theano、scikit-learn，而numpy、pandas是数据分析方向的第三方库，pygame是游戏开发方向的第三方库。<br>Python语言中开发用户界面方向的第三方库：PyQt5、wxPython、PyGTK，而turtle库是python的标准库之一。<br>Python语言中数据分析方向的第三方库：numpy、scipy、pandas。Seaborn<br>Python语言中数据可视化析方向的第三方库：matplotliB、TVTK、mayavi。<br>mxnet是Python语言中深度学习方向的第三方库。<br>Python语言中Web开发框架第三方库有Flask、Django、Pyramid，而scrapy是python网络爬虫方向的第三方库。<br>Beautifulsoup4库，也称为Beautiful Soup库或bs4库，用于解析和处理HTML和XML。<br>random库采用梅森旋转算法（Mersenne twister）生成伪随机数序列，可用于除随机性要求更高的加解密算法外的大多数工程应用。<br>于计算机视觉领域：OpenCV是一个强大的图像和视频工作库。它提供了多种程序接口，支持跨平台（包括移动端）应用。除了对图像进行基本处理外，还支持图像数据建模，并预制了多种图像识别引擎，如人脸识别<br>PyQt5库是Python语言当前最好的GUI（用户图形界面）第三方库，它可以在Windows、Linux和MacOS X等操作系统上跨平台使用。<br>人工智能领域：mxnet，keras，pytorch<br>Django：Web开发方向<br>NLTK：自然语言处理工具包<br>Luminoth：计算机视觉工具包<br>redis-py：数据存储<br>网络爬虫领域：Scrapy、Requests、PySpider。<br>SnowNLP用于处理中文文本内容。<br>Web开发方向：Tornado、Pyramid、Django。<br>Python语言中Web开发框架第三方库有Flask、Django、Pyramid。<br>pandas是数据分析的一个核心框架，集成了数据结构化和数据清洗以及分析的一些方法。pandas在numpy的基础上新增了三个数据类型，Series、DataFrame、Panel。可以进行高效的时间序列分析以及金融数据分析。</p>
+<p>Pyinstaller命令的常用参数：<br>-h，–help：查看帮助<br>–clean：清理打包过程中的临时文件<br>-D，–onedir：默认值，生成dist目录<br>-F，–onefile：在dist文件夹中只生成独立的打包文件<br>-i&lt;图标文件名.ico&gt;：指定打包程序使用的图标（icon）文件</p>
+<p>第11章Python第三方库纵览<br>11.1网络爬虫方向<br>网络爬虫是自动进行HTTP 访问并捕获HTML页面的程序。Python语言提供了多个具备网络爬虫功能的第三方库。<br>11.1.1requests<br>requests库是一个简洁且简单的处理HTTP请求的第三方库，其最大优点是程序编写过程更接近正常URL访问过程。这个库建立在Python语言的urllib3库基础上，类似这种在其他函数库之上再封装功能提供更友好函数的方式在Python语言中十分常见。在Python生态圈里，任何人都有通过技术创新或体验创建新发表意见和展示才华的机会。<br>Requests库支持非常丰富的链接访问功能，包括国际域名和URL获取、HTTP长连接和连接缓存、HTTP会话和 cookie 保持、浏览器使用风格的SSL 验证、基本的摘要认证、有效的键值对cookie记录、自动解压缩、自动内容解码、文件分块上传、HTTP(S）代理功能、连接超时处理、流数据下载等。<br>有关requests库的更多可访问<a target="_blank" rel="noopener" href="http://www.python-requests.org安装语法为/">http://www.python-requests.org安装语法为</a>:</p>
+<p>python35 -m pip install requests -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>requests库提供了7个函数，用来表示对一个网页的HTTP请求，requests库的常用函数：<br>requests.request()：构造一个请求，支撑以下各方法的基础方法<br>requests.get()：获取HTML 网页的主要方法，对应于HTTP的GET<br>requests.head()：获取HTML 网页头的主要方法，对应于HTTP的HEAD<br>requests.post()：向HTML 网页提交POST请求的方法，对应于HTTP的POST<br>requests.put()：向HTML网页提交PUT请求的方法，对应于HTTP的PUT<br>requests.patch()：向HTML 网页提交局部修改请求，对应于HTTP的PATCH<br>requests.delete()：向HTML页面提交删除请求，对应于HTTP的DELETE</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">resp=requests.get(&#x27;http://www.baidu.com&#x27;)</span><br><span class="line">print(resp.text)</span><br></pre></td></tr></table></figure>
+<p>11.1.2scrapy<br>Scrapy是Python开发的一个快速的、高层次的 Web获取框架。不同于简单的网络爬虫功能，scrapy框架本身包含了成熟网络爬虫系统所应该具有的部分共用功能，它是一个半成品,任何人都可以根据需求方便地利用框架已有功能经过简单扩展实现专业的网络爬虫系统。<br>Scrapy用途广泛，可以应用于专业爬虫系统的构建、数据挖掘、网络监控和自动化测试等领域。Scrapy提供URL队列、异步多线程访问、定时访问、数据库集成等众多功能，基于它构建的爬虫系统可以7*24运行，具备产品级运行能力。<br>有关scrapy库的更多介绍可以访问<a target="_blank" rel="noopener" href="https://scrapy.org/">https://scrapy.org/</a><br>python35-m pip install scrapy-i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple--trusted-host">http://pypi.douban.com/simple--trusted-host</a> pypi.douban.com<br>Scrapy框架结构，通过扩展函数完善功能后，可以利用这套框架实现对 Web页面不间断的获取。由于scrapy框架质量很高，可以用于产品设计和开发。<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43597208/article/details/105712021">scrapy架构原理图</a></p>
+<p>11.2 数据分析方向<br>数据分析是PYthon的一个优势方向，具有大批高质量的第三方库<br>11.2.1numpy<br>Numpy是 Python的一种开源数值计算扩展第三方库，用于处理数据类型相同的多维数组(ndarray)简称“数组”。这个库可用来存储和处理大型矩阵，比 Python语言提供的列表结构要高效很多。Numpy提供了许多高级的数值编程工具，如矩阵运算、矢量运算、N维数据变换等。<br>Numpy内部是c语言编写，对外采用Python语言进行封装。因此,在进行数据运算时，基于numpy的 Python程序可以达到接近c语言的处理速度。Numpy也成为Python数据分析方向各其他库的基础依赖库，已经成了科学计算事实上的“标准库”。<br>有关numpy库的更多介绍可访问: <a target="_blank" rel="noopener" href="http://www.numpy.org/">http://www.numpy.org/</a><br>安装语法：<br>python35-m pip install numpy -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple--trusted-host">http://pypi.douban.com/simple--trusted-host</a> pypi.douban.com<br>11.2.2scipy<br>Scipy是一款方便、易用、专为科学和工程设计的 Python 工具包，它在是numpy库的基础上增加了众多的数学、科学以及工程计算中常用的库函数。它包括统计、优化、整合、线性代数、傅立叶变换、信号分析、图像处理、常微分方程求解等众多模块。顾名思义，scipy主要用于科学和工程计算。<br>有关scipy库的更多介绍可访问:htts:&#x2F;&#x2F;scipy.org<br>安装语法:<br>python35-m pip install scipy -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.2.3pandas<br>pandas是基于numpy扩展的一个重要第三方库,它是为了解决数据分析任务而创建的。pandas提供了一批标准的数据模型和大量快速便捷处理数据的函数和方法，提供了高效地操作大型数据集所需要的工具。<br>Pandas最初被作为金融数据分析工具而开发，因此，pandas为时间序列分析提供了很好的支持。Pandas的名称来自面板数据(panel data）和 Python数据分析(data analysis)。Panel data是经济学中关于多维数据集的一个术语。Pandas 提供两种最基本的数据类型:Series和 DataFrame ,分别代表一维数组和二维数组类型。<br>有关scipy库的更多介绍可访问:<a target="_blank" rel="noopener" href="http://pandas.pydata.org/">http://pandas.pydata.org</a><br>安装语法:<br>python35-m pip install pandas -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple--trusted-host">http://pypi.douban.com/simple--trusted-host</a> pypi.douban.com</p>
+<p>11.3文本处理方向<br>Python语言非常适合处理文本，因此，在这个方向也形成了大量有价值的第三方库。常用的有pdfminer、penpyxl、python-docx、beautifulsoup4。<br>11.3.1pdfminer<br>pdfminer是一个可以从PDF 文档中提取各类信息的第三方库。与其他PDF相关的工具不同，它能够完全获取并分析PDF的文本数据。pdfminer能够获取 PDF中文本的准确位置、字体、行数等信息，能够将PDF 文个把转为HTML及文本格式。pdfminer包含两个重要的工具: pdf2txt.py和dumppdf.py。<br>pdf2txt.py能够从PDF 文件中提取所有文本内容。dumppd.py能够把PDF文件内容变成XML格式，并进一步提取其中的图片。<br>在关pdfminer 库的更多介绍可访问<a target="_blank" rel="noopener" href="https://euske.github.io/pdfminer/">https://euske.github.io/pdfminer/</a><br>安装语法:<br>python35-m pip install pdfminer -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.3.2openpyxl<br>Openpyxl是一个处理Microsoft Excel文档的Python第三方库，它支持读写Excel的xls、xlsx、xlsm、xltx、xltm等格式文件，并进一步能处理Excel文件中的工作表、表单和数据单元。<br>有关openpyxl库的更多介绍可访问<a target="_blank" rel="noopener" href="http://openpyxl.readthedocs.io/">http://openpyxl.readthedocs.io/</a><br>安装语法:python35 -m pipinstall openpyxl -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.3.3python-docx<br>Python-docx是一个处理Microsoft Word文档的 Python第三方库，它支持读取、查询以及修改doc、docx等格式文件，并能够对Word常见样式进行编程设置，包括字符样式、段落样式、表格样式、页面样式等，进一步可以使用这个库实现添加和修改文本、图像.样式和文档等功能。<br>有关python-docx库的更多介绍可访问<a target="_blank" rel="noopener" href="https://pypi.python.org/pypi/python-docx%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35">https://pypi.python.org/pypi/python-docx安装语法:python35</a> -m pip install python-docx -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.3.4beautifulsoup4<br>beautifulsoup4库，也称为Beautiful Soup库或bs4库，用于解析和处理HTML和XML。<br>需要注意,它不是BeautifulSoup库。它的最大优点是能根据HTML和 XML语法建立解析树，进而高效解析其中的内容。<br>HTML建立的Web页面一般非常复杂，除了有用的内容信息处，还包括大量用于页面格<br>11.4数据可视化方向<br>数据可视化是指根据数据特点将其展示为易于理解的图形的过程。Python语言在数据可视化方面具有较强的优势。常用的有matplotlib、TVTK、mayavi。<br>11.4.1matplotlib<br>Matplotlib是提供数据绘图功能的第三方库，主要进行二维图表数据展示，广泛用于科学计算的数据可视化。使用这个库可以利用Pyhton程序绘制超过100种数据可视化效果。<br>有关matplotlib库的更多介绍可访问<a target="_blank" rel="noopener" href="http://matplotlib.org/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35">http://matplotlib.org/安装语法:python35</a> -m pip install matplotlib -i http:&#x2F;&#x2F;<br>pypi.douban.com&#x2F;simple –trusted-hostpypi.douban.com<br>11.4.2TVTK<br>TVTK库是在标准的VTK库之上用Traits库进行封装的Python第三方库。视觉工具函数库(Visualization Toolkit，VTK）是一个开源、跨平台、支持平行处理的图形应用函数库，它是专业可编程的三维可视化工具。TVTK在Python生态系统中被等同于VTK。<br>windows平台不能使用pip命令安装，可以通过文件安装，其他平台可以<br>11.4.3mayavi<br>虽然VTK 3D可视化软件包功能强大，Python的TVK封装使用方便简洁，但是要用这些工具快速编写实用的三维可视化程序仍然需要花费不少精力。Mayavi基于TVK开发，完全用Python 编写，提供了一个更为方便实用的可视化软件，可以简洁地嵌入到用户编写的Python程序中，或者直接使用其面向脚本的API快速绘制三维可视化图形。值得注意的是mayavi也被称为,mayavi2。<br>有关mayavi’*库的更多介绍可访问<a target="_blank" rel="noopener" href="http://docs.enthought.com/mayavi/mayavi/">http://docs.enthought.com/mayavi/mayavi/</a><br>mayavi库在 Windows平台上暂时不能使用pip命令安装，建议使用文件安装，在其它平台可使用pip命令安装。<br>11.5用户图形界面方向<br>Python标准库内置了一个GUl库—Tkinter，这个库基于Tcl&#x2F;Tk开发，然而这个库十分陈旧，提供的开发控制也很有限、编写出来的GUI风格与现代程序GUI风格相差甚远，从用户体验角度说，Tkinter库并不成熟。<br>常用的3个高质量的用户图形界面Python生态库:PyQt5、wxPython、PyGTK<br>11.5.1PyQt5<br>PyQt5是Q5应用框架的Python第三方库,它有超过620个类和近6000个函数和方法。它是Python中最为成熟的商业级GUI第三方库。这个库是Python语言当前最好的GUI第三方库，它可以 Window、Linux和 MacOSx等操作系统上跨平台使用。<br>PyQt5采用“信号-槽”机制将事件和对应的处理程序进行绑定。简单说，信号就是事件、槽是事件的处理程序。例如，鼠标点击操作是信号，处理鼠标点击的程序是槽。一个信号可以连接多个槽，也可以不连接槽。信号可以连接其他信息。PyQt5窗体有很内置信息，也可以自定义信号。<br>有关PyQt5库的更多介绍可访问 <a target="_blank" rel="noopener" href="https://www.riverbank.computing.com/software/pyqt/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35-m">https://www.riverbank.computing.com/software/pyqt/安装语法:python35-m</a> pip install pyqt5 -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.5.2wxPython<br>wxPython是 Python语言的一套优秀的GUI图形库，它是跨平台GUI库 wxWidgets的Python封装，可以使用Python程序员能够轻松地创建健壮可靠、功能强大的图形用户界面的程序。其中, wxWidgets使用C++语言编写,C&#x2F;C++语言编写的功能库进行二次封装是Python语言的重要特点之一。<br>有关wxPython库的更多介绍可访问<a target="_blank" rel="noopener" href="https://wxpython.org/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35">https://wxpython.org/安装语法:python35</a> -m pip install wxPython -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.5.3PyGTK<br>PyGTK是基于GTK+的Python语言封装，它提供了各式的可视元素和功能，能够轻构创建具有图形用户界面的程序。PyGTK具有跨平台性，利用它编写的代码能够不加修改地稳定运行在各操作系统中，如Windows、MacOS、Linux 等。<br>有关PyGTK库的更多介绍可访问<a href="http://www.pygtk.org安装语法:python35-m">http://www.pygtk.org安装语法:python35-m</a> pip install pygtk-i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.6机器学习方向<br>机器学习是人工智能领域的一个重要分支，Python 语言也是机器学习和人工智能的重要基础语言。常用的三个高质量的机器学习框架: scikit-learn、TensofFlow、Theano。<br>11.6.1scikit-learn<br>scikit-learn是一个简单且高效的数据挖掘和数据分析工具，它基于NumPy、SciP和matplotplib构建。 scikit-learn项目最早由数据科学家David Cournapeau在2007年组织开发，它是Python语言中专门针对机器学习应用而发展起来的一款开源框架。scikit-learn的基本功能主要包括6个部分:分类、回归、聚类、数据降维、模型选择和数据预处理。scikit-learn也被称为sklearn。<br>有关scikit-learn库更多的介绍可访问<a target="_blank" rel="noopener" href="http://scikit-learn.org/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35">http://scikit-learn.org/安装语法:python35</a> -m pipinstall scikit-learn -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.6.2TensorFlow<br>TensorFlow是谷歌公司基于DistBelief进行研发的第二代人工智能学习系统，也是用来支撑著名AlphaGo系统后台框架，其命名来源于其自身的运行原理。Tensor(张量)指N维数组，Flow（流）指基于数据流图的计算，TensorFlow描述张量从流图的一端流动到另一端的计算过程。<br>TensorFlow的应用十分广泛，从语音识别或图像识别到机器翻译或自主跟踪等，既可以运行在数万台服务器的数据中心，也可以运行在智能手机或嵌入式设备中。<br>有关TensorFlow库的的更多介绍可访问<a target="_blank" rel="noopener" href="http://www.tensorflow.org/">http://www.tensorflow.org/</a><br>11.6.3Theano<br>Theano为执行深度学习中大规模神经网络算法的运算而设计，擅长处理多维数组<br>Theano开发始于2007年，可以理解它是一个运算数学表达式的编译器，并可以高效运行在GPU或CPU上。Theano是一个偏向底层开发的库,更像一个研究平台而单纯的深度学习库。<br>有关Theano 库的更多介绍可访问<a target="_blank" rel="noopener" href="http://deeplearning.net/software/theano/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35-m">http://deeplearning.net/software/theano/安装语法:python35-m</a> pip install theano-i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.7Web开发方向<br>Web开发是Python语言流行的一个重要方向，主要用于服务器后端开发。根据 PythonWeb开发框架的复杂程序。常用的 Python第三方生态度有:Django、Pyramid、Flask。<br>11.7.1Django<br>Django是Python生态中最流行的开源Web应用框架。Django采用模型(Model&gt;、模板（Template）和视图(Views）的编写模式，称为MTⅣ模式。其中，模型即数据存取层，用于处理与数据相关的所有事务，包括如何存取、如何验证有效性、包含哪些行为以及数据之间的关系等;模板即表现层，用于处理与表现相关的功能，通过模板方式定义页面风格;视图即业务逻辑层，用于存取模型及调取恰当模板的相关逻辑，是模型与模板的桥梁。<br>Django中提供了开发网站经常用到的模块，Django 的开发理念是DRY (Don’t Repeat Yourself)，用于鼓励快速开发、进而减少程序员建立一个高性能 Web 应用所花费的时间和精力，形成一种一站式解决方案。<br>有关Django库的更多介绍可访问<a target="_blank" rel="noopener" href="https://www.djangoproject.com/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35-m">https://www.djangoproject.com/安装语法:python35-m</a> pip install django-i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.7.2Pyramid<br>Pyramid是一个通、开源的Python Web应用程序开发框架。它主要的目的是让Python开发者更简单地创建Web应用。相比 Django，Pyramid是一个相对小巧、快速、灵活的开源PythonWeb框架。<br>与Django一样，Pyramid仍然面向较大规模的Web应用，但它更关注灵活性，开发者可以灵活选择所使用的数据库、模板风格、URL结构等内容。<br>有关Pyramid 库的更多介绍可访问<a target="_blank" rel="noopener" href="https://trypyramid.com/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35">https://trypyramid.com/安装语法:python35</a> -m pip install pyramid -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.7.3Flask<br>Flask是轻量级 Web应用框架，相比Django和 Pyramid，它也被称为微框架。使用Flask开发 Web应用十分方便，甚至几行代码即可建立一个小型网站。Flask核心十分简单，并不直接包含诸如数据库访问等的抽象访问层，而是通过扩展模块形式来支持。<br>有关Flask 库的更多介绍可访问<a target="_blank" rel="noopener" href="http://flask.pocoo.org/%E5%AE%89%E8%A3%85%E8%AF%AD%E6%B3%95:python35-m">http://flask.pocoo.org/安装语法:python35-m</a> pip install flask -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-host pypi.douban.com<br>11.8游戏开发方向<br>游戏开发是一个有趣的方向，在游戏逻辑和功能实现层面，Python已经成为重要的支撑性语言。有Python中有三个常用的生态库:Pygame、Panda3D、cocos2d。<br>11.8.1Pygame<br>Pygame是在SDL库基础上进行封装的、面向游戏开发入门的Python第三方库，除了制作游戏外，还用于制作多媒体应用程序。其，中 sDL (Simple DirectMedia Layer）是开源、跨平台的多媒体开发库，通过 OpenGL和 Direct3D底层函数提供对音频、键盘、鼠标和图形硬件的简洁访问。<br>Pygame是一个游戏开发框架，提供了大量与游戏相关的底层逻辑和功能支持，非常适合作为入门库理解并实践游戏开发。<br>有关Pygame 库的更多介绍可访问<a href="http://www.pygame.org安装语法:python35">http://www.pygame.org安装语法:python35</a> -m pip install pygame -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> —trusted-hostpypi.douban.com<br>11.8.2Panda3D<br>Panda3D是一个开源、跨平台的3D渲染和游戏开发库，简单说，它是一个 3D游戏引擎，由迪士尼和卡耐基.梅隆大学娱乐技术中心共同开发。Panda3D支持 Python和C++两种语言，但对Python支持更全面。<br>Panda3D支持很多当代先进游戏引擎所支持的特性，如法线贴图、光泽贴图、HDR、卡通渲染和线框渲染等。<br>有关Panda3D库的更多介绍可访问<a href="http://www.panda3d.org安装语法:python35">http://www.panda3d.org安装语法:python35</a> -m pipinstall panda3d -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>python35 -m pipinstall panda3d -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.8.3cocos2d<br>Cocos2d是一个构建2D游戏和图形界面交互式应用的框架,它包括C++、JavaScript .Swift、Python等多个版本。Cocos2d基于OpenGL进行图形渲染，能够利用GPU进行加速。Cocos2d引擎采用树形结构来管理游戏对象，一个游戏划分为不同场景，一个场景又分为不同层，每个层处理并响应用户事件。<br>11.9更多第三方库<br>Python语言有十几万个第三方库，覆盖信息技术几乎所有领域。即使在每个方向，也会有大量的专业人员开发多个第三方库来给出具体设计。除了本章所提到的方向外，还有以下几个第三方库也是比较常用的。</p>
+<p>11.9.1PIL<br>PIL库是Python语言在图像处理方面的重要第三方库，支持图像存储、处理和显示，它能够处理几乎所有的图片格式，可以完成对图像的缩放、剪截、叠加以及向图像添加线条、图像和文字等操作。使用Python语言处理图像相关的程序，首选PIL库。<br>PIL库主要可以完成图像归档和图像处理两方面功能需求。<br>图像归档:对图像进行批处理、生成图像预览、图像格式转换等。图像处理:图像基本处理、像素处理、颜色处理等。<br>有关PIL库的更多介绍可访问<a href="http://pillow.readthedocs.io安装语法:python35">http://pillow.readthedocs.io安装语法:python35</a> -m pip install pillow -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple">http://pypi.douban.com/simple</a> –trusted-hostpypi.douban.com<br>11.9.2SymPy<br>SymPy是一个支持符号计算的Python第三方库，它是一个全功能的计算机代数系统。SymPy代码简洁、易于理解、支持符号计算、高精度计算、模式匹配、绘图、解方程、微积分、组合数学、离散数学、几何学、概论与统计、物理学领域的计算和应用。</p>
+<p>有关SymPy库的更多介绍可访问:<a target="_blank" rel="noopener" href="http://www.sympy.org/">http://www.sympy.org/</a><br>安装语法:python35-m pip install sympy -i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple--trusted-host">http://pypi.douban.com/simple--trusted-host</a> pypi.douban..com<br>11.9.3NLTK<br>NLTK是一个非常重要的自然语言处理Python第三方库，它支持多种语言，尤其对中文支持良好。NLTK可以进行语料处理、文本统计、内容理解、情感分析等我种应用，具备非常可靠的应用价值。<br>有关NLTK的更多介绍可访问<a target="_blank" rel="noopener" href="http://www.nltk.org/">http://www.nltk.org/</a><br>11.9.4WeRoBot<br>WeRoBot是一个微信公众号开发框架，也称为微信机器人框架。WeRoBot可以解析微信服务器发来的消息，并将消息转换成Message或者Event类型。其中，表示用户发来的消息，如文本消息、图片消息:Event则表示用户触发的事件，如关注事件、扫描二维确事件。在消息解析、转换完成后。WeRoBot 会将消息转交给Handler进行处理，并将Handler 的返回值给微信服务器，进而实现完整的微信机器人功能。<br>有关 WeRoBot库的更多介绍可访问<a target="_blank" rel="noopener" href="http://werobot.readthedocs.io安装语法/">http://werobot.readthedocs.io安装语法</a>:<br>python35 -m pipinstall werobot -i http;&#x2F;&#x2F;pypi.douban.com&#x2F;simple –trusted-hostpypi.douban.com<br>11.9.5MyQR<br>MyQR是一个能够产生基本二维码、艺术二维码和动态效果二维码的Python第三方库。有关MyQR库的更多介绍可访问<a target="_blank" rel="noopener" href="https://github.com/sylnsfar/qrcode">https://github.com/sylnsfar/qrcode</a><br>安装命令:<br>python35-m pip install myqr-i <a target="_blank" rel="noopener" href="http://pypi.douban.com/simple--trusted-host">http://pypi.douban.com/simple--trusted-host</a> pypi.douban.com</p>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="posts/python06/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        
+      </div>
+      
+        <div class="catelogue catelogue-2">
+          
+            <p>
+              <span>上一篇：</span>
+              <a href="/posts/python10/">第十章  第三方库概览</a>
+            </p>
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/posts/sqlserver3/">『SQL Server』考三</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.yangxiang.cc/prism.js"></script>
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: 'posts/python06/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script>
+
+
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script>
+  /*页面载入完成后，创建复制按钮*/
+!function (e, t, a) { 
+/* code */
+var initCopyCode = function(){
+    var copyHtml = '';
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+    copyHtml += '  <i class="fa fa-globe"></i><span>copy</span>';
+    copyHtml += '</button>';
+    $(".highlight .code").before(copyHtml);
+    new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+}
+initCopyCode();
+}(window, document);
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="carousel" id="carousel_main">
+      <ul id="div_img">
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/pan.jpg" id="link_img" onClick="link('https://www.csdn.net/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/development_log.jpg" id="link_img" onClick="link('https://koinl.github.io/development_log/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/home_welcome.jpg" id="link_img" onClick="link('https://koinl.github.io/page_home/', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/Picture_APP_By_KoiNL.jpg" id="link_img" onClick="link('https://koinl.github.io/apk/APP_By_KoiNL.apk', '_self')" alt="" title="" /></li>
+          <li class="every_img"><img src="/imgs/cover/LunBoTu/new_blog_theme.jpg" id="link_img" onClick="link('https://koinl.github.io/', '_self')" alt="" title="" /></li>
+      </ul>
+      <ul class="div_circle"><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li><li class = every_circle></li></ul>
+      <div class="btn left"><p class="btn_p">《&nbsp</p></div><div class="btn right"><p class="btn_p">&nbsp》</p></div>
+  </div>
+  <script type="text/javascript">$(function () { var max_num = 4; var time_stop = 4250; var time_swap = 1250; var num = 0; var chosen_circle_color = "#0aa1ed"; var chosen_not_circle_color = "#ffffff"; function every_thing() { $("#div_img").animate({ left: -$(".every_img").eq(0).width() * num }, time_swap); $(".every_circle").eq(num).css("background", chosen_circle_color).siblings('li').css("background", chosen_not_circle_color); } function Right_move() { if (num >= max_num) { num = 0; } else { num++; } every_thing(); } function Left_move() { if (num === 0) { num = max_num; } else { num--; } every_thing(); } $(".every_circle").eq(0).css("background", chosen_circle_color); $("#div_img").width($('.every_img').length * $('.every_img').eq(0).width()); var id = setInterval(Right_move, time_stop); $("#carousel_main").mouseover(function () { clearInterval(id) }); $("#carousel_main").mouseout(function () { id = setInterval(Right_move, time_stop); }); $(".left").click(function () { $("#div_img").stop(); Left_move(); }); $(".right").click(function () { $("#div_img").stop(); Right_move(); }); $(".every_circle").mouseover(function () { num = $(this).index(); $("#div_img").stop(); every_thing(); }); }); function link(jinliweili_Url, quality_target) { window.open(jinliweili_Url, quality_target);}</script>
+    <div class="main-right--content">
+      Hello~近期剽窃本站内容频发，本站唯一指定网站：https://koinl.github.io。请认准。点击<a target="_blank" rel="noopener" href="https://koinl.github.io">点击此处</a>选择进入。
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+
+      <p>Theme：<a href="">koinl.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">信息来源于锦鲤未离</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        console.log(_commentDom)
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"路过人间的情书","artist":"陈恒媛","url":"music/路过人间的情书.mp3","cover":"http://p2.music.126.net/bRIshzdt9OWH0QvqHwfxjQ==/109951166380164291.jpg?param=177y177"},{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+  <script>
+    // gray
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      if (/^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(location.pathname.replace(rootPath, ''))) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+          window.loadImageFn();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+      // $('.main-container').fadeIn()
+    })
+  </script>
+</body>
+</html>
