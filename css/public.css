@@ -8,6 +8,10 @@
   background: beige !important;
 }
 
+pre:active {
+    background-color: #515f7400 !important;
+}
+
 // 博文图片隐藏
 .index-article--cover {
   display: none !important;
@@ -1621,10 +1625,6 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
   color: #007fff;
   text-align: right;
   text-decoration: underline;
-}
-
-.btn-copy {
-  display: none !important;
 }
 
 @media screen and (max-width: 768px) {
