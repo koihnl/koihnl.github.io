@@ -5,10 +5,14 @@
 <body>
 
 <style>
-    .Cover_QuanJu {padding: 15px;overflow: hidden;display: flex;align-items: center;}
+    .Cover_QuanJu { padding: 15px; overflow: hidden; display: flex; justify-content: space-between; align-items: center;justify-content: flex-start; }
+    .Cover_QuanJu img { border-radius: 50%; animation: light 4s ease-in-out infinite; transition: 2s; margin-bottom: -3px; margin-right: 9px; width: 64px; height: 64px; }
+    .Cover_QuanJu img:hover { transform: scale(1.15) rotate(-720deg); }
+    @keyframes light { 0% { box-shadow: 0 0 3px #f00; } 25% { box-shadow: 0 0 10px #0f0; } 50% { box-shadow: 0 0 3px #00f; } 75% { box-shadow: 0 0 10px #0f0; } 100% { box-shadow: 0 0 3px #f00; } }
     .HongSeShiXianKuangKuang {display: block;  margin-top: 18px;font-size: 48px;color: #ff0000ff;border: 6px solid;border-radius: 10px;}
     .HongSeXuXianKuangKuang {display: block;  margin-top: 18px;font-size: 28px;color: #ff0000ff;border: 6px dashed;border-radius: 10px;}
     .JinLiSeShiXianKuangKuang {border: 3px solid;border-radius: 5px; color: #b42424; margin-bottom: 18px;display: inline-block;}
+    
 </style>
 
     <section id="main" class="main" style="padding-top: 0;">
@@ -17,8 +21,8 @@
             <div id="new_container" style="width: 100%;min-height: 100vh;padding: 40px 44px 0 40px; justify-content: center; display: flex; background: #faebd7;">
                 <div class="content">
 
-                    <div class="main-left--info" style="background: #00000000; justify-content: flex-start;">
-                        <img src="/imgs/avatar.jpg" class="main-left--avatar">
+                    <div class="Cover_QuanJu">
+                        <img src="/imgs/avatar.jpg">
                         <div style="color: #b14828;">
                             <p style="font-size: 28px;">KoiHNL.</p><p style="font-size: 14px;">“锦鲤握运，未离我韵”</p>
                         </div>
