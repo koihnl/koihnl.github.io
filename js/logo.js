@@ -3,7 +3,7 @@
 // 动态加载 ECharts 库
 (function loadECharts() {
     var script = document.createElement('script');
-    script.src = "./echarts.min.js";
+    script.src = "./js/echarts.min.js";
     script.onload = function() {
         // 确保 ECharts 加载完毕后，再执行代码
         createKoinlChart();
