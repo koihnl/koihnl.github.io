@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>锦鲤未离的小站研发日志 | 锦鲤未离</title>
+  <script src="./koinlChartLib.js"></script>
 </head>
 
 <body>
@@ -247,7 +248,6 @@
     <h4>2022 年 01 月 16 日创建 Blog</h4>
     <p></p>
 
-    <script src="https://koinl.github.io/js/logo.js"></script>
     <script> document.addEventListener('DOMContentLoaded', function () { let toc = document.getElementById('toc'); let tocList = document.getElementById('toc-list'); let headings = document.getElementsByTagName('h4'); let filterInput = document.getElementById('filter'); function generateToc(keyword = '') { tocList.innerHTML = ''; for (let i = 0; i < headings.length; i++) { let heading = headings[i]; let id = 'heading-' + i; heading.id = id; let paragraph = heading.nextElementSibling; if (paragraph && (paragraph.tagName.toLowerCase() === 'pre' || paragraph.tagName.toLowerCase() === 'ul' || paragraph.tagName.toLowerCase() === 'p')) { if (keyword === '' || heading.textContent.includes(keyword)) { let listItem = document.createElement('li'); let link = document.createElement('a'); link.href = '#' + id; let text = heading.textContent; let match = text.match(/(分类.+)/); if (match) { let highlightedText = match[1]; link.innerHTML = text.replace(highlightedText, `<span class="highlight">${highlightedText}</span>`); } else { link.textContent = text; } listItem.appendChild(link); tocList.appendChild(listItem); heading.innerHTML = text; if (keyword) { keyword = keyword.slice(3); heading.innerHTML = heading.innerHTML.replace(new RegExp(keyword, 'g'), `<mark>${keyword}</mark>`); } } else { heading.innerHTML = heading.textContent; } } } } generateToc(); filterInput.addEventListener('input', function () { let keyword = '分类：' + filterInput.value.trim(); generateToc(keyword); }); document.addEventListener('click', function (event) { if (!toc.contains(event.target) && event.target !== filterInput) { toc.style.display = (toc.style.display === 'none') ? 'block' : 'none'; } }); toc.addEventListener('click', function (event) { event.stopPropagation(); }); }); </script>
         <script>
         var tocVisible = true;
