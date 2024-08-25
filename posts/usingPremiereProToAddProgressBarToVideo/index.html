@@ -256,6 +256,11 @@
             const messageDiv = document.getElementById('message');
             messageDiv.innerHTML = `第${generationCount}次图片显示成功，下拉可见`;
 
+                const existingDownloadLink = document.getElementById('download-link');
+    if (existingDownloadLink) {
+        existingDownloadLink.remove();
+    }
+
           
             originalImage.onload = function () {
              
