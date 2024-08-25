@@ -9,10 +9,7 @@
         body {
             background: #faebd7;
         }
-         img {
-            max-width: 100%;
-            height: auto;
-        }
+
 
         pre {
             white-space: pre-wrap;
@@ -68,6 +65,10 @@
             height: 1px;
             background-color: orange;
             margin: 20px 0;
+        }
+                details img {
+            max-width: 100%;
+            height: auto;
         }
 
         .interval-section {
@@ -287,10 +288,10 @@
 
           
                 const downloadLink = document.createElement('a');
-                generationCount++;
+                
                 downloadLink.href = imgData;
-                downloadLink.download = '第${generationCount}次图片.png';
-                downloadLink.innerHTML = '点击下载第${generationCount}次图片';
+                downloadLink.download = '进度条图片.png';
+                downloadLink.innerHTML = '点击下载进度条图片';
                 document.body.appendChild(downloadLink);
 
 
