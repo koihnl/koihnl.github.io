@@ -284,8 +284,8 @@
           
                 const downloadLink = document.createElement('a');
                 downloadLink.href = imgData;
-                downloadLink.download = 'image_with_rectangle.png';
-                downloadLink.innerHTML = 'Download Image';
+                downloadLink.download = '第${generationCount}次图片.png';
+                downloadLink.innerHTML = '点击下载第${generationCount}次图片';
                 document.body.appendChild(downloadLink);
 
 
