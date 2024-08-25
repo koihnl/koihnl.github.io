@@ -185,6 +185,7 @@
         </div>
 
         <div id="message"></div>
+        <div id="erroutput"></div>
     </form>
 
     <img id="original-image" src="https://koihnl.github.io/imgs/TransparentPictures.png" style="display: none;">
@@ -290,6 +291,13 @@
                 let startX = 0;
                 for (let i = 0; i < sectionWidths.length; i++) {
                     drawSection(startX, rectY, sectionWidths[i], rectHeight, sectionColor, legends[i] || '');
+
+                    let outputDiv = document.getElementById('erroutput');
+            let valueDisplay = document.createElement('div');
+            valueDisplay.className = 'value-display';
+            valueDisplay.textContent = `Section ${i + 1}: ${sectionWidths[i]}px, ${startX},${rectY},${rectHeight},${sectionColor},${legends[i]},`;
+            outputDiv.appendChild(valueDisplay);
+
                     startX += sectionWidths[i] + interregional_interval;
                 }
 
