@@ -9,6 +9,10 @@
         body {
             background: #faebd7;
         }
+         img {
+            max-width: 100%;
+            height: auto;
+        }
 
         pre {
             white-space: pre-wrap;
@@ -283,6 +287,7 @@
 
           
                 const downloadLink = document.createElement('a');
+                generationCount++;
                 downloadLink.href = imgData;
                 downloadLink.download = '第${generationCount}次图片.png';
                 downloadLink.innerHTML = '点击下载第${generationCount}次图片';
