@@ -254,6 +254,7 @@ function updateLastRowTitle(intervalCount) {
             if (!validateInputs()) {
         return;
     }
+    document.querySelector('.image-container').innerHTML = '';
 
             const wwidth = parseInt(document.getElementById('wwidth').value);
             const hheight = parseInt(document.getElementById('hheight').value);
