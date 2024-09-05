@@ -21,6 +21,24 @@
             font-size: xx-large;
             color: #b24224;
         }
+        
+        details summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        
+     
+        details summary::before {
+            content: '😊'; 
+            display: inline-block;
+            margin-right: 5px;
+            transition: transform 0.3s;
+        }
+        
+   
+        details[open] summary::before {
+            content: '🥰';
+        }
     </style>
     <title> </title>
 </head>
