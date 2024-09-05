@@ -9,8 +9,8 @@
 })();
 
 function getText() {
-    var encodedText = '5oWI5oWI5Y+z5aOr';
-    return decodeURIComponent(escape(atob(encodedText)));
+    var encodedText = '5pyA5Yqo5oiR5piv';
+    return decodeURIComponent(escape(atob(encodedText))); 
 }
 
 
