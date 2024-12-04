@@ -71,6 +71,10 @@
                     <p id="update-date" class="JinLiSeShiXianKuangKuang">最后修改时间：2024年8月9日</p>
                     <p id="days-jisuan" class="JinLiSeShiXianKuangKuang"></p>
                     <p id="ip-souxun" class="JinLiSeShiXianKuangKuang">正在获取访问者IP地址和地理位置...</p> 
+<div id="toolsContainer" class="HongSeShiXianKuangKuang">
+    <p>小工具区域！</p>
+</div>
+
 <script>
     const toolsLinks = [
         { text: "Txt文本阅读器", href: "/TxtReader.html" },
@@ -81,15 +85,21 @@
 
 
 
-    document.write('<div class="HongSeShiXianKuangKuang">');
-    document.write('<p>小工具区域！</p>');
+    // 获取目标容器
+    const toolsContainer = document.getElementById("toolsContainer");
+
+
     toolsLinks.forEach(link => {
-        document.write(`<a href="${link.href}" class="inlineBlock_KoiHNL">[${link.text}]</a>`);
+        const a = document.createElement("a");
+        a.href = link.href;
+        a.className = "inlineBlock_KoiHNL";
+        a.textContent = `[${link.text}]`;
+        toolsContainer.appendChild(a);
     });
-    document.write('</div>');
 
 
 </script>
+
 
 
                   </div>
