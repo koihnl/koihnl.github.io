@@ -18,20 +18,23 @@
 	</div>
 
 <script>
-function checkUploaderDisplay() {
-  const epub = document.getElementById("epub");
-  const topControls = document.getElementById("topControls");
-  const fileList = document.getElementById("fileList");
-  const isUploaderHidden = getComputedStyle(epub).display === "none";
-  const display = isUploaderHidden ? "none" : "block";
-  topControls.style.display = display;
-  fileList.style.display = display;
-}
-
-function toggleUploader() {
-  const epub = document.getElementById("epub");
-  uploader.style.display = uploader.style.display === "none" ? "block" : "none";
-  checkUploaderDisplay();
-}
-checkUploaderDisplay();
+document.addEventListener("DOMContentLoaded", () => {
+  function updateVisibility() {
+    const epub = document.getElementById("epub");
+    const fileContentContainer = document.getElementById("fileContentContainer");
+    if (epub.style.display === "none") {
+      fileContentContainer.style.display = "none";
+    } else {
+      fileContentContainer.style.display = "flex";
+    }
+  }
+  updateVisibility();
+  const observer = new MutationObserver(() => {
+    updateVisibility();
+  });
+  observer.observe(document.getElementById("epub"), {
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+});
 </script>
