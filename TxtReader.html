@@ -18,11 +18,6 @@
 	</div>
 
 <script>
-const fileContent = document.getElementById('filecontent');
-const uploader = document.getElementById('uploader');
-if (!fileContent.classList.contains('hidden')) {
-            uploader.style.display = 'none';
-        }
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility() {
     const epub = document.getElementById("epub");
@@ -31,10 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (epub.style.display === "none") {
       fileContentContainer.style.display = "none";
       fileListContainer.style.display = "none";
-      fileListContainer.classList.toggle('hidden');
-    } else {
-      fileContentContainer.style.display = "flex";
-      fileListContainer.style.display = "block";
     }
   }
   updateVisibility();
