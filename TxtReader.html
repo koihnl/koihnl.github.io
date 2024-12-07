@@ -16,3 +16,22 @@
 		<div id='content'></div>
 		<div style="text-align:center;" id='nav'></div>
 	</div>
+
+<script>
+function checkUploaderDisplay() {
+  const epub = document.getElementById("epub");
+  const topControls = document.getElementById("topControls");
+  const fileList = document.getElementById("fileList");
+  const isUploaderHidden = getComputedStyle(epub).display === "none";
+  const display = isUploaderHidden ? "none" : "block";
+  topControls.style.display = display;
+  fileList.style.display = display;
+}
+
+function toggleUploader() {
+  const epub = document.getElementById("epub");
+  uploader.style.display = uploader.style.display === "none" ? "block" : "none";
+  checkUploaderDisplay();
+}
+checkUploaderDisplay();
+</script>
