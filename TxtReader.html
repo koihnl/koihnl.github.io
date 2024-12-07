@@ -22,10 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility() {
     const epub = document.getElementById("epub");
     const fileContentContainer = document.getElementById("fileContentContainer");
+    const fileListContainer = document.getElementById("fileListContainer");
     if (epub.style.display === "none") {
       fileContentContainer.style.display = "none";
+      fileListContainer.style.display = "none";
     } else {
       fileContentContainer.style.display = "flex";
+      fileListContainer.style.display = "block";
     }
   }
   updateVisibility();
