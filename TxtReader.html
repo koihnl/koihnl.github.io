@@ -18,6 +18,11 @@
 	</div>
 
 <script>
+const fileContent = document.getElementById('filecontent');
+const epub = document.getElementById('epub');
+if (fileContent.classList.contains('hidden')) {
+            epub.style.display = 'none';
+        }
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility() {
     const epub = document.getElementById("epub");
