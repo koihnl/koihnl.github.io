@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (epub.style.display === "none") {
       fileContentContainer.style.display = "none";
       fileListContainer.style.display = "none";
+      fileListContainer.remove();
     }
   }
   updateVisibility();
