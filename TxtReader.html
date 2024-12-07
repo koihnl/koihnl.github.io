@@ -19,9 +19,9 @@
 
 <script>
 const fileContent = document.getElementById('filecontent');
-const epub = document.getElementById('epub');
-if (fileContent.classList.contains('hidden')) {
-            epub.style.display = 'none';
+const uploader = document.getElementById('uploader');
+if (!fileContent.classList.contains('hidden')) {
+            uploader.style.display = 'none';
         }
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility() {
