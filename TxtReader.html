@@ -77,29 +77,43 @@ document.getElementById('fontSizeRange').addEventListener('input', function () {
 
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility11() {
-    if (!document.getElementById("fileList").classList.contains("hidden") || !document.getElementById("fileContent").classList.contains("hidden")) {
-      if (document.getElementById("epub")) document.getElementById("epub").style.display = "none";
+    const fileList = document.getElementById("fileList");
+    const fileContent = document.getElementById("fileContent");
+    const epub = document.getElementById("epub");
+
+    if (!fileList || !fileContent) {
+      console.error("fileList 或 fileContent 元素不存在！");
+      return;
+    }
+
+    if (!fileList.classList.contains("hidden") || !fileContent.classList.contains("hidden")) {
+      if (epub) epub.style.display = "none";
     }
   }
+
   updateVisibility11();
+
   const observer = new MutationObserver(() => {
     updateVisibility11();
   });
+
   const fileList = document.getElementById("fileList");
   const fileContent = document.getElementById("fileContent");
+
   if (fileList) {
     observer.observe(fileList, {
       attributes: true,
-      attributeFilter: ["style"],
+      attributeFilter: ["class"], // 监听 class 属性变化
     });
   }
   if (fileContent) {
     observer.observe(fileContent, {
       attributes: true,
-      attributeFilter: ["style"],
+      attributeFilter: ["class"],
     });
   }
 });
+
 
 
 </script>
