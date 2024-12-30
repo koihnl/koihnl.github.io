@@ -41,5 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const uploader = document.getElementById('uploader');
+    const toggleDarkModeBtn = document.getElementById('toggleDarkModeBtn');
+    const fileReselect = document.getElementById('fileReselect');
+    const fontSizeRangediv = document.getElementById('fontSizeRangediv');
+    uploader.addEventListener('click', function () {
+        uploader.style.display = 'none';
+        toggleDarkModeBtn.style.display = 'inline-block';
+        fileReselect.style.display = 'inline-block';
+        fontSizeRangediv.style.display = 'block';
+    });
+
+});
+</script>
 
 </body> </html>
