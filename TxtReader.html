@@ -79,10 +79,11 @@ document.getElementById('fontSizeRange').addEventListener('input', function () {
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility11() {
     const fileList = document.getElementById("fileList");
+    const fileContent = document.getElementById("fileContent");
     const epub = document.getElementById("epub");
 
     if (fileList && epub) {
-      if (!fileList.classList.contains("hidden")) {
+      if (!fileList.classList.contains("hidden") && document.getElementById('fileInputLabel').style.display === "none" || !fileContent.classList.contains("hidden")) {
         epub.classList.add("hidden");
       } else {
         epub.classList.remove("hidden");
