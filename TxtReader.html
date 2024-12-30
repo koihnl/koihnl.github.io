@@ -39,16 +39,48 @@ document.addEventListener("DOMContentLoaded", () => {
     attributeFilter: ["style"],
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  function updateVisibility1() {
+    const dir = document.getElementById("dir");
+    const toggleDarkModeBtn = document.getElementById("toggleDarkModeBtn");
+    const fileReselect = document.getElementById("fileReselect");
+    const fontSizeRangediv = document.getElementById("fontSizeRangediv");
+    const fileContentContainer = document.getElementById("fileContentContainer");
+    const fileList = document.getElementById("fileList");
+    if (dir && dir.style.display === "none") {
+      if (toggleDarkModeBtn) toggleDarkModeBtn.style.display = "inline-block";
+      if (fileReselect) fileReselect.style.display = "inline-block";
+      if (fontSizeRangediv) fontSizeRangediv.style.display = "block";
+      if (fileContentContainer) fileContentContainer.style.display = "block";
+      if (fileList) fileList.style.display = "none";
+    }
+  }
+  updateVisibility1();
+  const observer = new MutationObserver(() => {
+    updateVisibility1();
+  });
+  const dir = document.getElementById("dir");
+  const page = document.getElementById("page");
+  if (dir) {
+    observer.observe(dir, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  }
+  if (page) {
+    observer.observe(page, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  }
+});
+
+	
 document.getElementById('fontSizeRange').addEventListener('input', function () {
 	document.getElementById('content').style.fontSize = document.getElementById('fontSizeRange').value + 'px'; });
 
-if (document.getElementById("dir").style.display === "none") {
-      document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
-      document.getElementById('fileReselect').style.display = 'inline-block';
-      document.getElementById('fontSizeRangediv').style.display = 'block';
-      document.getElementById('fileContentContainer').style.display = 'block';
-      document.getElementById('fileList').style.display = 'none';
-}
+
 
 
 </script>
