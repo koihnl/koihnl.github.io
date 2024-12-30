@@ -75,7 +75,29 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById('fontSizeRange').addEventListener('input', function () {
 	document.getElementById('content').style.fontSize = document.getElementById('fontSizeRange').value + 'px'; });
 
-
+document.addEventListener("DOMContentLoaded", () => {
+  function updateVisibility11() {
+    if (!document.getElementById("fileList").classList.contains("hidden") || !document.getElementById("fileContent").classList.contains("hidden")) {
+      if (document.getElementById("epub")) document.getElementById("epub").style.display = "none";
+    }
+  }
+  updateVisibility11();
+  const observer = new MutationObserver(() => {
+    updateVisibility11();
+  });
+  if (document.getElementById("fileList")) {
+    observer.observe(document.getElementById("fileList"), {
+      attributes: true,
+      attributeFilter: ["class"], 
+    });
+  }
+  if (document.getElementById("fileContent")) {
+    observer.observe(document.getElementById("fileContent"), {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+});
 
 </script>
 
