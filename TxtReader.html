@@ -51,6 +51,13 @@ if (dirDisplay === "none" && pageDisplay !== "none") {
       document.getElementById('fileContentContainer').style.display = 'block';
       document.getElementById('fileList').style.display = 'none';
 }
+if (document.getElementById("dir").style.display === "none" && document.getElementById("page").style.display !== "none") {
+      document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
+      document.getElementById('fileReselect').style.display = 'inline-block';
+      document.getElementById('fontSizeRangediv').style.display = 'block';
+      document.getElementById('fileContentContainer').style.display = 'block';
+      document.getElementById('fileList').style.display = 'none';
+}
 
 
 </script>
