@@ -42,16 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById('fontSizeRange').addEventListener('input', function () {
 	document.getElementById('content').style.fontSize = document.getElementById('fontSizeRange').value + 'px'; });
 
-const dirDisplay = window.getComputedStyle(document.getElementById("dir")).display;
-const pageDisplay = window.getComputedStyle(document.getElementById("page")).display;
-if (dirDisplay === "none" && pageDisplay !== "none") {
-      document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
-      document.getElementById('fileReselect').style.display = 'inline-block';
-      document.getElementById('fontSizeRangediv').style.display = 'block';
-      document.getElementById('fileContentContainer').style.display = 'block';
-      document.getElementById('fileList').style.display = 'none';
-}
-if (document.getElementById("dir").style.display === "none" && document.getElementById("page").style.display !== "none") {
+if (document.getElementById("dir").style.display === "none"{
       document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
       document.getElementById('fileReselect').style.display = 'inline-block';
       document.getElementById('fontSizeRangediv').style.display = 'block';
