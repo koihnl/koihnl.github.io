@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (fileList && fileContent && fileInputLabel && epub) {
       if (
-        !fileList.classList.contains("hidden") || 
+        !fileList.classList.contains("hidden") && 
         !fileContent.classList.contains("hidden") || 
         fileInputLabel.style.display === "none"
       ) {
