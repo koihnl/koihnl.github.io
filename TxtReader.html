@@ -74,8 +74,37 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.getElementById('fontSizeRange').addEventListener('input', function () {
 	document.getElementById('content').style.fontSize = document.getElementById('fontSizeRange').value + 'px'; });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  function updateVisibility11() {
+    const fileList = document.getElementById("fileList");
+    const epub = document.getElementById("epub");
 
+    if (fileList && epub) {
+      if (!fileList.classList.contains("hidden")) {
+        epub.classList.add("hidden");
+      } else {
+        epub.classList.remove("hidden");
+      }
+    }
+  }
 
+  updateVisibility11();
+
+  const observer = new MutationObserver(() => {
+    updateVisibility11();
+  });
+
+  const fileList = document.getElementById("fileList");
+
+  if (fileList) {
+    observer.observe(fileList, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+});
 
 </script>
 
