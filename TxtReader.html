@@ -77,7 +77,7 @@ document.getElementById('fontSizeRange').addEventListener('input', function () {
 
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility11() {
-    if (!document.getElementById("fileList").classList.contains("hidden") || !document.getElementById("fileContent").classList.contains("hidden")) {
+    if (!document.getElementById("fileContent").classList.contains("hidden")) {
       if (document.getElementById("epub")) document.getElementById("epub").style.display = "none";
     }
   }
