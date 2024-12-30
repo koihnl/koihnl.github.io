@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
       fileContentContainer.style.display = "none";
       fileListContainer.style.display = "none";
       fileListContainer.remove();
+      document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
+      document.getElementById('fileReselect').style.display = 'inline-block';
+      document.getElementById('fontSizeRangediv').style.display = 'block';
     }
   }
   updateVisibility();
@@ -38,22 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     attributes: true,
     attributeFilter: ["style"],
   });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const uploader = document.getElementById('uploader');
-    const toggleDarkModeBtn = document.getElementById('toggleDarkModeBtn');
-    const fileReselect = document.getElementById('fileReselect');
-    const fontSizeRangediv = document.getElementById('fontSizeRangediv');
-    uploader.addEventListener('click', function () {
-        uploader.style.display = 'none';
-        toggleDarkModeBtn.style.display = 'inline-block';
-        fileReselect.style.display = 'inline-block';
-        fontSizeRangediv.style.display = 'block';
-    });
-
 });
 </script>
 
