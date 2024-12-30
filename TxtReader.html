@@ -43,17 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility1() {
     const dir = document.getElementById("dir");
-    const toggleDarkModeBtn = document.getElementById("toggleDarkModeBtn");
-    const fileReselect = document.getElementById("fileReselect");
-    const fontSizeRangediv = document.getElementById("fontSizeRangediv");
-    const fileContentContainer = document.getElementById("fileContentContainer");
-    const fileList = document.getElementById("fileList");
     if (dir && dir.style.display === "none" && document.getElementById("page").style.display !== "none") {
-      if (toggleDarkModeBtn) toggleDarkModeBtn.style.display = "inline-block";
-      if (fileReselect) fileReselect.style.display = "inline-block";
-      if (fontSizeRangediv) fontSizeRangediv.style.display = "block";
-      if (fileContentContainer) fileContentContainer.style.display = "block";
-      if (fileList) fileList.style.display = "none";
+      if (document.getElementById("toggleDarkModeBtn")) document.getElementById("toggleDarkModeBtn").style.display = "inline-block";
+      if (document.getElementById("fileReselect")) document.getElementById("fileReselect").style.display = "inline-block";
+      if (document.getElementById("fontSizeRangediv")) document.getElementById("fontSizeRangediv").style.display = "block";
+      if (document.getElementById("fileContentContainer")) document.getElementById("fileContentContainer").style.display = "block";
+      if (document.getElementById("fileList")) document.getElementById("fileList").style.display = "none";
+      if (document.getElementById("fileInputLabel")) document.getElementById("fileInputLabel").style.display = "none";
+      if (document.getElementById("folderInputLabel")) document.getElementById("folderInputLabel").style.display = "none";
     }
   }
   updateVisibility1();
