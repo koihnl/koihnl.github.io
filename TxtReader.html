@@ -80,10 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility11() {
     const fileList = document.getElementById("fileList");
     const fileContent = document.getElementById("fileContent");
+    const fileInputLabel = document.getElementById("fileInputLabel");
     const epub = document.getElementById("epub");
 
-    if (fileList && epub) {
-      if (!fileList.classList.contains("hidden") && document.getElementById('fileInputLabel').style.display === "none" || !fileContent.classList.contains("hidden")) {
+    if (fileList && fileContent && fileInputLabel && epub) {
+      if (
+        !fileList.classList.contains("hidden") || 
+        !fileContent.classList.contains("hidden") || 
+        fileInputLabel.style.display === "none"
+      ) {
         epub.classList.add("hidden");
       } else {
         epub.classList.remove("hidden");
@@ -98,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const fileList = document.getElementById("fileList");
+  const fileContent = document.getElementById("fileContent");
+  const fileInputLabel = document.getElementById("fileInputLabel");
 
   if (fileList) {
     observer.observe(fileList, {
@@ -105,7 +112,22 @@ document.addEventListener("DOMContentLoaded", () => {
       attributeFilter: ["class"],
     });
   }
+
+  if (fileContent) {
+    observer.observe(fileContent, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+
+  if (fileInputLabel) {
+    observer.observe(fileInputLabel, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  }
 });
+
 
 </script>
 
