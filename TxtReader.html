@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('toggleDarkModeBtn').style.display = 'inline-block';
       document.getElementById('fileReselect').style.display = 'inline-block';
       document.getElementById('fontSizeRangediv').style.display = 'block';
+      document.getElementById('fileContentContainer').style.display = 'block';
+      document.getElementById('fileList').style.display = 'none';
     }
   }
   updateVisibility();
@@ -42,6 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     attributeFilter: ["style"],
   });
 });
+document.getElementById('fontSizeRange').addEventListener('input', function () {
+	document.getElementById('content').style.fontSize = document.getElementById('fontSizeRange').value + 'px'; });
 </script>
 
 </body> </html>
