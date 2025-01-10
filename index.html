@@ -40,7 +40,11 @@
     .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50; text-decoration: underline;}
     .Post_2024q_Pointer_KoiHNL {margin-top: 2px;cursor: pointer;color: #000;text-decoration: underline;}
     .inlineBlock_KoiHNL:hover, .Post_2024q_Pointer_KoiHNL summary:hover{color: #b24224;}
-    
+.YouLianTtext {position: absolute;top: 0;left: 0;width: 120%; display: flex;flex-direction: column;align-items: flex-start;justify-content: start;gap: 10px;background-color: rgba(255, 255, 255, 0.9); padding: 10px 0;border-radius: 8px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);opacity: 0;transform: translateY(-20px);pointer-events: none;transition: opacity 0.3s ease, transform 0.3s ease;}
+.YouLian:hover .YouLianTtext {opacity: 1;transform: translateY(0);pointer-events: auto;}
+   .YouLianTtext a {display: flex;align-items: center;gap: 8px; text-decoration: none;color: #333;font-size: 14px;padding: 5px 10px;border-radius: 4px;transition: background-color 0.3s ease, color 0.3s ease;}
+   .YouLianTtext a:hover {background-color: #0078d7;color: #fff;}
+   .YouLianTtext a img {width: 20px; height: 20px; border-radius: 50%; object-fit: cover;}
 </style>
                     <div class="My_Cover_And_YouLian" style="display: flex; ">
                         <div class="Cover_QuanJu">
@@ -50,10 +54,13 @@
                             </div>
                         </div>
                         <div class="Cover_QuanJu YouLian">
-                            <img src="https://saas.bk-cdn.com/t/28fa19a1-bd4e-468d-b51a-cc1195795049/u/e41e744f-8a62-49c8-9e5b-0b3866856d0c/1701708413945/logo.png">
-                            <a href="https://blog.feifeige.top/" target=“_blank”>
-                                  <p>友链:</p><p>飞飞哥博客</p>
-                            </a>
+                               <img src="https://saas.bk-cdn.com/t/28fa19a1-bd4e-468d-b51a-cc1195795049/u/e41e744f-8a62-49c8-9e5b-0b3866856d0c/1701708413945/logo.png">
+                               <div class="YouLianTtext">
+                                    <a href="https://blog.feifeige.top/" target="_blank">
+                                         <img src="https://saas.bk-cdn.com/t/28fa19a1-bd4e-468d-b51a-cc1195795049/u/e41e744f-8a62-49c8-9e5b-0b3866856d0c/1701708413945/logo.png" alt="飞">
+                                         飞飞哥博客
+                                    </a>
+                               </div>
                         </div>
                     </div>
                     
