@@ -28,6 +28,17 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
     document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
     const style = document.createElement('style');
     style.textContent = `
+
+    `;
+
+    document.head.appendChild(style);
+    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
+    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
+    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
+});
+
+</script>
+<style>
         pre { 
             white-space: pre-wrap; 
             white-space: -moz-pre-wrap; 
@@ -43,20 +54,9 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
             background-color: #fff; 
             padding: 20px; 
         } 
-    `;
-        const adjustBodyWidth = () => {
-        if (window.innerWidth <= 768) {
-            document.body.style.maxWidth = "90%";
-        } else {
-            document.body.style.maxWidth = "55%";
+        @media (max-width: 768px) { 
+            body { 
+                max-width: 90%; 
+            } 
         }
-    };
-    adjustBodyWidth();
-    window.addEventListener('resize', adjustBodyWidth);
-    document.head.appendChild(style);
-    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
-    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
-    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
-});
-
-</script>
+</style>
