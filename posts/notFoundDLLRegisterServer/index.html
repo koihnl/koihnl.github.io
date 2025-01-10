@@ -44,9 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('body').style.margin = '0 auto';
     document.querySelector('body').style.backgroundColor = '#fff';
     document.querySelector('body').style.padding = '20px';
-    if (window.innerWidth <= 768) {
-        document.querySelector('body').style.maxWidth = '90%';
+    function adjustBodyMaxWidth() {
+        if (window.innerWidth <= 768) {document.body.style.maxWidth = '90%';} 
+        else {document.body.style.maxWidth = '55%';}
     }
+    adjustBodyMaxWidth();
+    window.addEventListener('resize', adjustBodyMaxWidth);
 });
 </script>
 
