@@ -24,6 +24,10 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
 
 // ----------------------------------------------------------------------------------------------------------
     ];
+    const metaViewport = document.createElement('meta');
+     metaViewport.name = 'viewport';
+    metaViewport.content = 'width=device-width, initial-scale=1.0';
+    document.head.appendChild(metaViewport);
     document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[1] + " | 锦鲤未离" }));
     document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
     const style = document.createElement('style');
