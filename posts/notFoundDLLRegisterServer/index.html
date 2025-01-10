@@ -37,36 +37,22 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
             font-size: 16px; 
             font-family: auto; 
         } 
-        #toc { 
-            max-width: 60%; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            background-color: #ffffffe0; 
-            padding: 10px; 
-            max-height: 90vh; 
-            overflow-y: auto; 
-            display: block; 
-        } 
-        mark { 
-            background-color: yellow; 
-        } 
-        .highlight { 
-            color: red; 
-        } 
         body { 
-            max-width: 55%; 
             width: 100%; 
             margin: 0 auto; 
             background-color: #fff; 
             padding: 20px; 
         } 
-        @media (max-width: 768px) { 
-            body { 
-                max-width: 90%; 
-            } 
-        }
     `;
+        const adjustBodyWidth = () => {
+        if (window.innerWidth <= 768) {
+            document.body.style.maxWidth = "90%";
+        } else {
+            document.body.style.maxWidth = "55%";
+        }
+    };
+    adjustBodyWidth();
+    window.addEventListener('resize', adjustBodyWidth);
     document.head.appendChild(style);
     document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
     document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
