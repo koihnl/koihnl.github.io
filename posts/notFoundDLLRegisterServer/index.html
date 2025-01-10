@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(metaViewport);
     document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[1] + " | 锦鲤未离" }));
     document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
+    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
+    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
+    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
     document.querySelector('pre').style.whiteSpace = 'pre-wrap';
     document.querySelector('pre').style.wordWrap = 'break-word';
     document.querySelector('pre').style.fontSize = '16px';
@@ -44,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth <= 768) {
         document.querySelector('body').style.maxWidth = '90%';
     }
-    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
-    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
-    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
 });
 </script>
 
