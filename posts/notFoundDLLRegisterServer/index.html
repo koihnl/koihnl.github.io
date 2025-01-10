@@ -5,8 +5,10 @@
 `
 通常在运行中注册动态库文件：regsvr32 xxx.dll （按回车键执行命令）都能顺利通过，但有时也会报出异常：
 模块“xxx.dll”已加载,但找不到入口点DLLRegisterServer。请确保xxx.dll为有效的DLL或OCX文件，然后重试。
+
 首先确保dll文件放在正确的位置：
 32位系统将dll文件放在C:\Windows\System32 文件夹内。64位系统将dll文件放在C:\Windows\System32 文件夹和C:\Windows\SysWOW64 文件夹内，保存两份。
+
 解决方案：
 1、方法一：win+r，打开运行菜单，输入regsvr32 xxx.dll
 2、方法二：在开始菜单中找到cmd命令行窗口，以管理员身份运行，在命令行中输入regsvr32 xxx.dll。
@@ -14,10 +16,11 @@
 可网上下载或复制我给的链接：链接：https://pan.baidu.com/s/1b5927YwPEMRfCewf4jD-qg
 提取码：9qmg 。
 无需安装，点击DirectX Repair.exe，点击检测并修复。即可修复丢失的dll文件。然后关机重启，再尝试前两个方法。
+
 4、方法四（终极方法）：在前三步骤均无效的方法，可以尝试这个方法。
 以管理员身份运行“命令提示符”粘贴以下命令并执行：
 dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\system32\*.dll) do %windir%\system32\regsvr32.exe /s %d
-1
+
 这个步骤是将在C:\Windows\System32 文件夹下的全部dll文件强行注册一遍。亲测可用，大约要等待几分钟。就可以正常使用xxx.dll文件。
 ————————————————版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。原文链接：https://blog.csdn.net/qq_42002500/article/details/109402354
 `
