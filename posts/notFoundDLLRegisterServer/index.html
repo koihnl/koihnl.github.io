@@ -24,7 +24,7 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
 
 // ----------------------------------------------------------------------------------------------------------
     ];
-    document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[0] + " | 锦鲤未离" }));
+    document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[1] + " | 锦鲤未离" }));
     document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
     const style = document.createElement('style');
     style.textContent = `
@@ -49,6 +49,7 @@ dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\
             font-family: auto; 
         } 
         body { 
+            max-width: 90%;
             width: 100%; 
             margin: 0 auto; 
             background-color: #fff; 
