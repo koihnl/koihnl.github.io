@@ -1,51 +1,76 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>模块已加载,但找不到入口点DLLRegisterServer | 锦鲤未离</title>
-    <script src="../../js/logo.js"></script>
-</head>
-
-<body>
-
-    <style>pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; font-size: 16px; font-family: auto; } #toc { max-width: 60%; position: fixed; top: 0; left: 0; background-color: #ffffffe0; padding: 10px; max-height: 90vh; overflow-y: auto; display: block; } mark { background-color: yellow; } .highlight { color: red; } body { max-width: 60%; width: 100%; margin: 0 auto; background-color: #faebd7; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); } @media (max-width: 768px) { body { max-width: 90%; } } </style>
-
-    <pre>
-模块已加载,但找不到入口点DLLRegisterServer
-通常在运行中注册动态库文件：regsvr32 xxx.dll （按回车键执行命令）都能顺利通过。
-
-但有时也会报出异常：
-
+<script>
+            document.addEventListener('DOMContentLoaded', () => {
+// ----------------------------------------------------------------------------------------------------------
+                const data = [ "未知", "模块已加载,但找不到入口点DLLRegisterServer", 
+`
+通常在运行中注册动态库文件：regsvr32 xxx.dll （按回车键执行命令）都能顺利通过，但有时也会报出异常：
 模块“xxx.dll”已加载,但找不到入口点DLLRegisterServer。请确保xxx.dll为有效的DLL或OCX文件，然后重试。
-
 首先确保dll文件放在正确的位置：
 32位系统将dll文件放在C:\Windows\System32 文件夹内。64位系统将dll文件放在C:\Windows\System32 文件夹和C:\Windows\SysWOW64 文件夹内，保存两份。
-
 解决方案：
 1、方法一：win+r，打开运行菜单，输入regsvr32 xxx.dll
 2、方法二：在开始菜单中找到cmd命令行窗口，以管理员身份运行，在命令行中输入regsvr32 xxx.dll。
 3、方法三：如果以上两种方法均不可行。下载DirectX修复工具。
 可网上下载或复制我给的链接：链接：https://pan.baidu.com/s/1b5927YwPEMRfCewf4jD-qg
 提取码：9qmg 。
-
 无需安装，点击DirectX Repair.exe，点击检测并修复。即可修复丢失的dll文件。然后关机重启，再尝试前两个方法。
-
 4、方法四（终极方法）：在前三步骤均无效的方法，可以尝试这个方法。
 以管理员身份运行“命令提示符”粘贴以下命令并执行：
-
 dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\system32\*.dll) do %windir%\system32\regsvr32.exe /s %d
 1
 这个步骤是将在C:\Windows\System32 文件夹下的全部dll文件强行注册一遍。亲测可用，大约要等待几分钟。就可以正常使用xxx.dll文件。
-————————————————
+————————————————版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。原文链接：https://blog.csdn.net/qq_42002500/article/details/109402354
+`
 
-                            版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
-                        
-原文链接：https://blog.csdn.net/qq_42002500/article/details/109402354
-    </pre>
-    <script> document.addEventListener('DOMContentLoaded', function () { let toc = document.getElementById('toc'); let tocList = document.getElementById('toc-list'); let headings = document.getElementsByTagName('h4'); let filterInput = document.getElementById('filter'); function generateToc(keyword = '') { tocList.innerHTML = ''; for (let i = 0; i < headings.length; i++) { let heading = headings[i]; let id = 'heading-' + i; heading.id = id; let paragraph = heading.nextElementSibling; if (paragraph && (paragraph.tagName.toLowerCase() === 'pre' || paragraph.tagName.toLowerCase() === 'ul' || paragraph.tagName.toLowerCase() === 'p')) { if (keyword === '' || heading.textContent.includes(keyword)) { let listItem = document.createElement('li'); let link = document.createElement('a'); link.href = '#' + id; let text = heading.textContent; let match = text.match(/(分类.+)/); if (match) { let highlightedText = match[1]; link.innerHTML = text.replace(highlightedText, `<span class="highlight">${highlightedText}</span>`); } else { link.textContent = text; } listItem.appendChild(link); tocList.appendChild(listItem); heading.innerHTML = text; if (keyword) { keyword = keyword.slice(3); heading.innerHTML = heading.innerHTML.replace(new RegExp(keyword, 'g'), `<mark>${keyword}</mark>`); } } else { heading.innerHTML = heading.textContent; } } } } generateToc(); filterInput.addEventListener('input', function () { let keyword = '分类：' + filterInput.value.trim(); generateToc(keyword); }); document.addEventListener('click', function (event) { if (!toc.contains(event.target) && event.target !== filterInput) { toc.style.display = (toc.style.display === 'none') ? 'block' : 'none'; } }); toc.addEventListener('click', function (event) { event.stopPropagation(); }); }); </script>
+// ----------------------------------------------------------------------------------------------------------
+    ];
+    document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[0] + " | 锦鲤未离" }));
+    document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
+    const style = document.createElement('style');
+    style.textContent = `
+        pre { 
+            white-space: pre-wrap; 
+            white-space: -moz-pre-wrap; 
+            white-space: -pre-wrap; 
+            white-space: -o-pre-wrap; 
+            word-wrap: break-word; 
+            font-size: 16px; 
+            font-family: auto; 
+        } 
+        #toc { 
+            max-width: 60%; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            background-color: #ffffffe0; 
+            padding: 10px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            display: block; 
+        } 
+        mark { 
+            background-color: yellow; 
+        } 
+        .highlight { 
+            color: red; 
+        } 
+        body { 
+            max-width: 55%; 
+            width: 100%; 
+            margin: 0 auto; 
+            background-color: #fff; 
+            padding: 20px; 
+        } 
+        @media (max-width: 768px) { 
+            body { 
+                max-width: 90%; 
+            } 
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
+    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
+    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
+});
 
-</body>
-
-</html>
+</script>
