@@ -77,7 +77,212 @@
                     <p id="days-jisuan" class="JinLiSeShiXianKuangKuang"></p>
                     <p id="ip-souxun" class="JinLiSeShiXianKuangKuang">正在获取访问者IP地址和地理位置...</p> 
 
+  <style>
 
+    .fake {
+      background-color: rgb(236, 236, 236);
+    }
+    .phonehead {
+      background-color: rgb(236, 236, 236);
+      height: 5%;
+      width: 100%;
+      font-size: 13px;
+      font-weight: 800;
+      overflow: auto;
+      padding: 5px 0;
+    }
+    .line1 {
+      width: 33%;
+      float: left;
+    }
+    .chathead {
+      background-color: rgb(236, 236, 236);
+      height: 13%;
+      width: 100%;
+      font-size: 18px;
+      font-weight: 800;
+      overflow: auto;
+      padding: 3px 0 3px 0;
+    }
+    .chat {
+      background-color: rgb(236, 236, 236);
+      height: 577px;
+      border-top: 1px solid rgb(214, 214, 214);
+      border-bottom: 1px solid rgb(214, 214, 214);
+      padding: 5px 0 0 0;
+    }
+    .avatar1 {
+      padding: 0 10px;
+      float: left;
+    }
+    .avatar1 img {
+      height: 45px;
+      border-radius: 4px;
+    }
+    .avatar2 {
+      padding: 0 10px;
+      float: left;
+    }
+    .avatar2 img {
+      height: 45px;
+      border-radius: 4px;
+    }
+    .dialog1 {
+      /* 左边儿的对话框 */
+      margin: 5px 3px;
+      float: left;
+      clear: both;
+    }
+    .dialog2 {
+      /* 右边儿的对话框 */
+      margin: 5px 3px;
+      float: right;
+      clear: both;
+    }
+    .word1 {
+      /* ref: https://blog.csdn.net/weixin_30379911/article/details/99922923 */
+      left: 3px;
+      min-width: 20px;
+      max-width: 240px;
+      background: white;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      font-size: 18px;
+      color: black;
+      word-break: break-word;
+      position: relative;
+      padding: 10px 14px;
+      float: left;
+    }
+    .word1::before {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: -12px;
+      top: 15px;
+      border: 6px solid;
+      border-color: transparent white transparent transparent;
+    }
+    .word2 {
+      right: 3px;
+      min-width: 20px;
+      max-width: 240px;
+      background: rgb(150 237 107);
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      font-size: 18px;
+      color: black;
+      word-break: break-word;
+      position: relative;
+      padding: 10px 14px;
+      float: left;
+    }
+    .word2::before {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      right: -12px;
+      top: 12px;
+      border: 6px solid;
+      border-color: transparent transparent transparent rgb(150 237 107);
+    }
+    .reply {
+      height: 58px;
+      background-color: rgb(245 245 245);
+    }
+
+
+</style>
+  <div class="fake" style="margin: 0 auto; width:400px">
+    <!-- 造假部分 -->
+    <div class="phonehead">
+      <!-- 手机自带头部 -->
+      <div class="line1" style="text-align: left;">
+        <!-- 1.1信号 -->
+        <div style="height: 100%; float: left; padding: 2px ; margin: 0 2px;">
+          <img src="img/信号.png" height="14px" />
+        </div>
+        <!-- 1.2运营商 -->
+        中国移动&nbsp;&nbsp;4G
+      </div>
+      <div class="line1" style="text-align: center;">
+        <!-- 2.时间 -->
+        16:04
+      </div>
+      <div class="line1" style="text-align: right;">
+        <!-- 3.电量 -->
+        <div
+          style="height: 100%; float: right; padding: 2px 0; margin: 0 2px;"
+        >
+          <img src="img/电量.png" height="14px" />
+        </div>
+      </div>
+    </div>
+    <div class="chathead">
+      <!-- 对话框头部 -->
+      <div class="line1" style="text-align: left;">
+        <div
+          style="height: 100%; float: left; padding: 2px ; margin: 0 15px;"
+        >
+          <img src="img/arrow.png" height="21px" />
+        </div>
+      </div>
+      <div class="line1" style="text-align: center;">
+        A同学
+      </div>
+      <div
+        class="line1"
+        style="text-align: right; margin-right:4px; width:30%;"
+      >
+        ···
+      </div>
+    </div>
+    <div class="chat">
+      <div class="dialog1">
+        <div class="avatar1"><img src="img/a.jpg" /></div>
+        <div class="word1">
+          你好啊，是「锦鲤未离」吗？你的邮箱是什么啊？
+        </div>
+      </div>
+      <div class="dialog2">
+        <div class="word2">
+          你好，我是！我的邮箱是koihnl@qq.com。
+        </div>
+        <div class="avatar2"><img src="img/B.jpg" /></div>
+      </div>
+      <div class="dialog1">
+        <div class="avatar1"><img src="img/a.jpg" /></div>
+        <div class="word1">
+          你的博客写的怎么样啦？
+        </div>
+      </div>
+      <div class="dialog2">
+        <div class="word2">
+          马马虎虎吧！我的博客分为两部分！
+          第一部分：小工具。
+          目前分有
+          第二部分：博文。
+          目前分有
+        </div>
+        <div class="avatar2"><img src="img/B.jpg" /></div>
+      </div>
+      <div class="dialog2">
+        <div class="word2">
+          噢，对了。喊个口号：“锦鲤握运，未离我韵”。
+        </div>
+        <div class="avatar2"><img src="img/B.jpg" /></div>
+      </div>
+    </div>
+    <div class="reply">
+      <div>
+        <img src="img/reply.png" width="400px" />
+      </div>
+    </div>
+  </div>
 
 
 
