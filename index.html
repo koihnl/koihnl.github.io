@@ -8,8 +8,8 @@
  
     <section id="main" class="main" style="padding-top: 0;"> 
         <div id="main-container" class="main-container" style="margin-top: 0;">
-            <div id="new_container" style="width: 100%;min-height: 100vh;padding: 40px 44px 0 40px; justify-content: center; display: flex; background: #fff;">
-               <style>.content {max-width: 60%;margin: 0 auto;}@media (max-width: 768px) {.content {max-width: 90%;}}</style>
+            <div id="new_container" style="width: 100%;min-height: 100vh;padding: 40px 44px 0 40px; justify-content: center; background: #fff;">
+               <style>.content {max-width: 60%;margin: 0 auto;}@media (max-width: 768px) {.content {max-width: 100%;}}</style>
                 <div class="content">
 <!-- ----------------------------------------Start---------------------------------------- -->
 <script>
@@ -37,118 +37,22 @@
 
   <style>
 
-    .fake {
-      background-color: rgb(236, 236, 236);
-    }
-    .phonehead {
-      background-color: rgb(236, 236, 236);
-      height: 5%;
-      width: 100%;
-      font-size: 13px;
-      font-weight: 800;
-      overflow: auto;
-      padding: 5px 0;
-    }
-    .line1 {
-      width: 33%;
-      float: left;
-    }
-    .chathead {
-      background-color: rgb(236, 236, 236);
-      height: 13%;
-      width: 100%;
-      font-size: 18px;
-      font-weight: 800;
-      overflow: auto;
-      padding: 3px 0 3px 0;
-    }
-    .chat {
-      background-color: rgb(236, 236, 236);
-      height: 577px;
-      border-top: 1px solid rgb(214, 214, 214);
-      border-bottom: 1px solid rgb(214, 214, 214);
-      padding: 5px 0 0 0;
-    }
-    .avatar1 {
-      padding: 0 10px;
-      float: left;
-    }
-    .avatar1 img {
-      height: 45px;
-      border-radius: 4px;
-    }
-    .avatar2 {
-      padding: 0 10px;
-      float: left;
-    }
-    .avatar2 img {
-      height: 45px;
-      border-radius: 4px;
-    }
-    .dialog1 {
-      margin: 5px 3px;
-      float: left;
-      clear: both;
-    }
-    .dialog2 {
-      margin: 5px 3px;
-      float: right;
-      clear: both;
-    }
-    .word1 {
-      left: 3px;
-      min-width: 20px;
-      max-width: 240px;
-      background: white;
-      -webkit-border-radius: 5px;
-      -moz-border-radius: 5px;
-      border-radius: 5px;
-      font-size: 18px;
-      color: black;
-      word-break: break-word;
-      position: relative;
-      padding: 10px 14px;
-      float: left;
-    }
-    .word1::before {
-      content: "";
-      position: absolute;
-      width: 0;
-      height: 0;
-      left: -12px;
-      top: 15px;
-      border: 6px solid;
-      border-color: transparent white transparent transparent;
-    }
-    .word2 {
-      right: 3px;
-      min-width: 20px;
-      max-width: 240px;
-      background: rgb(150 237 107);
-      -webkit-border-radius: 5px;
-      -moz-border-radius: 5px;
-      border-radius: 5px;
-      font-size: 18px;
-      color: black;
-      word-break: break-word;
-      position: relative;
-      padding: 10px 14px;
-      float: left;
-    }
-    .word2::before {
-      content: "";
-      position: absolute;
-      width: 0;
-      height: 0;
-      right: -12px;
-      top: 12px;
-      border: 6px solid;
-      border-color: transparent transparent transparent rgb(150 237 107);
-    }
-    .reply {
-      height: 58px;
-      background-color: rgb(245 245 245);
-    }
+    .fake {background-color: rgb(236, 236, 236);}
+    .phonehead {background-color: rgb(236, 236, 236);height: 5%;width: 100%;font-size: 13px;font-weight: 800;overflow: auto;padding: 5px 0;}
+    .line1 {width: 33%;float: left;}
+    .chathead {background-color: rgb(236, 236, 236);height: 13%;width: 100%;font-size: 18px;font-weight: 800;overflow: auto;padding: 3px 0 3px 0;}
+    .chat {background-color: rgb(236, 236, 236);height: 577px;border-top: 1px solid rgb(214, 214, 214);border-bottom: 1px solid rgb(214, 214, 214);padding: 5px 0 0 0;}
+    .avatar1 {padding: 0 10px;float: left;}
+    .avatar1 img {height: 45px;border-radius: 4px;}
+    .avatar2 {padding: 0 10px;float: left;}
+    .avatar2 img {height: 45px;border-radius: 4px;}
+    .dialog1 {margin: 5px 3px;float: left;clear: both;}
+    .dialog2 {margin: 5px 3px;float: right;clear: both;}
+    .word1 {left: 3px;min-width: 20px;max-width: 240px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .word1::before {content: "";position: absolute;width: 0;height: 0;left: -12px;top: 15px;border: 6px solid;border-color: transparent white transparent transparent;}
+    .word2 {right: 3px;min-width: 20px;max-width: 240px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .word2::before {content: "";position: absolute;width: 0;height: 0;right: -12px;top: 12px;border: 6px solid;border-color: transparent transparent transparent rgb(150 237 107);}
+    .reply {height: 58px;background-color: rgb(245 245 245);}
 
 
 </style>
@@ -187,11 +91,11 @@
            <p id="toolsContainer"></p>
           <p>第二部分：博文。</p>
           <p>目前分有
-           <p id="postsContainerBox">
-           <p id="postsContainer"></p>
+           <p id="postsContainerBox"></p>
+           <p id="postsContainer"></p></p>
            <details id="Post2024q" class="Post_2024q_Pointer_KoiHNL"></details>
-        </p>
-        </p>
+        
+        
         </div>
         <div class="avatar2"><img src="/imgs/avatar.jpg" /></div>
       </div>
