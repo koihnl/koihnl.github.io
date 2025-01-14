@@ -101,16 +101,18 @@
     </div>
 
 <script>
-   let previousWidth = window.innerWidth;
-const div = document.getElementById("word2");
+let previousWidth = window.innerWidth;
+const divs = document.querySelectorAll(".word2");
 
 window.addEventListener("resize", () => {
     const currentWidth = window.innerWidth;
     const widthDiff = currentWidth - previousWidth;
 
     if (widthDiff >= 2) {
-        const currentDivWidth = parseInt(window.getComputedStyle(div).width, 10);
-        div.style.width = `${currentDivWidth + Math.floor(widthDiff / 2)}px`;
+        divs.forEach((div) => {
+            const currentDivWidth = parseInt(window.getComputedStyle(div).width, 10);
+            div.style.width = `${currentDivWidth + Math.floor(widthDiff / 2)}px`;
+        });
         previousWidth = currentWidth;
     }
 });
