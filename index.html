@@ -35,9 +35,9 @@
     .chatbox .avatar1 img, .chatbox .avatar2 img {height: 45px;border-radius: 4px;}
     .chatbox .dialog1 {margin: 5px 3px;float: left;clear: both;}
     .chatbox .dialog2 {margin: 5px 3px;float: right;clear: both;}
-    .chatbox .word1 {left: 3px;min-width: 20px;max-width: 410px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word1 {left: 3px;min-width: 43px;max-width: 380px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
     .chatbox .word1::before {content: "";position: absolute;width: 0;height: 0;left: -12px;top: 15px;border: 6px solid;border-color: transparent white transparent transparent;}
-    .chatbox .word2 {right: 3px;min-width: 20px;max-width: 410px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word2 {right: 3px;min-width: 43px;max-width: 380px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
     .chatbox .word2::before {content: "";position: absolute;width: 0;height: 0;right: -12px;top: 12px;border: 6px solid;border-color: transparent transparent transparent rgb(150 237 107);}
     .inlineBlock_KoiHNL {display: inline-block; color: #ff7f50;} 
     .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50; text-decoration: underline;}
@@ -103,25 +103,21 @@
 <script>
 let previousWidth = window.innerWidth;
 const divs = document.querySelectorAll(".word2");
-
 window.addEventListener("resize", () => {
+    const numword = 2;
     const currentWidth = window.innerWidth;
     const widthDiff = currentWidth - previousWidth;
-
-    // 当窗口宽度变化了至少2px时触发
-    if (Math.abs(widthDiff) >= 2) {
+    if (Math.abs(widthDiff) >= numword) {
         divs.forEach((div) => {
             const currentDivWidth = parseInt(window.getComputedStyle(div).width, 10);
 
             if (widthDiff > 0) {
-                // 窗口增大时，div 宽度增加
-                div.style.width = `${currentDivWidth + Math.floor(widthDiff / 2)}px`;
+                div.style.width = `${currentDivWidth + Math.floor(widthDiff / numword)}px`;
             } else {
-                // 窗口缩小时，div 宽度减少
-                div.style.width = `${Math.max(currentDivWidth + Math.floor(widthDiff / 2), 0)}px`; // 确保宽度不小于0
+                div.style.width = `${Math.max(currentDivWidth + Math.floor(widthDiff / numword), 0)}px`; 
             }
         });
-        previousWidth = currentWidth; // 更新记录的宽度
+        previousWidth = currentWidth; 
     }
 });
 </script>
