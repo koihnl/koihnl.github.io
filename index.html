@@ -35,11 +35,11 @@
     .chatbox .avatar1 img, .chatbox .avatar2 img {height: 45px;border-radius: 4px;}
     .chatbox .dialog1 {margin: 5px 3px;float: left;clear: both;}
     .chatbox .dialog2 {margin: 5px 3px;float: right;clear: both;}
-    .chatbox .word1 {left: 3px;width: calc(300px + ((100vw - 300px) / 2));min-width: 43px;max-width: 351px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word1 {left: 3px;max-width: calc(300px + ((100vw - 300px) / 2));min-width: 43px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
     .chatbox .word1::before {content: "";position: absolute;width: 0;height: 0;left: -12px;top: 15px;border: 6px solid;border-color: transparent white transparent transparent;}
-    .chatbox .word2 {right: 3px;width: calc(300px + ((100vw - 300px) / 2));min-width: 43px;max-width: 488px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word2 {right: 3px;max-width: calc(300px + ((100vw - 300px) / 2));min-width: 43px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
     .chatbox .word2::before {content: "";position: absolute;width: 0;height: 0;right: -12px;top: 12px;border: 6px solid;border-color: transparent transparent transparent rgb(150 237 107);}
-     @media (max-width: 768px) {.chatbox .word1, .chatbox .word2 {width: calc(200px + ((100vw - 300px) / 2));}}
+     @media (max-width: 768px) {.chatbox .word1, .chatbox .word2 {max-width: calc(200px + ((100vw - 300px) / 2));}}
     .inlineBlock_KoiHNL {display: inline-block; color: #ff7f50;} 
     .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50; text-decoration: underline;}
     .Post_2024q_Pointer_KoiHNL {margin-top: 2px;cursor: pointer;color: #000;text-decoration: underline;}
