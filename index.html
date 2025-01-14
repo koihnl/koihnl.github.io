@@ -28,6 +28,7 @@
                     
 
   <style>
+    .yansehuanrao {background: linear-gradient(45deg, #ff00cc, #3333ff, #00ffcc, #ffff66, #ff6600);background-size: 300%;-webkit-background-clip: text;-webkit-text-fill-color: transparent;animation: flow 5s infinite linear;}
     .content {max-width: 60%;margin: 0 auto;}@media (max-width: 868px) {.content {max-width: 100%;}}
     .chatbox {background-color: rgb(236, 236, 236);height: 577px;padding: 5px 0 0 0;}
     .chatbox .avatar1, .chatbox .avatar2 {padding: 0 10px;float: left;}
@@ -40,10 +41,10 @@
     .chatbox .word1::before {content: "";position: absolute;width: 0;height: 0;left: -12px;top: 15px;border: 6px solid;border-color: transparent white transparent transparent;}
     .chatbox .word2::before {content: "";position: absolute;width: 0;height: 0;right: -12px;top: 12px;border: 6px solid;border-color: transparent transparent transparent rgb(150 237 107);}
      @media (max-width: 768px) {.chatbox .word {max-width: calc(200px + ((100vw - 300px) / 2));}}
-    .inlineBlock_KoiHNL {display: inline-block; color: #ff7f50;} 
-    .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50; text-decoration: underline;}
-    .Post_2024q_Pointer_KoiHNL {margin-top: 2px;cursor: pointer;color: #000;text-decoration: underline;}
+    .inlineBlock_KoiHNL, .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50;}
     .inlineBlock_KoiHNL:hover, .Post_2024q_Pointer_KoiHNL summary:hover{color: #b24224;}
+    .inlineBlock_KoiHNL {display: inline-block;} 
+    .Post_2024q_Pointer_KoiHNL {margin-top: 2px;cursor: pointer;color: #000;}
 </style>
 <div class="content">
     <div class="chatbox">
@@ -53,7 +54,7 @@
       </div>
        
       <div class="dialog2">
-        <div class="word2 word">你好，我是「锦鲤未离」，邮箱是「koihnl@qq.com」，个性签名是「锦鲤握运，未离我韵」</div>
+        <div class="word2 word">你好，我是<span class="yansehuanrao">「锦鲤未离」</span>，邮箱是「koihnl@qq.com」，个性签名是「锦鲤握运，未离我韵」</div>
         <div class="avatar2"><img src="/imgs/avatar.jpg" /></div>
       </div>
        
