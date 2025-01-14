@@ -9,8 +9,6 @@
     <section id="main" class="main" style="padding-top: 0;"> 
         <div id="main-container" class="main-container" style="margin-top: 0;background-color: rgb(236, 236, 236);">
             <div id="new_container" style="width: 100%;min-height: 100vh;padding: 40px 5px 0 5px; justify-content: center;">
-               <style>.content {max-width: 60%;margin: 0 auto;}@media (max-width: 768px) {.content {max-width: 100%;}}</style>
-                <div class="content">
 <!-- ----------------------------------------Start---------------------------------------- -->
 <script>
    const toolsLinks = [
@@ -30,38 +28,39 @@
                     
 
   <style>
+    .content {max-width: 60%;margin: 0 auto;}@media (max-width: 868px) {.content {max-width: 100%;}}
     .chatbox {background-color: rgb(236, 236, 236);height: 577px;padding: 5px 0 0 0;}
     .chatbox .avatar1, .chatbox .avatar2 {padding: 0 10px;float: left;}
     .chatbox .avatar1 img, .chatbox .avatar2 img {height: 45px;border-radius: 4px;}
     .chatbox .dialog1 {margin: 5px 3px;float: left;clear: both;}
     .chatbox .dialog2 {margin: 5px 3px;float: right;clear: both;}
-    .chatbox .word1 {left: 3px;max-width: 434px;min-width: 43px;background: white;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word {max-width: 434px;min-width: 43px;-webkit-border-radius: 5px;-moz-border-radius: 5px;color: black;border-radius: 5px;font-size: 18px;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
+    .chatbox .word1 {left: 3px;background: white;}
+    .chatbox .word2 {right: 3px;background: rgb(150 237 107);}
     .chatbox .word1::before {content: "";position: absolute;width: 0;height: 0;left: -12px;top: 15px;border: 6px solid;border-color: transparent white transparent transparent;}
-    .chatbox .word2 {right: 3px;max-width: 434px;min-width: 43px;background: rgb(150 237 107);-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;font-size: 18px;color: black;word-break: break-word;position: relative;padding: 10px 14px;float: left;}
     .chatbox .word2::before {content: "";position: absolute;width: 0;height: 0;right: -12px;top: 12px;border: 6px solid;border-color: transparent transparent transparent rgb(150 237 107);}
-     @media (max-width: 768px) {.chatbox .word1, .chatbox .word2 {max-width: calc(200px + ((100vw - 300px) / 2));}}
+     @media (max-width: 768px) {.chatbox .word {max-width: calc(200px + ((100vw - 300px) / 2));}}
     .inlineBlock_KoiHNL {display: inline-block; color: #ff7f50;} 
     .Post_2024q_Pointer_KoiHNL summary {color: #ff7f50; text-decoration: underline;}
     .Post_2024q_Pointer_KoiHNL {margin-top: 2px;cursor: pointer;color: #000;text-decoration: underline;}
     .inlineBlock_KoiHNL:hover, .Post_2024q_Pointer_KoiHNL summary:hover{color: #b24224;}
-
-
 </style>
+<div class="content">
     <div class="chatbox">
       <div class="dialog1">
         <div class="avatar1"><img src="#" /></div>
-        <div class="word1">你好啊，你是？</div>
+        <div class="word1 word">你好啊，你是？</div>
       </div>
       <div class="dialog2">
-        <div class="word2">你好，我是「锦鲤未离」，邮箱是「koihnl@qq.com」，个性签名是「锦鲤握运，未离我韵」</div>
+        <div class="word2 word">你好，我是「锦鲤未离」，邮箱是「koihnl@qq.com」，个性签名是「锦鲤握运，未离我韵」</div>
         <div class="avatar2"><img src="/imgs/avatar.jpg" /></div>
       </div>
       <div class="dialog1">
         <div class="avatar1"><img src="#" /></div>
-        <div class="word1">你的博客写的怎么样啦？</div>
+        <div class="word1 word">你的博客写的怎么样啦？</div>
       </div>
       <div class="dialog2">
-        <div class="word2">
+        <div class="word2 word">
           马马虎虎吧！我的博客分为两部分！
           <p>第一部分：小工具。</p>
           <p>目前分有</p>
@@ -70,22 +69,19 @@
           <p>目前分有</p>
            <p id="postsContainer"></p>
            <details id="Post2024q" class="Post_2024q_Pointer_KoiHNL"></details>
-           
-        
-        
         </div>
         <div class="avatar2"><img src="/imgs/avatar.jpg" /></div>
       </div>
  
       <div class="dialog1">
         <div class="avatar1"><img src="#" /></div>
-        <div class="word1">
+        <div class="word1 word">
            好哦。我也推荐几个链接：<br>
            - <a href="https://blog.feifeige.top/">飞飞哥博客</a>
         </div>
       </div>
       <div class="dialog2">
-        <div class="word2">OK！另外：<br>
+        <div class="word2 word">OK！另外：<br>
            <p id="update-date">最后修改时间：2024年12月13日</p>
            <p id="days-jisuan"></p>
            <p id="ip-souxun">正在获取访问者IP地址和地理位置...</p> 
@@ -104,10 +100,10 @@
 
 
 
-                  
+</div>               
 <!-- ----------------------------------------End---------------------------------------- -->
                     
-                </div>
+                
             </div>
         </div>    
     </section>
