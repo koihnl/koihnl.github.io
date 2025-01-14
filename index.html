@@ -108,12 +108,20 @@ window.addEventListener("resize", () => {
     const currentWidth = window.innerWidth;
     const widthDiff = currentWidth - previousWidth;
 
-    if (widthDiff >= 2) {
+    // 当窗口宽度变化了至少2px时触发
+    if (Math.abs(widthDiff) >= 2) {
         divs.forEach((div) => {
             const currentDivWidth = parseInt(window.getComputedStyle(div).width, 10);
-            div.style.width = `${currentDivWidth + Math.floor(widthDiff / 2)}px`;
+
+            if (widthDiff > 0) {
+                // 窗口增大时，div 宽度增加
+                div.style.width = `${currentDivWidth + Math.floor(widthDiff / 2)}px`;
+            } else {
+                // 窗口缩小时，div 宽度减少
+                div.style.width = `${Math.max(currentDivWidth + Math.floor(widthDiff / 2), 0)}px`; // 确保宽度不小于0
+            }
         });
-        previousWidth = currentWidth;
+        previousWidth = currentWidth; // 更新记录的宽度
     }
 });
 </script>
