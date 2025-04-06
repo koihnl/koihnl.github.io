@@ -9,7 +9,7 @@
     <style>
          :root {
             --primary-color: #2c3e50;
-            --secondary-color: #b44b22;
+            --secondary-color: #2BC4AF;
         }
         
         body {
@@ -138,7 +138,7 @@
         </div>
         <div class="action-buttons">
             <button onclick="copyToClipboard()">复制内容</button>
-            <button onclick="exportTxt()">导出TXT</button>
+            <button onclick="exportTxt()">导出文本</button>
             <button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button>
             <button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button>
         </div>
@@ -149,10 +149,11 @@
     <button class="add-button" onclick="addEntry()">➕ 新增记录</button>
 
     <div class="footer-container">
-        <div style="margin-bottom: 10px;">常用短语：</div>
+        <div style="margin-bottom: 10px;">常用词组：</div>
         <div class="action-buttons">
-            <button onclick="insertPhrase('送文')">送文</button>
-            <button onclick="insertPhrase('开会：《》')">开会</button>
+            <button onclick="insertPhrase('-送文。')">送文</button>
+            <button onclick="insertPhrase('-开会：《》')">开会</button>
+            <button onclick="insertPhrase('-毕。')">毕</button>
         </div>
     </div>
 
