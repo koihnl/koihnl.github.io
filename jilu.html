@@ -3,96 +3,109 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>智能每日记录系统</title>
+    <title>每日记录系统</title>
     <style>
          :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
-            --background-color: #f9f9f9;
         }
         
         body {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 0;
+            padding: 70px 20px 150px;
             font-family: 'Microsoft YaHei', sans-serif;
-            background-color: var(--background-color);
+            min-height: 100vh;
+            box-sizing: border-box;
+            background: #f8f9fa;
         }
+        /* 固定头部 */
         
-        .header {
+        .header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
+        /* 主内容区 */
         
-        .date-header {
-            font-family: '黑体', 'SimHei', sans-serif;
-            font-size: 24px;
-            color: var(--primary-color);
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 0;
         }
-        
-        .nav-buttons button {
-            padding: 8px 15px;
-            margin-left: 10px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        hr {
-            border: 0;
-            border-top: 2px solid var(--primary-color);
-            margin: 20px 0;
-        }
+        /* 时间块样式 */
         
         .time-block {
             display: flex;
-            margin: 15px 0;
-            transition: transform 0.2s;
-        }
-        
-        .time-block:hover {
-            transform: translateX(5px);
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            scroll-margin: 100px;
         }
         
         .time {
-            font-family: '楷体', 'KaiTi', cursive;
+            font-family: monospace;
             width: 80px;
-            margin-right: 20px;
             color: var(--primary-color);
+            padding-top: 4px;
         }
         
         .content {
-            font-family: '仿宋', 'FangSong', serif;
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
+            border: none;
+            padding: 5px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: none;
             min-height: 60px;
         }
+        /* 固定底部 */
         
-        .common-phrases {
-            margin-top: 30px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
+        .footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
+        /* 新增按钮 */
         
-        .phrase-buttons {
+        .add-button {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            z-index: 2000;
+        }
+        /* 功能按钮组 */
+        
+        .action-buttons {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
+            margin-top: 10px;
         }
         
         button {
-            padding: 8px 15px;
-            background-color: var(--secondary-color);
+            background: var(--secondary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            padding: 8px 15px;
             cursor: pointer;
             transition: opacity 0.2s;
         }
@@ -100,54 +113,45 @@
         button:hover {
             opacity: 0.9;
         }
+        /* 添加危险按钮样式 */
         
-        .export-section {
-            margin-top: 30px;
-            text-align: center;
+        button[style*="background-color: #ff4757"] {
+            background-color: #ff4757 !important;
+            transition: all 0.3s;
         }
         
-        .stats {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        button[style*="background-color: #ff4757"]:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <div class="date-header" id="dateHeader"></div>
-        <div class="nav-buttons">
-            <button onclick="changeDate(-1)">前一天</button>
-            <button onclick="changeDate(1)">后一天</button>
+    <div class="header-container">
+        <div>
+            <span id="dateHeader" style="font-size: 20px; margin-right: 15px;"></span>
+            <button onclick="changeDate(-1)">← 前一天</button>
+            <button onclick="changeDate(1)">后一天 →</button>
         </div>
-    </div>
-    <hr>
-    <div class="stats" id="stats"></div>
-    <div id="entries"></div>
-    <button onclick="addEntry()">➕ 新增记录块</button>
-
-    <div class="common-phrases">
-        <h3>📝 常用短语：</h3>
-        <div class="phrase-buttons">
-            <button onclick="insertPhrase('今日工作进展：')">工作进展</button>
-            <button onclick="insertPhrase('需要注意：')">注意事项</button>
-            <button onclick="insertPhrase('明日计划：')">明日计划</button>
-            <button onclick="insertPhrase('会议记录：')">会议记录</button>
-            <button onclick="insertPhrase('临时任务：')">临时任务</button>
+        <div class="action-buttons">
+            <button onclick="exportTxt()">导出TXT</button>
+            <button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button>
+            <button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button>
         </div>
     </div>
 
-    <div class="export-section">
-        <button onclick="exportDoc()">📤 导出Word文档</button>
-        <button onclick="backupData()">💾 备份数据</button>
-        <button onclick="restoreData()">📥 恢复数据</button>
-    </div>
+    <div class="main-content" id="entries"></div>
 
-    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <button class="add-button" onclick="addEntry()">➕ 新增记录</button>
+
+    <div class="footer-container">
+        <div style="margin-bottom: 10px;">常用短语：</div>
+        <div class="action-buttons">
+            <button onclick="insertPhrase('今日进展：')">送文</button>
+            <button onclick="insertPhrase('开会：《》，')">开会</button>
+        </div>
+    </div>
 
     <script>
         let currentDate = new Date();
@@ -157,11 +161,15 @@
         function init() {
             updateDateDisplay();
             loadData();
-            updateStats();
-            setInterval(autoSave, 30000); // 30秒自动保存
+            setInterval(() => {
+                localStorage.setItem(getDateKey(currentDate), JSON.stringify({
+                    entries: entries,
+                    updatedAt: new Date().toISOString()
+                }));
+            }, 30000);
         }
 
-        // 日期处理相关函数
+        // 日期处理
         function formatDate(date) {
             return `${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;
         }
@@ -174,68 +182,69 @@
             return num.toString().padStart(2, '0');
         }
 
-        // 数据存储相关函数
+        // 数据存储
         function saveData() {
-            const data = {
+            localStorage.setItem(getDateKey(currentDate), JSON.stringify({
                 entries: entries,
                 updatedAt: new Date().toISOString()
-            };
-            localStorage.setItem(getDateKey(currentDate), JSON.stringify(data));
+            }));
         }
 
         function loadData() {
             const data = localStorage.getItem(getDateKey(currentDate));
             entries = data ? JSON.parse(data).entries : [];
             renderEntries();
-            if (entries.length === 0) addEntry();
         }
-
-        // 界面渲染函数
-        function renderEntries() {
-            const container = document.getElementById('entries');
-            container.innerHTML = '';
-
-            entries.forEach((entry, index) => {
-                const entryDiv = document.createElement('div');
-                entryDiv.className = 'time-block';
-                entryDiv.innerHTML = `
-                    <div class="time">${entry.time}</div>
-                    <textarea class="content" rows="2">${entry.content}</textarea>
-                    <button class="delete-btn" onclick="deleteEntry(${index})">×</button>
-                `;
-
-                const textarea = entryDiv.querySelector('textarea');
-                textarea.addEventListener('input', () => {
-                    entries[index].content = textarea.value;
-                    saveData();
-                    updateStats();
-                });
-
-                container.appendChild(entryDiv);
-            });
-        }
-
-        // 核心功能函数
+        // 修改 addEntry 函数
         function addEntry() {
             const time = new Date().toLocaleTimeString('zh-CN', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            entries.push({
+            // 使用 unshift 替代 push，将新条目添加到数组开头
+            entries.unshift({
                 time,
                 content: ''
             });
             renderEntries();
             saveData();
-            updateStats();
+
+            // 自动滚动到顶部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
+        // 修改 renderEntries 函数
+        function renderEntries() {
+            const container = document.getElementById('entries');
+            container.innerHTML = '';
+
+            // 使用反向循环实现新条目在上方
+            entries.forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'time-block';
+                entryDiv.innerHTML = `
+            <div class="time">${entry.time}</div>
+            <textarea class="content" rows="2">${entry.content}</textarea>
+            <button onclick="deleteEntry(${index})" style="margin-left: 10px;">删除</button>
+        `;
+
+                entryDiv.querySelector('textarea').addEventListener('input', (e) => {
+                    entries[index].content = e.target.value;
+                    saveData();
+                });
+
+                container.appendChild(entryDiv);
+            });
+        }
+        // 修改后的deleteEntry函数（已有）
         function deleteEntry(index) {
-            if (confirm('确定要删除这个记录吗？')) {
+            if (confirm('确定要删除此条记录吗？')) {
                 entries.splice(index, 1);
                 renderEntries();
                 saveData();
-                updateStats();
             }
         }
 
@@ -243,118 +252,85 @@
             currentDate.setDate(currentDate.getDate() + offset);
             updateDateDisplay();
             loadData();
-            updateStats();
         }
 
-        // 辅助功能函数
+        // 辅助功能
         function updateDateDisplay() {
             document.getElementById('dateHeader').textContent = formatDate(currentDate);
         }
 
-        function updateStats() {
-            const totalEntries = entries.length;
-            const totalChars = entries.reduce((sum, entry) => sum + entry.content.length, 0);
-            document.getElementById('stats').innerHTML = `
-                📊 统计：今日记录块 ${totalEntries} 个，总字数 ${totalChars}
-            `;
-        }
-
         function insertPhrase(phrase) {
             if (entries.length === 0) addEntry();
-            const lastEntry = entries[entries.length - 1];
-            lastEntry.content += phrase;
+
+            // 获取第一个条目（最新条目）
+            const firstEntry = entries[0];
+            firstEntry.content += phrase;
+
+            // 更新界面和保存数据
             renderEntries();
             saveData();
-        }
 
-        // 数据备份/恢复功能
-        function backupData() {
-            const allData = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    allData[key] = localStorage.getItem(key);
-                }
-            }
-            const blob = new Blob([JSON.stringify(allData)], {
-                type: 'application/json'
+            // 自动滚动到顶部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
-            saveAs(blob, `daily-records-backup-${new Date().toISOString().slice(0,10)}.json`);
         }
 
-        function restoreData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const data = JSON.parse(reader.result);
-                    Object.keys(data).forEach(key => {
-                        localStorage.setItem(key, data[key]);
-                    });
-                    alert('数据恢复成功！');
-                    location.reload();
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
+        // 数据导出
+        function exportTxt() {
+            const dateStr = formatDate(currentDate);
+            let content = `${dateStr}\n${'='.repeat(30)}\n\n`;
 
-        // 导出功能
-        async function exportDoc() {
-            const doc = new docx.Document();
-
-            // 标题部分
-            doc.addSection({
-                children: [
-                    new docx.Paragraph({
-                        text: formatDate(currentDate),
-                        heading: docx.HeadingLevel.HEADING_1,
-                        font: '黑体'
-                    }),
-                    new docx.Paragraph({
-                        text: "",
-                        border: {
-                            bottom: {
-                                color: "auto",
-                                space: 1,
-                                style: "single",
-                                size: 6
-                            }
-                        }
-                    })
-                ]
-            });
-
-            // 内容部分
             entries.forEach(entry => {
-                doc.addSection({
-                    children: [
-                        new docx.Paragraph({
-                            children: [
-                                new docx.TextRun({
-                                    text: entry.time,
-                                    font: '楷体'
-                                }),
-                                new docx.TextRun({
-                                    text: "\t" + entry.content,
-                                    font: '仿宋'
-                                })
-                            ],
-                            spacing: {
-                                after: 200
-                            }
-                        })
-                    ]
-                });
+                content += `[${entry.time}] ${entry.content.replace(/\n/g, ' ')}\n\n`;
             });
 
-            // 生成文件
-            const blob = await docx.Packer.toBlob(doc);
-            saveAs(blob, `${formatDate(currentDate)}.docx`);
+            const blob = new Blob([content], {
+                type: 'text/plain;charset=utf-8'
+            });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${dateStr}.txt`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
         }
+
+        // 删除
+
+        function deleteCurrentDayData() {
+            if (confirm('确定要删除本日所有记录吗？此操作不可撤销！')) {
+                const key = getDateKey(currentDate);
+                localStorage.removeItem(key);
+                entries = [];
+                renderEntries();
+                alert('已成功删除本日记录');
+            }
+        }
+
+        function deleteAllData() {
+            if (confirm('即将永久删除所有记录！\n\n此操作不可恢复！\n确认要继续吗？')) {
+                // 获取所有日期键
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+                        keys.push(key);
+                    }
+                }
+
+                // 批量删除
+                keys.forEach(key => localStorage.removeItem(key));
+
+                // 清空当前数据
+                entries = [];
+                renderEntries();
+                alert(`已删除全部数据，共清理 ${keys.length} 天的记录`);
+            }
+        }
+
+
+
 
         // 初始化
         init();
