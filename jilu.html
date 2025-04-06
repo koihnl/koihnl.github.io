@@ -4,11 +4,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>每日记录系统</title>
+    <title>每日记录系统 | 锦鲤未离</title>
     <style>
          :root {
             --primary-color: #2c3e50;
-            --secondary-color: #3498db;
+            --secondary-color: #b44b22;
         }
         
         body {
@@ -39,7 +39,7 @@
         .main-content {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px 0;
+            padding: 60px 0;
         }
         /* 时间块样式 */
         
@@ -131,12 +131,13 @@
 <body>
     <div class="header-container">
         <div>
-            <span id="dateHeader" style="font-size: 20px; margin-right: 15px;"></span>
-            <button onclick="changeDate(-1)">← 前一天</button>
-            <button onclick="changeDate(1)">后一天 →</button>
+            <input type="date" id="datePicker" style="border: 0; font-size: 16px; margin-right: 15px; padding: 3px; font-weight: bold; cursor: pointer;">
+            <button onclick="changeDate(-1)">前一天</button>
+            <button onclick="changeDate(1)">后一天</button>
         </div>
         <div class="action-buttons">
             <button onclick="exportTxt()">导出TXT</button>
+            <button onclick="copyToClipboard()">复制内容</button>
             <button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button>
             <button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button>
         </div>
@@ -149,8 +150,8 @@
     <div class="footer-container">
         <div style="margin-bottom: 10px;">常用短语：</div>
         <div class="action-buttons">
-            <button onclick="insertPhrase('今日进展：')">送文</button>
-            <button onclick="insertPhrase('开会：《》，')">开会</button>
+            <button onclick="insertPhrase('送文')">送文</button>
+            <button onclick="insertPhrase('开会：《》')">开会</button>
         </div>
     </div>
 
@@ -170,19 +171,32 @@
             }, 30000);
         }
 
-        // 日期处理
+        // 辅助功能：日期处理
         function formatDate(date) {
             return `${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;
         }
-
+        // 辅助功能：日期处理
         function getDateKey(date) {
             return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
         }
-
+        // 辅助功能：补零处理
         function pad(num) {
             return num.toString().padStart(2, '0');
         }
+        // 
+        function updateDateDisplay() {
+            const dateString = `${currentDate.getFullYear()}-${pad(currentDate.getMonth()+1)}-${pad(currentDate.getDate())}`;
+            document.getElementById('datePicker').value = dateString;
+        }
 
+        // 辅助功能：日期选择事件监听
+        document.getElementById('datePicker').addEventListener('change', function(e) {
+            const selectedDate = new Date(e.target.value);
+            currentDate.setFullYear(selectedDate.getFullYear());
+            currentDate.setMonth(selectedDate.getMonth());
+            currentDate.setDate(selectedDate.getDate());
+            loadData();
+        });
         // 数据存储
         function saveData() {
             localStorage.setItem(getDateKey(currentDate), JSON.stringify({
@@ -190,39 +204,34 @@
                 updatedAt: new Date().toISOString()
             }));
         }
-
+        // 数据加载
         function loadData() {
             const data = localStorage.getItem(getDateKey(currentDate));
             entries = data ? JSON.parse(data).entries : [];
             renderEntries();
         }
-        // 修改 addEntry 函数
+        // Button：添加
         function addEntry() {
             const time = new Date().toLocaleTimeString('zh-CN', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            // 使用 unshift 替代 push，将新条目添加到数组开头
             entries.unshift({
                 time,
                 content: ''
             });
             renderEntries();
             saveData();
-
-            // 自动滚动到顶部
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
         }
 
-        // 修改 renderEntries 函数
+        // 添加功能函数
         function renderEntries() {
             const container = document.getElementById('entries');
             container.innerHTML = '';
-
-            // 使用反向循环实现新条目在上方
             entries.forEach((entry, index) => {
                 const entryDiv = document.createElement('div');
                 entryDiv.className = 'time-block';
@@ -240,7 +249,70 @@
                 container.appendChild(entryDiv);
             });
         }
-        // 修改后的deleteEntry函数（已有）
+
+        // Button：改变时间
+        function changeDate(offset) {
+            currentDate.setDate(currentDate.getDate() + offset);
+            updateDateDisplay();
+            loadData();
+        }
+
+
+        // Button：常用词组
+        function insertPhrase(phrase) {
+            if (entries.length === 0) addEntry();
+            const firstEntry = entries[0];
+            firstEntry.content += phrase;
+            renderEntries();
+            saveData();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Button：数据导出
+        function exportTxt() {
+            const dateStr = formatDate(currentDate);
+            let content = `${'='.repeat(30)}\n${dateStr}\n`;
+
+            entries.forEach(entry => {
+                content += `[${entry.time}] ${entry.content.replace(/\n/g, ' ')}\n`;
+            });
+
+            const blob = new Blob([content], {
+                type: 'text/plain;charset=utf-8'
+            });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${dateStr}工作.txt`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+        }
+
+        // Button：数据复制
+        function copyToClipboard() {
+            const dateStr = formatDate(currentDate);
+            let content = `${'='.repeat(30)}\n${dateStr}\n`;
+
+            entries.forEach(entry => {
+                content += `[${entry.time}] ${entry.content.replace(/\n/g, ' ')}\n`;
+            });
+
+            navigator.clipboard.writeText(content)
+                .then(() => {})
+                .catch(err => {
+                    console.error('复制失败:', err);
+                    const textarea = document.createElement('textarea');
+                    textarea.value = content;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                });
+        }
+
+        // Button：删除，单项、一天、全部
         function deleteEntry(index) {
             if (confirm('确定要删除此条记录吗？')) {
                 entries.splice(index, 1);
@@ -249,63 +321,12 @@
             }
         }
 
-        function changeDate(offset) {
-            currentDate.setDate(currentDate.getDate() + offset);
-            updateDateDisplay();
-            loadData();
-        }
-
-        // 辅助功能
-        function updateDateDisplay() {
-            document.getElementById('dateHeader').textContent = formatDate(currentDate);
-        }
-
-        function insertPhrase(phrase) {
-            if (entries.length === 0) addEntry();
-
-            // 获取第一个条目（最新条目）
-            const firstEntry = entries[0];
-            firstEntry.content += phrase;
-
-            // 更新界面和保存数据
-            renderEntries();
-            saveData();
-
-            // 自动滚动到顶部
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        // 数据导出
-        function exportTxt() {
-            const dateStr = formatDate(currentDate);
-            let content = `${dateStr}\n${'='.repeat(30)}\n\n`;
-
-            entries.forEach(entry => {
-                content += `[${entry.time}] ${entry.content.replace(/\n/g, ' ')}\n\n`;
-            });
-
-            const blob = new Blob([content], {
-                type: 'text/plain;charset=utf-8'
-            });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${dateStr}.txt`;
-            link.click();
-            setTimeout(() => URL.revokeObjectURL(link.href), 100);
-        }
-
-        // 删除
-
         function deleteCurrentDayData() {
             if (confirm('确定要删除本日所有记录吗？此操作不可撤销！')) {
                 const key = getDateKey(currentDate);
                 localStorage.removeItem(key);
                 entries = [];
                 renderEntries();
-                alert('已成功删除本日记录');
             }
         }
 
@@ -319,14 +340,9 @@
                         keys.push(key);
                     }
                 }
-
-                // 批量删除
                 keys.forEach(key => localStorage.removeItem(key));
-
-                // 清空当前数据
                 entries = [];
                 renderEntries();
-                alert(`已删除全部数据，共清理 ${keys.length} 天的记录`);
             }
         }
 
