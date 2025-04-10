@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泡馍点餐系统</title>
+    <!-- 引入html2canvas库 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            background-color: #f5f5f5;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 120px;
+            background-color: #fff;
+            overflow-y: auto;
+            box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-item {
+            padding: 15px 10px;
+            font-size: 14px;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+        
+        .sidebar-item.active {
+            border-left: 4px solid #ff6b00;
+            font-weight: bold;
+            background-color: #fff8f0;
+        }
+        
+        .sidebar-item.recommend {
+            color: #ff6b00;
+        }
+        
+        .content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 15px;
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dish {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .dish:last-child {
+            border-bottom: none;
+        }
+        
+        .dish-info {
+            flex: 1;
+        }
+        
+        .dish-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .dish-desc {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .dish-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            min-width: 80px;
+        }
+        
+        .current-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+        
+        .dish-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .quantity {
+            margin: 0 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff6b00;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 10px rgba(255, 107, 0, 0.3);
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff0000;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .order-total {
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .export-btn {
+            background-color: #ff6b00;
+            color: white;
+        }
+        
+        .close-btn {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .share-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="content-container">
+        <div class="section-title" id="currentSectionTitle"></div>
+        <div class="content" id="content"></div>
+    </div>
+
+    <div class="cart">
+        🛒
+        <div class="cart-badge">0</div>
+    </div>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content" id="modalContent">
+            <div class="modal-title">您的订单</div>
+            <div id="orderItems"></div>
+            <div class="order-total" id="orderTotal">总计：￥0</div>
+            <div class="modal-actions">
+                <button class="modal-btn close-btn" id="closeModal">关闭</button>
+                <button class="modal-btn export-btn" id="exportImg">导出图片</button>
+                <button class="modal-btn share-btn" id="shareOrder">分享订单</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 菜单数据
+        const menuData = {
+            categories: [{
+                id: "recommend",
+                name: "推荐菜品",
+                title: "招牌推荐",
+                items: [{
+                    name: "羊肉泡馍",
+                    desc: "传统口味，汤鲜味美",
+                    price: 23
+                }, {
+                    name: "牛肉泡馍",
+                    desc: "精选牛肉，肉质鲜嫩",
+                    price: 25
+                }, {
+                    name: "三鲜泡馍",
+                    desc: "海鲜风味，清淡可口",
+                    price: 20
+                }]
+            }, {
+                id: "special",
+                name: "特色菜品",
+                title: "特色美食",
+                items: [{
+                    name: "酸辣泡馍",
+                    desc: "酸辣开胃，风味独特",
+                    price: 22
+                }, {
+                    name: "麻辣泡馍",
+                    desc: "麻辣鲜香，回味无穷",
+                    price: 24
+                }]
+            }, {
+                id: "setmeal",
+                name: "套餐系列",
+                title: "超值套餐",
+                items: [{
+                    name: "单人套餐",
+                    desc: "泡馍+小菜+饮料",
+                    price: 30
+                }, {
+                    name: "双人套餐",
+                    desc: "两份泡馍+两份小菜+两杯饮料",
+                    price: 55
+                }]
+            }]
+        };
+
+        // 初始化页面
+        function initPage() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            // 生成导航菜单
+            menuData.categories.forEach((category, index) => {
+                const navItem = document.createElement('div');
+                navItem.className = `sidebar-item ${index === 0 ? 'active recommend' : ''}`;
+                navItem.textContent = category.name;
+                navItem.setAttribute('data-section', category.id);
+                sidebar.appendChild(navItem);
+            });
+
+            // 生成内容区域
+            menuData.categories.forEach(category => {
+                const section = document.createElement('div');
+                section.className = 'section';
+                section.id = category.id;
+                section.style.display = category.id === 'recommend' ? 'block' : 'none';
+
+                if (category.title) {
+                    const title = document.createElement('div');
+                    title.className = 'section-title';
+                    title.textContent = category.title;
+                    section.appendChild(title);
+                }
+
+                category.items.forEach((item, index) => {
+                    const dish = document.createElement('div');
+                    dish.className = 'dish';
+
+                    const dishInfo = document.createElement('div');
+                    dishInfo.className = 'dish-info';
+
+                    const dishName = document.createElement('div');
+                    dishName.className = 'dish-name';
+                    dishName.textContent = item.name;
+
+                    const dishDesc = document.createElement('div');
+                    dishDesc.className = 'dish-desc';
+                    dishDesc.textContent = item.desc || '';
+
+                    dishInfo.appendChild(dishName);
+                    dishInfo.appendChild(dishDesc);
+
+                    const dishPrice = document.createElement('div');
+                    dishPrice.className = 'dish-price';
+
+                    const currentPrice = document.createElement('div');
+                    currentPrice.className = 'current-price';
+                    currentPrice.textContent = `￥${item.price}`;
+                    dishPrice.appendChild(currentPrice);
+
+                    const controls = document.createElement('div');
+                    controls.className = 'dish-controls';
+
+                    const minusBtn = document.createElement('button');
+                    minusBtn.className = 'quantity-btn minus';
+                    minusBtn.textContent = '-';
+
+                    const quantity = document.createElement('span');
+                    quantity.className = 'quantity';
+                    quantity.textContent = '0';
+
+                    const plusBtn = document.createElement('button');
+                    plusBtn.className = 'quantity-btn plus';
+                    plusBtn.textContent = '+';
+
+                    controls.appendChild(minusBtn);
+                    controls.appendChild(quantity);
+                    controls.appendChild(plusBtn);
+                    dishPrice.appendChild(controls);
+
+                    dish.appendChild(dishInfo);
+                    dish.appendChild(dishPrice);
+                    section.appendChild(dish);
+                });
+
+                content.appendChild(section);
+            });
+
+            // 设置初始标题
+            document.getElementById('currentSectionTitle').textContent = menuData.categories[0].title || '';
+        }
+
+        // 导航切换
+        function setupNavigation() {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const sections = document.querySelectorAll('.section');
+            const currentSectionTitle = document.getElementById('currentSectionTitle');
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const sectionId = item.getAttribute('data-section');
+                    const category = menuData.categories.find(c => c.id === sectionId);
+
+                    // 更新导航激活状态
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // 更新当前标题
+                    currentSectionTitle.textContent = (category && category.title) || '';
+
+                    // 显示对应内容区
+                    sections.forEach(section => section.style.display = 'none');
+                    document.getElementById(sectionId).style.display = 'block';
+                });
+            });
+        }
+
+        // 购物车功能
+        function setupCart() {
+            const cart = {};
+            const cartBadge = document.querySelector('.cart-badge');
+            const cartBtn = document.querySelector('.cart');
+            const orderModal = document.getElementById('orderModal');
+            const orderItems = document.getElementById('orderItems');
+            const orderTotal = document.getElementById('orderTotal');
+            const closeModal = document.getElementById('closeModal');
+            const exportImg = document.getElementById('exportImg');
+            const shareOrder = document.getElementById('shareOrder');
+
+            // 初始化菜品数量控制
+            document.querySelectorAll('.dish').forEach((dish, index) => {
+                const minusBtn = dish.querySelector('.minus');
+                const plusBtn = dish.querySelector('.plus');
+                const quantity = dish.querySelector('.quantity');
+                const dishName = dish.querySelector('.dish-name').textContent;
+                const priceElement = dish.querySelector('.current-price');
+
+                if (priceElement && priceElement.textContent) {
+                    const priceText = priceElement.textContent;
+                    const currentPrice = parseFloat(priceText.replace('￥', ''));
+
+                    // 初始化购物车中的菜品
+                    cart[index] = {
+                        name: dishName,
+                        price: currentPrice,
+                        quantity: 0
+                    };
+
+                    // 减按钮
+                    if (minusBtn) {
+                        minusBtn.addEventListener('click', () => {
+                            if (cart[index].quantity > 0) {
+                                cart[index].quantity--;
+                                quantity.textContent = cart[index].quantity;
+                                updateCart();
+                            }
+                        });
+                    }
+
+                    // 加按钮
+                    if (plusBtn) {
+                        plusBtn.addEventListener('click', () => {
+                            cart[index].quantity++;
+                            quantity.textContent = cart[index].quantity;
+                            updateCart();
+                        });
+                    }
+                }
+            });
+
+            // 更新购物车
+            function updateCart() {
+                let totalItems = 0;
+                let totalPrice = 0;
+
+                for (const item in cart) {
+                    totalItems += cart[item].quantity;
+                    totalPrice += cart[item].quantity * cart[item].price;
+                }
+
+                cartBadge.textContent = totalItems;
+            }
+
+            // 显示订单模态框
+            cartBtn.addEventListener('click', showOrderModal);
+
+            function showOrderModal() {
+                let itemsHtml = '';
+                let totalPrice = 0;
+
+                for (const item in cart) {
+                    if (cart[item].quantity > 0) {
+                        itemsHtml += `
+                            <div class="order-item">
+                                <div>${cart[item].name} × ${cart[item].quantity}</div>
+                                <div>￥${(cart[item].price * cart[item].quantity).toFixed(2)}</div>
+                            </div>
+                        `;
+                        totalPrice += cart[item].price * cart[item].quantity;
+                    }
+                }
+
+                if (itemsHtml === '') {
+                    itemsHtml = '<div style="text-align: center; color: #999;">购物车是空的</div>';
+                }
+
+                orderItems.innerHTML = itemsHtml;
+                orderTotal.textContent = `总计：￥${totalPrice.toFixed(2)}`;
+                orderModal.style.display = 'flex';
+            }
+
+            // 关闭模态框
+            closeModal.addEventListener('click', () => {
+                orderModal.style.display = 'none';
+            });
+
+            // 点击模态框外部关闭
+            orderModal.addEventListener('click', (e) => {
+                if (e.target === orderModal) {
+                    orderModal.style.display = 'none';
+                }
+            });
+
+            // 导出购物车为图片
+            exportImg.addEventListener('click', async() => {
+                try {
+                    const modalContent = document.getElementById('modalContent');
+
+                    // 使用html2canvas将购物车内容转为图片
+                    const canvas = await html2canvas(modalContent, {
+                        backgroundColor: null,
+                        scale: 2 // 提高图片质量
+                    });
+
+                    // 转换为图片URL
+                    const imageData = canvas.toDataURL('image/png');
+
+                    // 创建下载链接
+                    const a = document.createElement('a');
+                    a.href = imageData;
+                    a.download = `订单_${new Date().getTime()}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (error) {
+                    alert('导出图片失败: ' + error.message);
+                }
+            });
+
+            // 分享购物车内容
+            shareOrder.addEventListener('click', async() => {
+                try {
+                    // 检查浏览器是否支持Web Share API
+                    if (!navigator.share) {
+                        alert('您的浏览器不支持直接分享功能，请使用导出图片后手动分享。');
+                        return;
+                    }
+
+                    const modalContent = document.getElementById('modalContent');
+
+                    // 使用html2canvas将购物车内容转为图片
+                    const canvas = await html2canvas(modalContent, {
+                        backgroundColor: null,
+                        scale: 2 // 提高图片质量
+                    });
+
+                    // 转换为Blob对象用于分享
+                    canvas.toBlob(async(blob) => {
+                        try {
+                            // 创建分享数据
+                            const shareData = {
+                                title: '我的点餐订单',
+                                text: '这是我点的餐，请查看！',
+                                files: [new File([blob], 'order.png', {
+                                    type: 'image/png'
+                                })]
+                            };
+
+                            // 调用分享API
+                            await navigator.share(shareData);
+                        } catch (shareError) {
+                            if (shareError.name !== 'AbortError') {
+                                alert('分享失败: ' + shareError.message);
+                            }
+                        }
+                    }, 'image/png');
+                } catch (error) {
+                    alert('生成分享内容失败: ' + error.message);
+                }
+            });
+        }
+
+        // 初始化页面
+        initPage();
+        setupNavigation();
+        setupCart();
+    </script>
+</body>
+
+</html>
