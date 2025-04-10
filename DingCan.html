@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>泡馍点餐系统</title>
+    <title>点餐 | 锦鲤未离</title>
     <!-- 引入html2canvas库 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -28,6 +28,8 @@
             background-color: #fff;
             overflow-y: auto;
             box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
         }
         
         .sidebar-item {
@@ -35,6 +37,7 @@
             font-size: 14px;
             border-left: 4px solid transparent;
             cursor: pointer;
+            transition: all 0.3s;
         }
         
         .sidebar-item.active {
@@ -52,6 +55,29 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
+        }
+        
+        .search-container {
+            padding: 10px 15px;
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-input:focus {
+            border-color: #ff6b00;
         }
         
         .section-title {
@@ -60,9 +86,10 @@
             padding: 15px;
             background-color: #fff;
             position: sticky;
-            top: 0;
+            top: 50px;
             z-index: 10;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
         }
         
         .content {
@@ -249,9 +276,42 @@
             color: #333;
         }
         
-        .share-btn {
-            background-color: #4CAF50;
+        .copy-btn {
+            background-color: #2196F3;
             color: white;
+        }
+        
+        .export-time {
+            display: none;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .dish-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 15px;
+            background-color: #f5f5f5;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 16px;
+        }
+        /* 图片懒加载相关样式 */
+        
+        .dish-img.loading {
+            background-color: #f5f5f5;
+        }
+        
+        .dish-img.loaded {
+            background-color: transparent;
         }
     </style>
 </head>
@@ -260,7 +320,9 @@
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content-container">
-        <div class="section-title" id="currentSectionTitle"></div>
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索菜品...">
+        </div>
         <div class="content" id="content"></div>
     </div>
 
@@ -274,10 +336,12 @@
             <div class="modal-title">您的订单</div>
             <div id="orderItems"></div>
             <div class="order-total" id="orderTotal">总计：￥0</div>
+            <div class="export-time" id="exportTime"></div>
             <div class="modal-actions">
                 <button class="modal-btn close-btn" id="closeModal">关闭</button>
+                <button class="modal-btn copy-btn" id="copyText">复制文本</button>
+                <button class="modal-btn export-btn" id="exportTxt">导出文本</button>
                 <button class="modal-btn export-btn" id="exportImg">导出图片</button>
-                <button class="modal-btn share-btn" id="shareOrder">分享订单</button>
             </div>
         </div>
     </div>
@@ -287,20 +351,23 @@
         const menuData = {
             categories: [{
                 id: "recommend",
-                name: "推荐菜品",
+                name: "招牌推荐",
                 title: "招牌推荐",
                 items: [{
                     name: "羊肉泡馍",
                     desc: "传统口味，汤鲜味美",
-                    price: 23
+                    price: 23,
+                    image: "https://img.zcool.cn/community/01f8f85d8b1b0ca801209e1f9e7a7c.jpg@1280w_1l_2o_100sh.jpg"
                 }, {
                     name: "牛肉泡馍",
                     desc: "精选牛肉，肉质鲜嫩",
-                    price: 25
+                    price: 25,
+                    image: "https://img.zcool.cn/community/01a5a95d8b1b0ca801213f2637f3a9.jpg@1280w_1l_2o_100sh.jpg"
                 }, {
                     name: "三鲜泡馍",
                     desc: "海鲜风味，清淡可口",
-                    price: 20
+                    price: 20,
+                    image: "https://img.zcool.cn/community/01f9f95d8b1b0ca801209e1f9a7a7c.jpg@1280w_1l_2o_100sh.jpg"
                 }]
             }, {
                 id: "special",
@@ -309,11 +376,13 @@
                 items: [{
                     name: "酸辣泡馍",
                     desc: "酸辣开胃，风味独特",
-                    price: 22
+                    price: 22,
+                    image: "https://img.zcool.cn/community/01b8f95d8b1b0ca801213f2636f3a9.jpg@1280w_1l_2o_100sh.jpg"
                 }, {
                     name: "麻辣泡馍",
                     desc: "麻辣鲜香，回味无穷",
-                    price: 24
+                    price: 24,
+                    image: "https://img.zcool.cn/community/01d8f95d8b1b0ca801213f2635f3a9.jpg@1280w_1l_2o_100sh.jpg"
                 }]
             }, {
                 id: "setmeal",
@@ -322,11 +391,13 @@
                 items: [{
                     name: "单人套餐",
                     desc: "泡馍+小菜+饮料",
-                    price: 30
+                    price: 30,
+                    image: "https://img.zcool.cn/community/01e8f95d8b1b0ca801213f2634f3a9.jpg@1280w_1l_2o_100sh.jpg"
                 }, {
                     name: "双人套餐",
                     desc: "两份泡馍+两份小菜+两杯饮料",
-                    price: 55
+                    price: 55,
+                    image: "https://img.zcool.cn/community/01f8f95d8b1b0ca801213f2633f3a9.jpg@1280w_1l_2o_100sh.jpg"
                 }]
             }]
         };
@@ -350,7 +421,7 @@
                 const section = document.createElement('div');
                 section.className = 'section';
                 section.id = category.id;
-                section.style.display = category.id === 'recommend' ? 'block' : 'none';
+                section.dataset.category = category.id;
 
                 if (category.title) {
                     const title = document.createElement('div');
@@ -359,9 +430,19 @@
                     section.appendChild(title);
                 }
 
+                const itemsContainer = document.createElement('div');
+                itemsContainer.className = 'items-container';
+
                 category.items.forEach((item, index) => {
                     const dish = document.createElement('div');
                     dish.className = 'dish';
+                    dish.dataset.name = item.name.toLowerCase();
+                    dish.dataset.desc = item.desc.toLowerCase();
+
+                    const dishImg = document.createElement('img');
+                    dishImg.className = 'dish-img loading';
+                    dishImg.dataset.src = item.image;
+                    dishImg.alt = item.name;
 
                     const dishInfo = document.createElement('div');
                     dishInfo.className = 'dish-info';
@@ -405,40 +486,142 @@
                     controls.appendChild(plusBtn);
                     dishPrice.appendChild(controls);
 
+                    dish.appendChild(dishImg);
                     dish.appendChild(dishInfo);
                     dish.appendChild(dishPrice);
-                    section.appendChild(dish);
+                    itemsContainer.appendChild(dish);
                 });
 
+                section.appendChild(itemsContainer);
                 content.appendChild(section);
             });
 
-            // 设置初始标题
-            document.getElementById('currentSectionTitle').textContent = menuData.categories[0].title || '';
+            // 初始加载可视区域图片
+            lazyLoadImages();
         }
 
-        // 导航切换
+        // 图片懒加载
+        function lazyLoadImages() {
+            const images = document.querySelectorAll('.dish-img.loading');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.onload = () => {
+                            img.classList.remove('loading');
+                            img.classList.add('loaded');
+                        };
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '0px 0px 100px 0px'
+            });
+
+            images.forEach(img => {
+                observer.observe(img);
+            });
+        }
+
+        // 导航切换和滚动高亮
         function setupNavigation() {
             const sidebarItems = document.querySelectorAll('.sidebar-item');
             const sections = document.querySelectorAll('.section');
-            const currentSectionTitle = document.getElementById('currentSectionTitle');
+            const content = document.getElementById('content');
 
+            // 点击导航切换
             sidebarItems.forEach(item => {
                 item.addEventListener('click', () => {
                     const sectionId = item.getAttribute('data-section');
-                    const category = menuData.categories.find(c => c.id === sectionId);
+                    const section = document.getElementById(sectionId);
 
                     // 更新导航激活状态
                     sidebarItems.forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
 
-                    // 更新当前标题
-                    currentSectionTitle.textContent = (category && category.title) || '';
-
-                    // 显示对应内容区
-                    sections.forEach(section => section.style.display = 'none');
-                    document.getElementById(sectionId).style.display = 'block';
+                    // 滚动到对应区域
+                    section.scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 });
+            });
+
+            // 滚动时高亮对应导航
+            content.addEventListener('scroll', () => {
+                const scrollPosition = content.scrollTop + 100;
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        const sectionId = section.id;
+                        sidebarItems.forEach(item => {
+                            item.classList.remove('active');
+                            if (item.getAttribute('data-section') === sectionId) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // 搜索功能
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const dishes = document.querySelectorAll('.dish');
+            const sections = document.querySelectorAll('.section');
+
+            searchInput.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim().toLowerCase();
+
+                if (keyword === '') {
+                    // 恢复原始显示
+                    sections.forEach(section => {
+                        section.style.display = 'block';
+                        section.querySelectorAll('.dish').forEach(dish => {
+                            dish.style.display = 'flex';
+                        });
+                    });
+                    return;
+                }
+
+                let hasResults = false;
+
+                sections.forEach(section => {
+                    let sectionHasResults = false;
+                    section.querySelectorAll('.dish').forEach(dish => {
+                        const name = dish.dataset.name;
+                        const desc = dish.dataset.desc;
+
+                        if (name.includes(keyword)) { /*TWO:name.includes(keyword) || desc.includes(keyword)*/
+                            dish.style.display = 'flex';
+                            sectionHasResults = true;
+                            hasResults = true;
+                        } else {
+                            dish.style.display = 'none';
+                        }
+                    });
+
+                    // 显示/隐藏整个板块
+                    section.style.display = sectionHasResults ? 'block' : 'none';
+                });
+
+                // 显示无结果提示
+                const noResults = document.getElementById('noResults');
+                if (!hasResults) {
+                    if (!noResults) {
+                        const noResultsDiv = document.createElement('div');
+                        noResultsDiv.id = 'noResults';
+                        noResultsDiv.className = 'no-results';
+                        noResultsDiv.textContent = '没有找到相关菜品';
+                        document.getElementById('content').appendChild(noResultsDiv);
+                    }
+                } else if (noResults) {
+                    noResults.remove();
+                }
             });
         }
 
@@ -450,9 +633,11 @@
             const orderModal = document.getElementById('orderModal');
             const orderItems = document.getElementById('orderItems');
             const orderTotal = document.getElementById('orderTotal');
+            const exportTime = document.getElementById('exportTime');
             const closeModal = document.getElementById('closeModal');
+            const copyText = document.getElementById('copyText');
+            const exportTxt = document.getElementById('exportTxt');
             const exportImg = document.getElementById('exportImg');
-            const shareOrder = document.getElementById('shareOrder');
 
             // 初始化菜品数量控制
             document.querySelectorAll('.dish').forEach((dish, index) => {
@@ -533,6 +718,11 @@
 
                 orderItems.innerHTML = itemsHtml;
                 orderTotal.textContent = `总计：￥${totalPrice.toFixed(2)}`;
+
+                // 更新导出时间显示
+                const now = new Date();
+                exportTime.textContent = `导出时间: ${now.toLocaleString()}`;
+
                 orderModal.style.display = 'flex';
             }
 
@@ -548,16 +738,88 @@
                 }
             });
 
-            // 导出购物车为图片
+            // 复制订单文本
+            copyText.addEventListener('click', () => {
+                let orderText = '=== 点餐单 ===\n\n';
+                let totalPrice = 0;
+
+                for (const item in cart) {
+                    if (cart[item].quantity > 0) {
+                        orderText += `${cart[item].name} × ${cart[item].quantity} = ￥${(cart[item].price * cart[item].quantity).toFixed(2)}\n`;
+                        totalPrice += cart[item].price * cart[item].quantity;
+                    }
+                }
+
+                orderText += `\n总计：￥${totalPrice.toFixed(2)}`;
+                orderText += `\n\n下单时间：${new Date().toLocaleString()}`;
+
+                // 使用Clipboard API复制文本
+                navigator.clipboard.writeText(orderText).then(() => {
+                    alert('订单已复制到剪贴板！');
+                }).catch(err => {
+                    alert('复制失败，请手动选择文本复制: ' + err);
+                });
+            });
+
+            // 导出订单文本
+            exportTxt.addEventListener('click', () => {
+                let orderText = '=== 点餐单 ===\n\n';
+                let totalPrice = 0;
+
+                for (const item in cart) {
+                    if (cart[item].quantity > 0) {
+                        orderText += `${cart[item].name} × ${cart[item].quantity} = ￥${(cart[item].price * cart[item].quantity).toFixed(2)}\n`;
+                        totalPrice += cart[item].price * cart[item].quantity;
+                    }
+                }
+
+                orderText += `\n总计：￥${totalPrice.toFixed(2)}`;
+                orderText += `\n\n下单时间：${new Date().toLocaleString()}`;
+
+                // 创建Blob对象
+                const blob = new Blob([orderText], {
+                    type: 'text/plain'
+                });
+
+                // 创建下载链接
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `点餐单_${new Date().getTime()}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            // 导出订单图片
             exportImg.addEventListener('click', async() => {
                 try {
+                    // 克隆模态框内容，用于导出
                     const modalContent = document.getElementById('modalContent');
+                    const clone = modalContent.cloneNode(true);
+
+                    // 隐藏不需要导出的元素
+                    const actions = clone.querySelector('.modal-actions');
+                    if (actions) actions.style.display = 'none';
+
+                    // 更新导出时间
+                    const now = new Date();
+                    const exportTime = clone.querySelector('.export-time');
+                    if (actions) exportTime.style.display = 'block';
+                    if (exportTime) exportTime.textContent = `导出时间: ${now.toLocaleString()}`;
+
+                    // 临时添加到DOM中
+                    clone.style.position = 'absolute';
+                    clone.style.left = '-9999px';
+                    document.body.appendChild(clone);
 
                     // 使用html2canvas将购物车内容转为图片
-                    const canvas = await html2canvas(modalContent, {
+                    const canvas = await html2canvas(clone, {
                         backgroundColor: null,
                         scale: 2 // 提高图片质量
                     });
+
+                    // 移除临时元素
+                    document.body.removeChild(clone);
 
                     // 转换为图片URL
                     const imageData = canvas.toDataURL('image/png');
@@ -565,7 +827,7 @@
                     // 创建下载链接
                     const a = document.createElement('a');
                     a.href = imageData;
-                    a.download = `订单_${new Date().getTime()}.png`;
+                    a.download = `订单_${now.toLocaleString()}_${now.getTime()}.png`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -573,54 +835,16 @@
                     alert('导出图片失败: ' + error.message);
                 }
             });
-
-            // 分享购物车内容
-            shareOrder.addEventListener('click', async() => {
-                try {
-                    // 检查浏览器是否支持Web Share API
-                    if (!navigator.share) {
-                        alert('您的浏览器不支持直接分享功能，请使用导出图片后手动分享。');
-                        return;
-                    }
-
-                    const modalContent = document.getElementById('modalContent');
-
-                    // 使用html2canvas将购物车内容转为图片
-                    const canvas = await html2canvas(modalContent, {
-                        backgroundColor: null,
-                        scale: 2 // 提高图片质量
-                    });
-
-                    // 转换为Blob对象用于分享
-                    canvas.toBlob(async(blob) => {
-                        try {
-                            // 创建分享数据
-                            const shareData = {
-                                title: '我的点餐订单',
-                                text: '这是我点的餐，请查看！',
-                                files: [new File([blob], 'order.png', {
-                                    type: 'image/png'
-                                })]
-                            };
-
-                            // 调用分享API
-                            await navigator.share(shareData);
-                        } catch (shareError) {
-                            if (shareError.name !== 'AbortError') {
-                                alert('分享失败: ' + shareError.message);
-                            }
-                        }
-                    }, 'image/png');
-                } catch (error) {
-                    alert('生成分享内容失败: ' + error.message);
-                }
-            });
         }
 
         // 初始化页面
         initPage();
         setupNavigation();
+        setupSearch();
         setupCart();
+
+        // 监听滚动事件实现图片懒加载
+        document.getElementById('content').addEventListener('scroll', lazyLoadImages);
     </script>
 </body>
 
