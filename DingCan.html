@@ -7,6 +7,7 @@
     <title>点餐 | 锦鲤未离</title>
     <!-- 引入html2canvas库 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="./js/logo.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -31,6 +32,7 @@
             position: relative;
             z-index: 10;
         }
+        @media (max-width: 450px) { .sidebar { width: 80px; } }
         
         .sidebar-item {
             padding: 15px 10px;
@@ -86,7 +88,7 @@
             padding: 15px;
             background-color: #fff;
             position: sticky;
-            top: 50px;
+            top: 0px;
             z-index: 10;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-top: 15px;
