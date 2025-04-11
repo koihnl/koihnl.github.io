@@ -32,7 +32,12 @@
             position: relative;
             z-index: 10;
         }
-        @media (max-width: 450px) { .sidebar { width: 80px; } }
+        
+        @media (max-width: 450px) {
+            .sidebar {
+                width: 80px;
+            }
+        }
         
         .sidebar-item {
             padding: 15px 10px;
@@ -350,60 +355,44 @@
 
     <script>
         // 菜单数据
-        const menuData = {
-            categories: [{
-                id: "recommend",
-                name: "招牌推荐",
-                title: "招牌推荐",
-                items: [{
-                    name: "羊肉泡馍",
-                    desc: "传统口味，汤鲜味美",
-                    price: 23,
-                    image: "https://img.zcool.cn/community/01f8f85d8b1b0ca801209e1f9e7a7c.jpg@1280w_1l_2o_100sh.jpg"
-                }, {
-                    name: "牛肉泡馍",
-                    desc: "精选牛肉，肉质鲜嫩",
-                    price: 25,
-                    image: "https://img.zcool.cn/community/01a5a95d8b1b0ca801213f2637f3a9.jpg@1280w_1l_2o_100sh.jpg"
-                }, {
-                    name: "三鲜泡馍",
-                    desc: "海鲜风味，清淡可口",
-                    price: 20,
-                    image: "https://img.zcool.cn/community/01f9f95d8b1b0ca801209e1f9a7a7c.jpg@1280w_1l_2o_100sh.jpg"
-                }]
-            }, {
-                id: "special",
-                name: "特色菜品",
-                title: "特色美食",
-                items: [{
-                    name: "酸辣泡馍",
-                    desc: "酸辣开胃，风味独特",
-                    price: 22,
-                    image: "https://img.zcool.cn/community/01b8f95d8b1b0ca801213f2636f3a9.jpg@1280w_1l_2o_100sh.jpg"
-                }, {
-                    name: "麻辣泡馍",
-                    desc: "麻辣鲜香，回味无穷",
-                    price: 24,
-                    image: "https://img.zcool.cn/community/01d8f95d8b1b0ca801213f2635f3a9.jpg@1280w_1l_2o_100sh.jpg"
-                }]
-            }, {
-                id: "setmeal",
-                name: "套餐系列",
-                title: "超值套餐",
-                items: [{
-                    name: "单人套餐",
-                    desc: "泡馍+小菜+饮料",
-                    price: 30,
-                    image: "https://img.zcool.cn/community/01e8f95d8b1b0ca801213f2634f3a9.jpg@1280w_1l_2o_100sh.jpg"
-                }, {
-                    name: "双人套餐",
-                    desc: "两份泡馍+两份小菜+两杯饮料",
-                    price: 55,
-                    image: "https://img.zcool.cn/community/01f8f95d8b1b0ca801213f2633f3a9.jpg@1280w_1l_2o_100sh.jpg"
-                }]
-            }]
-        };
+        const simpleMenuData = [
+            ["recommend", "招牌推荐", "羊肉泡馍", "传统口味，汤鲜味美", 23, "#"],
+            ["recommend", "招牌推荐", "牛肉泡馍", "精选牛肉，肉质鲜嫩", 25, "#"],
+            ["recommend", "招牌推荐", "三鲜泡馍", "海鲜风味，清淡可口", 20, "#"],
+            ["special", "特色菜品", "酸辣泡馍", "酸辣开胃，风味独特", 22, "#"],
+            ["special", "特色菜品", "麻辣泡馍", "麻辣鲜香，回味无穷", 24, "#"],
+            ["setmeal", "套餐系列", "单人套餐", "泡馍+小菜+饮料", 30, "#"],
+            ["setmeal", "套餐系列", "双人套餐", "两份泡馍+两份小菜+两杯饮料", 55, "#"]
+        ];
 
+        // const menuData = {categories: [{id: "recommend",name: "招牌推荐",title: "招牌推荐",items: [{name: "羊肉泡馍",desc: "传统口味，汤鲜味美",price: 23,image: "https://img.picture.cn/dicm.jpg"}]}]};
+        // 转换函数 == ↑
+        function convertMenuData(simpleData) {
+            const categoriesMap = {};
+            simpleData.forEach(item => {
+                const [id, name, itemName, desc, price, image] = item;
+
+                if (!categoriesMap[id]) {
+                    categoriesMap[id] = {
+                        id,
+                        name,
+                        title: name,
+                        /* 假设title=name*/
+                        items: []
+                    };
+                }
+                categoriesMap[id].items.push({
+                    name: itemName,
+                    desc,
+                    price,
+                    image
+                });
+            });
+            return {
+                categories: Object.values(categoriesMap)
+            };
+        }
+        const menuData = convertMenuData(simpleMenuData);
         // 初始化页面
         function initPage() {
             const sidebar = document.getElementById('sidebar');
@@ -741,6 +730,7 @@
             });
 
             // 复制订单文本
+            // 复制订单文本
             copyText.addEventListener('click', () => {
                 let orderText = '=== 点餐单 ===\n\n';
                 let totalPrice = 0;
@@ -757,7 +747,15 @@
 
                 // 使用Clipboard API复制文本
                 navigator.clipboard.writeText(orderText).then(() => {
-                    alert('订单已复制到剪贴板！');
+                    // 修改按钮文本和样式
+                    copyText.textContent = '已复制';
+                    copyText.style.backgroundColor = '#45a049'; // 更深的绿色
+
+                    // 3秒后恢复原样式
+                    setTimeout(() => {
+                        copyText.textContent = '复制文本';
+                        copyText.style.backgroundColor = '#2196F3'; // 恢复原蓝色
+                    }, 3000);
                 }).catch(err => {
                     alert('复制失败，请手动选择文本复制: ' + err);
                 });
@@ -786,7 +784,8 @@
                 // 创建下载链接
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = `点餐单_${new Date().getTime()}.txt`;
+                const now = new Date();
+                a.download = `点餐单T${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}.txt`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -829,7 +828,7 @@
                     // 创建下载链接
                     const a = document.createElement('a');
                     a.href = imageData;
-                    a.download = `订单_${now.toLocaleString()}_${now.getTime()}.png`;
+                    a.download = `订单T${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}.png`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
