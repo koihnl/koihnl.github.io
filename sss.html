@@ -763,384 +763,145 @@
 			<input id="btnReset" class="icon" type="checkbox" name="reset" onclick="reset()">
 		</div>
 	</div>
-	<script type="x-shader/x-fragment">/* 如果...能够...逆转日寺.Sh...iiii.時..間&&间...... */
-#include <SFML/Graphics.hpp>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <queue>
-#include <stack>
-#include <algorithm>
-
-const int WINDOW_WIDTH = 1200;
-const int WINDOW_HEIGHT = 800;
-const int PARTICLE_COUNT = 500;
-const int HISTORY_SIZE = 200;
-const int FONT_SIZE = 24;
-const float GRAVITY = 0.2f;
-const float TIME_SPEED = 1.5f;
-
-class Particle {
-public:
-    sf::Vector2f position;
-    sf::Vector2f velocity;
-    sf::Vector2f acceleration;
-    sf::Color color;
-    float radius;
-    float life;
-    float maxLife;
-    bool active;
-    std::deque<sf::Vector2f> positionHistory;
-
-    Particle() : position(0, 0), velocity(0, 0), acceleration(0, 0),
-                 color(sf::Color::White), radius(3.0f), life(100.0f),
-                 maxLife(100.0f), active(false) {}
-
-    void initialize(sf::Vector2f pos) {
-        position = pos;
-        velocity = sf::Vector2f((rand() % 100 - 50) / 10.0f, (rand() % 100 - 150) / 10.0f);
-        radius = rand() % 5 + 2;
-        life = maxLife = rand() % 50 + 70;
-        active = true;
-        color = sf::Color(rand() % 55 + 200, rand() % 55 + 100, rand() % 155 + 100, 255);
-        positionHistory.clear();
-    }
-
-    void update(float dt, bool reverseTime, bool applyPhysics) {
-        if (!active) return;
-
-        if (applyPhysics) {
-            acceleration.y = GRAVITY;
-            velocity += acceleration * dt;
-            position += velocity * dt;
-        }
-
-        if (reverseTime) {
-            if (!positionHistory.empty()) {
-                position = positionHistory.front();
-                positionHistory.pop_front();
-            }
-        } else {
-            positionHistory.push_front(position);
-            if (positionHistory.size() > HISTORY_SIZE) {
-                positionHistory.pop_back();
-            }
-        }
-
-        life -= dt;
-        if (life <= 0) {
-            active = false;
-        }
-    }
-
-    void draw(sf::RenderWindow& window) {
-        if (!active) return;
-
-        sf::CircleShape circle(radius);
-        circle.setFillColor(color);
-        circle.setOrigin(radius, radius);
-        circle.setPosition(position);
-        window.draw(circle);
-
-        if (!reverseTime) {
-            float alphaStep = 255.0f / positionHistory.size();
-            float alpha = alphaStep;
-            float size = radius * 0.3f;
-
-            for (auto& pos : positionHistory) {
-                sf::CircleShape trail(size);
-                trail.setFillColor(sf::Color(color.r, color.g, color.b, alpha));
-                trail.setOrigin(size, size);
-                trail.setPosition(pos);
-                window.draw(trail);
-                alpha += alphaStep;
-                size *= 0.99f;
-            }
-        }
-    }
-};
-
-class TimeReversalSystem {
-private:
-    std::vector<Particle> particles;
-    sf::Clock clock;
-    sf::Time elapsedTime;
-    sf::Time totalTime;
-    bool reverseTime;
-    bool physicsEnabled;
-    float timeScale;
-    sf::Font font;
-    sf::Text timeText;
-    sf::Text controlText;
-    sf::RectangleShape timeBar;
-    sf::RectangleShape timeIndicator;
-    sf::CircleShape timeControl;
-    std::vector<sf::Vertex> timeFlowLines;
-    sf::RectangleShape background;
-    sf::Texture backgroundTexture;
-    sf::Shader timeWarpShader;
-
-public:
-    TimeReversalSystem() : reverseTime(false), physicsEnabled(true), 
-                          timeScale(TIME_SPEED), elapsedTime(sf::Time::Zero),
-                          totalTime(sf::Time::Zero) {
-        particles.resize(PARTICLE_COUNT);
-        
-        if (!font.loadFromFile("arial.ttf")) {
-            std::cerr << "Error loading font" << std::endl;
-            exit(1);
-        }
-        
-        timeText.setFont(font);
-        timeText.setCharacterSize(FONT_SIZE);
-        timeText.setFillColor(sf::Color::White);
-        timeText.setPosition(20, 20);
-        
-        controlText.setFont(font);
-        controlText.setCharacterSize(FONT_SIZE - 4);
-        controlText.setFillColor(sf::Color(200, 220, 255));
-        controlText.setPosition(20, WINDOW_HEIGHT - 100);
-        controlText.setString(
-            "Controls:\n"
-            "Space - Toggle time direction\n"
-            "P - Toggle physics\n"
-            "Left/Right - Adjust time speed\n"
-            "R - Reset system\n"
-            "Click - Create particles"
-        );
-        
-        timeBar.setSize(sf::Vector2f(300, 10));
-        timeBar.setFillColor(sf::Color(80, 80, 120));
-        timeBar.setPosition(WINDOW_WIDTH - 350, 30);
-        
-        timeIndicator.setSize(sf::Vector2f(5, 20));
-        timeIndicator.setFillColor(sf::Color::White);
-        
-        timeControl.setRadius(20);
-        timeControl.setOutlineThickness(2);
-        timeControl.setOutlineColor(sf::Color::White);
-        timeControl.setPosition(WINDOW_WIDTH - 200, 70);
-        
-        background.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
-        background.setFillColor(sf::Color(15, 10, 25));
-        
-        if (!timeWarpShader.loadFromFile("time_warp.frag", sf::Shader::Fragment)) {
-            std::cout << "Shader not loaded. Using default rendering." << std::endl;
-        }
-        
-        reset();
-    }
-
-    void reset() {
-        for (auto& p : particles) {
-            p.active = false;
-        }
-        elapsedTime = sf::Time::Zero;
-        totalTime = sf::Time::Zero;
-        reverseTime = false;
-        timeScale = TIME_SPEED;
-        physicsEnabled = true;
-        timeFlowLines.clear();
-    }
-
-    void spawnParticles(sf::Vector2f position, int count = 10) {
-        for (int i = 0; i < count; i++) {
-            for (auto& p : particles) {
-                if (!p.active) {
-                    p.initialize(position);
-                    break;
-                }
-            }
-        }
-    }
-
-    void update() {
-        float dt = clock.restart().asSeconds() * timeScale;
-        
-        if (reverseTime) {
-            elapsedTime -= sf::seconds(dt);
-            if (elapsedTime < sf::Time::Zero) {
-                elapsedTime = sf::Time::Zero;
-            }
-        } else {
-            elapsedTime += sf::seconds(dt);
-        }
-        
-        totalTime += sf::seconds(dt);
-        
-        for (auto& p : particles) {
-            p.update(dt, reverseTime, physicsEnabled);
-        }
-        
-        updateTimeFlowLines();
-        updateUI();
-    }
-
-    void updateTimeFlowLines() {
-        static float timeAccumulator = 0.0f;
-        timeAccumulator += clock.getElapsedTime().asSeconds();
-        
-        if (timeAccumulator > 0.1f) {
-            timeAccumulator = 0.0f;
-            timeFlowLines.clear();
-            
-            for (int i = 0; i < 50; i++) {
-                float x = static_cast<float>(rand() % WINDOW_WIDTH);
-                float y = static_cast<float>(rand() % WINDOW_HEIGHT);
-                float length = static_cast<float>(rand() % 30 + 20);
-                float angle = reverseTime ? 3.14159f : 0.0f;
-                
-                timeFlowLines.push_back(sf::Vertex(sf::Vector2f(x, y), sf::Color(100, 150, 255, 80)));
-                timeFlowLines.push_back(sf::Vertex(
-                    sf::Vector2f(x + length * std::cos(angle), 
-                    y + length * std::sin(angle)
-                ), sf::Color(100, 200, 255, 20)));
-            }
-        }
-    }
-
-    void updateUI() {
-        std::ostringstream timeStream;
-        timeStream << "Time: " << std::fixed << std::setprecision(1) << elapsedTime.asSeconds() << "s\n";
-        timeStream << "State: " << (reverseTime ? "REVERSE" : "FORWARD") << "\n";
-        timeStream << "Speed: " << timeScale << "x\n";
-        timeStream << "Physics: " << (physicsEnabled ? "ON" : "OFF") << "\n";
-        timeStream << "Particles: " << std::count_if(particles.begin(), particles.end(), 
-            [](const Particle& p) { return p.active; });
-        timeText.setString(timeStream.str());
-        
-        float indicatorPos = (elapsedTime.asSeconds() / 60.0f) * 300.0f;
-        timeIndicator.setPosition(timeBar.getPosition().x + indicatorPos, timeBar.getPosition().y - 5);
-        
-        timeControl.setFillColor(reverseTime ? sf::Color(255, 100, 100) : sf::Color(100, 255, 150));
-    }
-
-    void draw(sf::RenderWindow& window) {
-        window.draw(background);
-        
-        if (timeWarpShader.isAvailable()) {
-            timeWarpShader.setUniform("time", totalTime.asSeconds());
-            timeWarpShader.setUniform("reverse", reverseTime);
-            
-            sf::RenderStates states;
-            states.shader = &timeWarpShader;
-            
-            window.draw(timeFlowLines.data(), timeFlowLines.size(), sf::Lines, states);
-        } else {
-            window.draw(timeFlowLines.data(), timeFlowLines.size(), sf::Lines);
-        }
-        
-        for (auto& p : particles) {
-            p.draw(window);
-        }
-        
-        window.draw(timeBar);
-        window.draw(timeIndicator);
-        window.draw(timeControl);
-        window.draw(timeText);
-        window.draw(controlText);
-        
-        drawTimeSymbol(window);
-    }
-
-    void drawTimeSymbol(sf::RenderWindow& window) {
-        sf::CircleShape outer(50);
-        outer.setFillColor(sf::Color::Transparent);
-        outer.setOutlineThickness(3);
-        outer.setOutlineColor(reverseTime ? sf::Color(255, 100, 100) : sf::Color(100, 255, 150));
-        outer.setPosition(WINDOW_WIDTH - 150, 70);
-        outer.setOrigin(50, 50);
-        window.draw(outer);
-        
-        for (int i = 0; i < 8; i++) {
-            sf::RectangleShape line(sf::Vector2f(40, 3));
-            line.setFillColor(reverseTime ? sf::Color(255, 150, 150) : sf::Color(150, 255, 180));
-            line.setPosition(WINDOW_WIDTH - 100, 120);
-            line.setOrigin(0, 1.5f);
-            line.rotate(i * 45.0f);
-            window.draw(line);
-        }
-        
-        sf::ConvexShape arrow(3);
-        arrow.setPoint(0, sf::Vector2f(0, -15));
-        arrow.setPoint(1, sf::Vector2f(10, 0));
-        arrow.setPoint(2, sf::Vector2f(-10, 0));
-        arrow.setFillColor(sf::Color::White);
-        arrow.setPosition(WINDOW_WIDTH - 100, 120);
-        arrow.setRotation(reverseTime ? 180.0f : 0.0f);
-        arrow.rotate(static_cast<float>(std::fmod(totalTime.asSeconds() * 30.0f, 360.0f)));
-        window.draw(arrow);
-    }
-
-    void toggleTimeDirection() {
-        reverseTime = !reverseTime;
-    }
-
-    void togglePhysics() {
-        physicsEnabled = !physicsEnabled;
-    }
-
-    void adjustTimeSpeed(float delta) {
-        timeScale += delta;
-        if (timeScale < 0.1f) timeScale = 0.1f;
-        if (timeScale > 5.0f) timeScale = 5.0f;
-    }
-
-    void handleClick(sf::Vector2f position) {
-        spawnParticles(position, 15);
-    }
-};
-
-int main() {
-    srand(static_cast<unsigned int>(time(nullptr)));
-    
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Time Reversal Simulation");
-    window.setFramerateLimit(60);
-    
-    TimeReversalSystem system;
-    
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-            
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Space) {
-                    system.toggleTimeDirection();
-                } else if (event.key.code == sf::Keyboard::P) {
-                    system.togglePhysics();
-                } else if (event.key.code == sf::Keyboard::R) {
-                    system.reset();
-                } else if (event.key.code == sf::Keyboard::Left) {
-                    system.adjustTimeSpeed(-0.2f);
-                } else if (event.key.code == sf::Keyboard::Right) {
-                    system.adjustTimeSpeed(0.2f);
-                }
-            }
-            
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    system.handleClick(window.mapPixelToCoords(
-                        sf::Vector2i(event.mouseButton.x, event.mouseButton.y)
-                    ));
-                }
-            }
-        }
-        
-        system.update();
-        
-        window.clear();
-        system.draw(window);
-        window.display();
-    }
-    
-    return 0;
+	<script type="x-shader/x-fragment">#version 300 es
+/*********
+* 如果...能够...逆转日寺.Sh...iiii.時..間&&间......
+*/
+precision highp float;
+out vec4 O;
+uniform float time;
+uniform vec2 resolution;
+#define FC gl_FragCoord.xy
+#define R resolution
+#define T time
+#define N normalize
+#define S smoothstep
+#define MN min(R.x,R.y)
+#define MAXD 40.
+#define CT curve(T,.4)
+#define rot(a) mat2(cos((a)-vec4(0,11,33,0)))
+#define hue(a) (.5+.5*sin(3.14*(a)+vec3(1,2,3)))
+vec3 rnd(vec3 p) {
+  return fract(
+  	sin(
+  		p.xyz*724.524+
+  		p.yzx*534.824+
+  		p.zxy*381.254
+  	)*vec3(413.644,388.521,924.532)
+  );
+}
+float rnd(float a) {
+	vec2 p=fract(a*vec2(12.9898,78.233));
+	p+=dot(p,p+34.56);
+	return fract(p.x*p.y);
+}
+float curve(float t, float e) {
+	t/=e;
+	return mix(
+		rnd(floor(t)),
+		rnd(floor(t)+1.),
+		pow(S(.0,1.,fract(t)),10.)
+	);
+}
+vec3 kifs(vec3 p) {
+	float y=p.y;
+	for (float i=1.; i<4.; i++) {
+		p=max(p,-p*.9-.1)-vec3(2.5,1.7,0)+.06*dot(abs(fract(p*4.)-.5)-.25,vec3(.2));
+		p.xy*=rot(cos(y*.05)*.5);
+		p.xz*=rot(20.+T+CT);
+	}
+	return p;
+}
+float box(vec3 p, vec3 s) {
+	p=abs(p)-s;
+	return length(max(p,.0))+min(.0,max(max(p.x,p.y),p.z));
+}
+float cyl(vec3 p, float r) {
+	p.y=.0;
+	return length(p)-r;
+}
+float map(vec3 p) {
+	p.xy*=rot(CT-.39);
+	p=kifs(p);
+	return min(box(p-vec3(0,0,1),vec3(2.2,.8,.7)),cyl(abs(abs(p)-vec3(.5,0,0))-vec3(.5,0,1),.08));
+}
+vec3 norm(vec3 p) {
+	float h=1e-4; vec2 k=vec2(-1,1);
+	return N(
+		k.xyy*map(p+k.xyy*h)+
+		k.yxy*map(p+k.yxy*h)+
+		k.yyx*map(p+k.yyx*h)+
+		k.xxx*map(p+k.xxx*h)
+	);
+}
+float march(inout vec3 p, vec3 rd) {
+	float dd=.0, k=mix(.8,1.,rnd(rd).x), f=sin(CT*3.14*mod(T*.2,5.))*.5+.5;
+	vec2 uv=(FC-.5*R)/MN;
+	for (float i=.0; i<60.; i++) {
+		float d=map(p)*k;
+		if (abs(d)<1e-4 || dd>MAXD) break;
+    vec3 dof=rnd(vec3(uv+7.+i,fract(T)+i*.2))*.5;
+    dof.z=.0;
+    vec3 r=N(vec3(uv,1.+sin(T*.25)*.5));
+    r-=f*dof*clamp(dot(uv,uv*.5),.0,1.);
+    rd=r;
+		p+=rd*d;
+		dd+=d;
+	}
+	return dd;
+}
+float poly(vec2 p, float n) {
+	float
+	a=atan(p.x,p.y),
+	b=6.28318/n;
+	return cos(floor(.5+a/b)*b-a)*length(p);
+}
+vec3 pattern(vec2 uv, float t) {
+	vec2 p=uv*.05;
+	vec3 col=vec3(0);
+	for (float i=.0; i<5.; i++) {
+		p=fract(p*2.05)-.5;
+		float d=poly(p,8.)/(.25+dot(p,p));
+		d=sin(d*9.+t+i)*.25;
+		d=abs(d);
+		col+=.02/d*hue(length(uv)+i*.125-t*.125);
+	}
+	return col;
+}
+vec3 render(inout vec3 p, vec3 rd) {
+	vec3 col=vec3(0), q=p;
+	float d=march(p,rd);
+	if (d<MAXD) {
+		vec3 n=norm(p), lp=vec3(1,2,-3), l=N(lp-p);
+		float dif=clamp(dot(l,n),.0,1.), fres=pow(clamp(1.+dot(rd,n),.0,1.),5.),
+		spec=pow(clamp(dot(reflect(rd,n),l),.0,1.),8.);
+		col+=(.2+dif)*hue(.3+dot(q,q*.12)-T);
+		col=mix(col,vec3(0),fres),
+		col+=.2*spec+.4*hue(.2+sqrt(spec)-T);
+		col+=fres;
+		col=tanh(col);
+		col=sqrt(col);
+	} else {
+		vec2 uv=FC/R*2.-1.;
+		uv*=.95;
+		uv*=uv*uv*uv*uv;
+		float v=pow(dot(uv,uv),.8);
+		col=mix(vec3(0), pattern((FC-.5*R)/MN,T-CT), S(.01,.1,dot(uv,uv)));
+		col=vec3(dot(mix(col,vec3(1),v),vec3(.21,.71,.07)));
+		col=max(col,.95);
+	}
+	return col;
+}
+void main() {
+	vec2 uv=(FC-.5*R)/MN;
+	uv+=sin(uv*20.+T)*.4;
+	vec3 col=vec3(0),
+	p=vec3(0,0,exp(-cos(mod(T+4.*CT,2.)-floor(3.14*CT))*4.)-16.),
+	rd=N(vec3(uv,1));
+	col+=render(p,rd);
+	col+=1.-min((time-.2)*.8,1.);
+	col=fract(CT)>.1 ? col : tanh(S(1.5,.0,vec3(dot(col,vec3(.21,.71,.07)))));
+	O=vec4(col,1);
 }</script>
 </body>
 
