@@ -240,6 +240,27 @@
 </head>
 
 <body>
+<style>.copyButton {margin-top: 10px;padding: 5px 10px;background-color: #007bff;color: white;border: none;border-radius: 5px;cursor: pointer;transition: background-color 0.3s;}
+	.copyButton:hover {background-color: #0056b3;}
+	.copyButton.copied {background-color: #28a745;}</style>
+	<script>document.querySelectorAll('.copyButton').forEach(button => {button.addEventListener('click', function() {const targetId = this.getAttribute('data-target');const codeSnippet = document.getElementById(targetId).innerText;const button = this;navigator.clipboard.writeText(codeSnippet).then(function() {button.textContent = "已复制";button.classList.add("copied");setTimeout(function() {button.textContent = "复制";button.classList.remove("copied");}, 2000);}).catch(function(err) {console.error('复制失败: ', err);button.textContent = "复制失败";setTimeout(() => button.textContent = "复制", 2000);});});}); </script>
+    <div class="centererlast">
+            <div class="code-container" style="display: inline-block;">
+                    <pre style="display: inline-block;"><code id="codeSnippet1">　</code></pre>
+                    <button class="copyButton" data-target="codeSnippet1">复制</button>
+           </div>
+           <div class="code-container" style="display: inline-block;">
+                    <pre style="display: inline-block;"><code id="codeSnippet2">〔〕</code></pre>
+                    <button class="copyButton" data-target="codeSnippet2">复制</button>
+           </div>
+           <div class="code-container" style="display: inline-block;">
+                    <pre style="display: inline-block;"><code id="codeSnippet3">•</code></pre>
+                    <button class="copyButton" data-target="codeSnippet3">复制</button>
+           </div>
+    </div>
+
+
+	
 	<style>.inlineBlock_KoiHNL, p {color: white;font-size: 26px;}</style>
 	<style>
   .mainKoiHNL {
