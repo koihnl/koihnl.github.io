@@ -1,39 +1,10 @@
-<script>
-    // 数据定义
-    const data = [
-        ['[251205]深度学习在图像识别中的应用[AI技术]', `
-卷积神经网络是深度学习中处理图像数据的核心架构。它通过卷积层、池化层和全连接层的组合，能够自动提取图像中的特征。
-图像分类是计算机视觉中的基础任务，目标是将输入的图像分配到预定义的类别中。常用的图像分类数据集包括ImageNet、CIFAR-10等。
-目标检测不仅要识别图像中的物体类别，还要定位物体的位置。常见的目标检测算法包括R-CNN系列、YOLO系列和SSD等。`],
-        ['[251208]中国古代哲学思想概览[哲学]', `儒家思想由孔子创立，强调仁、义、礼、智、信等核心价值观。儒家主张通过道德修养和社会规范来建立和谐的社会秩序。
-
-道家思想以老子和庄子为代表，主张"道法自然"，强调顺应自然规律，追求无为而治。道家认为过度的人为干预会破坏自然的和谐。
-
-法家强调法律和制度的重要性，主张以严明的法治来治理国家。法家认为人性本恶，需要通过法律来约束人们的行为。`],
-        ['[251210]量子计算基础入门[物理]', `量子比特是量子计算的基本单位，与经典比特不同，量子比特可以同时处于0和1的叠加状态。这种特性使得量子计算机在某些问题上具有指数级的速度优势。
-
-量子纠缠是量子力学中最奇特的现象之一。当两个量子比特纠缠时，无论它们相距多远，对一个量子比特的测量会立即影响另一个量子比特的状态。
-
-量子门是量子计算中的基本操作单元，类似于经典计算中的逻辑门。常见的量子门包括：Hadamard门、CNOT门、相位门等，它们可以对量子比特进行操作。`],
-        ['[251213]JavaScript闭包与作用域详解[技术]', `闭包是JavaScript中一个非常重要的概念。简单来说，闭包是指那些能够访问自由变量的函数。自由变量是指在函数中使用的，但既不是函数参数也不是函数局部变量的变量。
-
-闭包的形成与JavaScript的作用域链密切相关。当一个函数被创建时，它会保存其所在的作用域链。即使这个函数在其他作用域中被调用，它仍然可以访问它被创建时的作用域中的变量。
-
-闭包在实际开发中有许多应用场景，比如：创建私有变量、实现函数柯里化、模块化开发等。通过闭包，我们可以创建具有状态的函数，这些状态在函数调用之间会被保留。`],
-        ['[251215]神经网络基础与实现[人工智能]', `神经网络的基本单位是神经元，它模拟了生物神经元的工作原理。每个神经元接收多个输入，对这些输入进行加权求和，然后通过激活函数产生输出。
-
-前向传播是神经网络进行预测的过程。输入数据从输入层经过隐藏层，最终到达输出层。每一层的神经元都会对输入进行加权求和并应用激活函数。
-
-反向传播是训练神经网络的核心算法。它通过计算损失函数对每个参数的梯度，然后使用梯度下降法更新参数，从而最小化损失函数。`]
-    ];
-</script>
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大作文</title>
+    <title>学习文章网站</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 重置和基础样式 */
@@ -245,6 +216,7 @@
         .title-item.active {
             background-color: #e8f4fc;
             border-left: 4px solid var(--primary-color);
+            box-shadow: inset 2px 0 5px rgba(52, 152, 219, 0.1);
         }
         
         .title-item.active::before {
@@ -354,11 +326,6 @@
             color: #2c3e50;
             margin-top: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        /* 为pre标签中的每一段添加首行缩进 */
-        
-        .article-content::first-line {
-            /* 这个选择器只对第一行有效，但我们需要每段都缩进 */
         }
         
         .empty-state {
@@ -525,6 +492,35 @@
     </main>
 
     <script>
+        // 数据定义 - 使用您提供的格式
+        const data = [
+            ['[251205]深度学习在图像识别中的应用[AI技术]', `卷积神经网络是深度学习中处理图像数据的核心架构。它通过卷积层、池化层和全连接层的组合，能够自动提取图像中的特征。
+
+图像分类是计算机视觉中的基础任务，目标是将输入的图像分配到预定义的类别中。常用的图像分类数据集包括ImageNet、CIFAR-10等。
+
+目标检测不仅要识别图像中的物体类别，还要定位物体的位置。常见的目标检测算法包括R-CNN系列、YOLO系列和SSD等。`],
+            ['[251208]中国古代哲学思想概览[哲学]', `儒家思想由孔子创立，强调仁、义、礼、智、信等核心价值观。儒家主张通过道德修养和社会规范来建立和谐的社会秩序。
+
+道家思想以老子和庄子为代表，主张"道法自然"，强调顺应自然规律，追求无为而治。道家认为过度的人为干预会破坏自然的和谐。
+
+法家强调法律和制度的重要性，主张以严明的法治来治理国家。法家认为人性本恶，需要通过法律来约束人们的行为。`],
+            ['[251210]量子计算基础入门[物理]', `量子比特是量子计算的基本单位，与经典比特不同，量子比特可以同时处于0和1的叠加状态。这种特性使得量子计算机在某些问题上具有指数级的速度优势。
+
+量子纠缠是量子力学中最奇特的现象之一。当两个量子比特纠缠时，无论它们相距多远，对一个量子比特的测量会立即影响另一个量子比特的状态。
+
+量子门是量子计算中的基本操作单元，类似于经典计算中的逻辑门。常见的量子门包括：Hadamard门、CNOT门、相位门等，它们可以对量子比特进行操作。`],
+            ['[251213]JavaScript闭包与作用域详解[技术]', `闭包是JavaScript中一个非常重要的概念。简单来说，闭包是指那些能够访问自由变量的函数。自由变量是指在函数中使用的，但既不是函数参数也不是函数局部变量的变量。
+
+闭包的形成与JavaScript的作用域链密切相关。当一个函数被创建时，它会保存其所在的作用域链。即使这个函数在其他作用域中被调用，它仍然可以访问它被创建时的作用域中的变量。
+
+闭包在实际开发中有许多应用场景，比如：创建私有变量、实现函数柯里化、模块化开发等。通过闭包，我们可以创建具有状态的函数，这些状态在函数调用之间会被保留。`],
+            ['[251215]神经网络基础与实现[人工智能]', `神经网络的基本单位是神经元，它模拟了生物神经元的工作原理。每个神经元接收多个输入，对这些输入进行加权求和，然后通过激活函数产生输出。
+
+前向传播是神经网络进行预测的过程。输入数据从输入层经过隐藏层，最终到达输出层。每一层的神经元都会对输入进行加权求和并应用激活函数。
+
+反向传播是训练神经网络的核心算法。它通过计算损失函数对每个参数的梯度，然后使用梯度下降法更新参数，从而最小化损失函数。`]
+        ];
+
         // 确保DOM完全加载后再执行JavaScript
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -534,6 +530,7 @@
                     this.filteredArticles = [];
                     this.searchTimeout = null;
                     this.currentActiveId = null;
+                    this.scrollTimeout = null;
 
                     // 搜索范围选项
                     this.searchOptions = {
@@ -560,6 +557,13 @@
 
                     // 监听滚动事件，实现动态跟踪
                     this.setupScrollTracking();
+
+                    // 初始高亮第一个标题
+                    if (this.filteredArticles.length > 0) {
+                        setTimeout(() => {
+                            this.updateActiveTitle(this.filteredArticles[0].id);
+                        }, 100);
+                    }
                 }
 
                 loadArticles(data) {
@@ -701,6 +705,9 @@
                         this.currentActiveId = this.filteredArticles[0].id;
                         this.updateActiveTitle(this.currentActiveId);
                     }
+
+                    // 重新计算文章位置
+                    setTimeout(() => this.calculateArticlePositions(), 100);
                 }
 
                 scrollToArticle(articleId) {
@@ -724,6 +731,25 @@
                         el.classList.remove('active');
                         if (el.dataset.id === articleId) {
                             el.classList.add('active');
+
+                            // 滚动到可见区域
+                            const listContainer = document.getElementById('title-list');
+                            const itemRect = el.getBoundingClientRect();
+                            const listRect = listContainer.getBoundingClientRect();
+
+                            if (itemRect.top < listRect.top) {
+                                // 项目在可见区域上方，滚动到顶部
+                                el.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            } else if (itemRect.bottom > listRect.bottom) {
+                                // 项目在可见区域下方，滚动到底部
+                                el.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'end'
+                                });
+                            }
                         }
                     });
                 }
@@ -731,46 +757,86 @@
                 setupScrollTracking() {
                     const articlesContainer = document.getElementById('all-articles-container');
 
-                    articlesContainer.addEventListener('scroll', () => {
-                        this.handleScroll();
-                    });
+                    // 使用requestAnimationFrame优化滚动性能
+                    let ticking = false;
+
+                    const handleScroll = () => {
+                        if (!ticking) {
+                            requestAnimationFrame(() => {
+                                this.handleScroll();
+                                ticking = false;
+                            });
+                            ticking = true;
+                        }
+                    };
+
+                    articlesContainer.addEventListener('scroll', handleScroll);
 
                     // 初始时也执行一次
                     setTimeout(() => this.handleScroll(), 100);
                 }
 
-                handleScroll() {
+                calculateArticlePositions() {
+                    this.articlePositions = [];
                     const articles = document.querySelectorAll('.article-in-all');
                     const container = document.getElementById('all-articles-container');
 
-                    let closestArticle = null;
-                    let closestDistance = Infinity;
+                    articles.forEach((article, index) => {
+                        const rect = article.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+                        const relativeTop = rect.top - containerRect.top + container.scrollTop;
 
-                    // 获取容器的滚动位置
-                    const containerScrollTop = container.scrollTop;
-                    const containerHeight = container.clientHeight;
-
-                    // 找出当前最接近顶部的文章
-                    articles.forEach(article => {
-                        const articleTop = article.offsetTop - container.offsetTop;
-                        const articleBottom = articleTop + article.offsetHeight;
-
-                        // 如果文章在可视区域内
-                        if (articleTop <= containerScrollTop + containerHeight / 3 &&
-                            articleBottom >= containerScrollTop + containerHeight / 3) {
-
-                            // 计算文章与视口顶部的距离
-                            const distance = Math.abs(articleTop - containerScrollTop);
-                            if (distance < closestDistance) {
-                                closestDistance = distance;
-                                closestArticle = article;
-                            }
-                        }
+                        this.articlePositions.push({
+                            id: article.id,
+                            top: relativeTop,
+                            bottom: relativeTop + rect.height,
+                            index: index
+                        });
                     });
+                }
 
-                    // 如果找到最接近的文章，更新活跃状态
-                    if (closestArticle) {
-                        this.updateActiveTitle(closestArticle.id);
+                handleScroll() {
+                    if (!this.articlePositions || this.articlePositions.length === 0) {
+                        this.calculateArticlePositions();
+                    }
+
+                    const container = document.getElementById('all-articles-container');
+                    const scrollTop = container.scrollTop;
+                    const viewportHeight = container.clientHeight;
+
+                    // 找到当前视口顶部的文章
+                    const currentScrollPosition = scrollTop + viewportHeight * 0.3; // 使用30%位置作为基准点
+
+                    let currentArticleId = null;
+
+                    // 查找当前位于视口中的文章
+                    for (let i = 0; i < this.articlePositions.length; i++) {
+                        const article = this.articlePositions[i];
+
+                        if (currentScrollPosition >= article.top && currentScrollPosition <= article.bottom) {
+                            currentArticleId = article.id;
+                            break;
+                        }
+
+                        // 如果滚动位置在两个文章之间，选择上一个文章
+                        if (currentScrollPosition < article.top) {
+                            if (i > 0) {
+                                currentArticleId = this.articlePositions[i - 1].id;
+                            } else {
+                                currentArticleId = article.id;
+                            }
+                            break;
+                        }
+                    }
+
+                    // 如果没找到（比如滚动到底部），选择最后一个文章
+                    if (!currentArticleId && this.articlePositions.length > 0) {
+                        currentArticleId = this.articlePositions[this.articlePositions.length - 1].id;
+                    }
+
+                    // 更新活跃状态
+                    if (currentArticleId && currentArticleId !== this.currentActiveId) {
+                        this.updateActiveTitle(currentArticleId);
                     }
                 }
 
@@ -828,6 +894,9 @@
                         } else {
                             this.currentActiveId = null;
                         }
+
+                        // 重新计算文章位置
+                        setTimeout(() => this.calculateArticlePositions(), 100);
                     }, 300);
                 }
 
@@ -894,6 +963,14 @@
                     searchContentCheckbox.addEventListener('change', () => {
                         this.searchOptions.content = searchContentCheckbox.checked;
                         this.searchArticles(searchInput.value);
+                    });
+
+                    // 窗口大小变化时重新计算文章位置
+                    window.addEventListener('resize', () => {
+                        setTimeout(() => {
+                            this.calculateArticlePositions();
+                            this.handleScroll();
+                        }, 100);
                     });
 
                     // 键盘快捷键
