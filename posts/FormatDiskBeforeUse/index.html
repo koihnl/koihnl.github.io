@@ -1,0 +1,47 @@
+
+<script>
+                                    const data = [ "2026年2月10日", "使用驱动器中的光盘之前需要将其格式化", 
+`
+U盘在正常使用中出现了问题：
+--------------------------------------
+丨使用驱动器中的光盘之前需要将其格式化。丨
+丨是否要将其格式化？　　　　　　　　　　丨
+丨　　　　　　　　　　　格式化磁盘  取消丨
+--------------------------------------
+ 此时此刻，千万不要点击格式化磁盘
+如果是Windows电脑，只需要Win+R 打开CND命令提示符界面(以Win10为例就是邮件点击开始菜单图标就能看见)
+然后输入：chkdsk D:/f       (其中D是你U盘的盘符，f是fix修复的意思)
+运行完之后就可以双击打开U盘了，如果还不可以，可以尝试一下再次运行或者重新插入U盘。
+————————————————版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。原文链接：https://blog.csdn.net/weixin_43702272/article/details/135524114
+`
+    ];   
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const metaViewport = document.createElement('meta');
+     metaViewport.name = 'viewport';
+    metaViewport.content = 'width=device-width, initial-scale=1.0';
+    document.head.appendChild(metaViewport);
+    document.head.appendChild(Object.assign(document.createElement('title'), { textContent: data[1] + " | 锦鲤未离" }));
+    document.head.appendChild(Object.assign(document.createElement('script'), { src: "/js/logo.js" }));
+    document.body.appendChild(Object.assign(document.createElement('h2'), { textContent: data[1] }));
+    document.body.appendChild(Object.assign(document.createElement('p'), { textContent: "创建时间：" + data[0] }));
+    document.body.appendChild(Object.assign(document.createElement('pre'), { textContent: data[2] }));
+    document.querySelector('pre').style.whiteSpace = 'pre-wrap';
+    document.querySelector('pre').style.wordWrap = 'break-word';
+    document.querySelector('pre').style.fontSize = '16px';
+    document.querySelector('pre').style.fontFamily = 'auto';
+    document.querySelector('body').style.maxWidth = '55%';
+    document.querySelector('body').style.width = '100%';
+    document.querySelector('body').style.margin = '0 auto';
+    document.querySelector('body').style.backgroundColor = '#fff';
+    document.querySelector('body').style.padding = '20px';
+    function adjustBodyMaxWidth() {
+        if (window.innerWidth <= 768) {document.body.style.maxWidth = '90%';} 
+        else {document.body.style.maxWidth = '55%';}
+    }
+    adjustBodyMaxWidth();
+    window.addEventListener('resize', adjustBodyMaxWidth);
+});
+</script>
+
