@@ -1,0 +1,1547 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习面试网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 重置和基础样式 */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+         :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --category-color: #27ae60;
+            --date-color: #7f8c8d;
+            --level-1-color: #3498db;
+            --level-2-color: #2ecc71;
+            --level-3-color: #e67e22;
+            --level-4-color: #9b59b6;
+            --level-5-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
+        }
+        /* 头部样式 */
+        
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), #1a252f);
+            color: white;
+            padding: 18px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            height: 100%;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: white;
+            margin: 0 auto;
+        }
+        /* 主体布局 */
+        
+        main {
+            height: calc(100vh - 80px);
+            padding: 20px 0;
+        }
+        
+        main .container {
+            display: flex;
+            gap: 30px;
+            height: 100%;
+        }
+        /* 侧边栏 - 平铺显示所有目录 */
+        
+        .sidebar {
+            flex: 0 0 380px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        
+        .category-header h3 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        /* 搜索区域样式 */
+        
+        .search-container {
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 0 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .search-box i {
+            color: #666;
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px 0;
+            font-size: 1rem;
+            background: transparent;
+            width: 100%;
+        }
+        
+        #clear-search {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        #clear-search:hover {
+            color: var(--accent-color);
+        }
+        
+        .search-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .category-count {
+            font-weight: 500;
+        }
+        /* 目录列表样式 - 平铺显示 */
+        
+        .directory-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        .directory-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .directory-item:hover {
+            background-color: #f8fafc;
+        }
+        
+        .directory-item.active {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .directory-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-color);
+        }
+        /* 不同层级样式 - 平铺显示 */
+        
+        .level-1 {
+            font-weight: 700;
+            color: var(--level-1-color);
+            background-color: rgba(52, 152, 219, 0.05);
+            padding-left: 25px;
+            font-size: 1.1rem;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        
+        .level-2 {
+            font-weight: 600;
+            color: var(--level-2-color);
+            background-color: rgba(46, 204, 113, 0.03);
+            padding-left: 35px;
+        }
+        
+        .level-3 {
+            font-weight: 500;
+            color: var(--level-3-color);
+            background-color: rgba(230, 126, 34, 0.03);
+            padding-left: 45px;
+            font-size: 0.95rem;
+        }
+        
+        .level-4 {
+            font-weight: 500;
+            color: var(--level-4-color);
+            background-color: rgba(155, 89, 182, 0.03);
+            padding-left: 55px;
+            font-size: 0.95rem;
+        }
+        
+        .level-5 {
+            font-weight: 400;
+            color: var(--level-5-color);
+            padding-left: 65px;
+            font-size: 0.9rem;
+            background-color: rgba(231, 76, 60, 0.02);
+        }
+        /* 内容区域 - 平铺显示所有题目 */
+        
+        .content {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .all-questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 35px 40px;
+            height: 100%;
+        }
+        
+        .all-questions-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .all-questions-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        .all-questions-container::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        /* 套题容器 - 用于定位 */
+        
+        .article-container {
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .article-container:last-child {
+            margin-bottom: 0;
+        }
+        
+        .article-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e8f4fc;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 10;
+            padding-top: 10px;
+        }
+        
+        .article-title-full {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .article-date {
+            color: var(--date-color);
+            font-weight: 500;
+            font-size: 1rem;
+            background: #f5f7fa;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .article-category {
+            color: var(--category-color);
+            font-weight: 600;
+            font-size: 1rem;
+            background: #e8f6ef;
+            padding: 5px 15px;
+            border-radius: 6px;
+        }
+        /* 题目和解析样式 */
+        
+        .question-container {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
+        .question-title {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f4fc;
+            font-weight: 600;
+        }
+        
+        .question-content {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        /* 解析按钮和内容 */
+        
+        .answer-toggle-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 0 20px 0;
+            transition: background-color 0.2s;
+        }
+        
+        .answer-toggle-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .answer-container {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .answer-container.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .answer-title {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fde8e8;
+            font-weight: 600;
+        }
+        
+        .answer-content {
+            background-color: #fff9e6;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 25px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #bdc3c7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #95a5a6;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        /* 响应式设计 */
+        
+        @media (max-width: 1200px) {
+            main .container {
+                gap: 20px;
+            }
+            .sidebar {
+                flex: 0 0 350px;
+            }
+            .article-title-full {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            main .container {
+                flex-direction: column;
+                height: auto;
+            }
+            .sidebar {
+                flex: none;
+                width: 100%;
+                height: 450px;
+            }
+            .content {
+                height: auto;
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            .all-questions-container {
+                padding: 25px;
+            }
+            .article-title-full {
+                font-size: 1.6rem;
+            }
+            .question-content,
+            .answer-content {
+                padding: 20px;
+                font-size: 1rem;
+            }
+            .sidebar {
+                height: 400px;
+            }
+            .category-header {
+                padding: 15px 20px;
+            }
+            .level-1 {
+                padding-left: 20px;
+            }
+            .level-2 {
+                padding-left: 30px;
+            }
+            .level-3 {
+                padding-left: 40px;
+            }
+            .level-4 {
+                padding-left: 50px;
+            }
+            .level-5 {
+                padding-left: 60px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .all-questions-container {
+                padding: 20px;
+            }
+            .article-title-full {
+                font-size: 1.5rem;
+            }
+            .question-content,
+            .answer-content {
+                padding: 15px;
+                font-size: 0.95rem;
+            }
+            .directory-item {
+                padding: 12px 15px 12px 20px;
+            }
+            .level-1 {
+                padding-left: 15px;
+            }
+            .level-2 {
+                padding-left: 25px;
+            }
+            .level-3 {
+                padding-left: 35px;
+            }
+            .level-4 {
+                padding-left: 45px;
+            }
+            .level-5 {
+                padding-left: 55px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">学习面试网站</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="sidebar">
+                <div class="category-header">
+                    <h3>面试目录</h3>
+
+                    <!-- 搜索区域 -->
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="搜索题目、解析或分类...">
+                            <button id="clear-search"><i class="fas fa-times"></i></button>
+                        </div>
+
+                        <!-- 搜索结果统计 -->
+                        <div class="search-stats">
+                            <div class="search-result-count" id="search-result-count">找到 0 个内容</div>
+                            <div class="category-count" id="category-count">0 个目录项</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="directory-list" id="directory-list">
+                    <!-- 目录列表会通过JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="all-questions-container" id="all-questions-container">
+                    <!-- 所有面试题目内容会通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 面试数据 - 平铺显示所有目录项
+        const interviewData = [{
+            id: 'level-1-1',
+            title: '一级分类：2025年12月15日-21日（第51周）',
+            level: 1,
+            children: [{
+                id: 'level-2-1',
+                title: '二级分类：公务员面试',
+                level: 2,
+                children: [{
+                    id: 'level-3-1',
+                    title: '三级分类：国考AI面试模考大赛（每周4期一三五(均单题)六(套题)）',
+                    level: 3,
+                    children: []
+                }, {
+                    id: 'level-3-2',
+                    title: '三级分类：省考AI面试模考大赛（同上）',
+                    level: 3,
+                    children: []
+                }]
+            }, {
+                id: 'level-2-2',
+                title: '二级分类：事业单位面试',
+                level: 2,
+                children: [{
+                    id: 'level-3-3',
+                    title: '三级分类：2025结构化AI面试模考大赛（每周一期在周六）',
+                    level: 3,
+                    children: []
+                }, {
+                    id: 'level-3-4',
+                    title: '三级分类：2025年下半年AI面试模考大赛-事业单位联考（每周三期二四六）',
+                    level: 3,
+                    children: [{
+                        id: 'level-4-1',
+                        title: '[251216]2025年下半年AI面试模考大赛-事业单位联考（第22季套题）[事考]',
+                        level: 4,
+                        type: 'article',
+                        date: '251216',
+                        category: '事考',
+                        questions: [{
+                            id: 'q-22-1',
+                            title: '题目1：请谈谈你对"互联网+政务服务"的看法。',
+                            level: 5,
+                            question: `随着信息技术的发展，"互联网+政务服务"成为政府改革的重要方向。请谈谈你对"互联网+政务服务"的看法，并分析其在提升政府服务效能方面的作用。`,
+                            answer: `【解析】
+1. 概念理解："互联网+政务服务"是指利用互联网技术和思维，优化政府服务流程，提高服务效率，实现政务服务线上化、智能化。
+
+2. 主要优势：
+   - 提高服务效率：减少群众跑腿次数，缩短办事时间
+   - 降低行政成本：减少纸质材料，优化人力资源配置
+   - 增强透明度：办事流程公开透明，减少暗箱操作
+   - 改善用户体验：提供24小时不打烊服务，随时随地可办理
+
+3. 实践意义：
+   - 推动政府数字化转型
+   - 促进服务型政府建设
+   - 优化营商环境
+   - 增强群众获得感
+
+4. 存在问题：
+   - 数字鸿沟问题：部分老年人、偏远地区群众难以适应
+   - 数据安全问题：个人信息保护需要加强
+   - 系统整合难题：各部门系统互不联通
+
+5. 改进建议：
+   - 加强数字素养培训
+   - 完善数据安全保障体系
+   - 推进跨部门数据共享
+   - 保留线下服务渠道
+
+总之，"互联网+政务服务"是政府治理现代化的必然趋势，需要在推进过程中平衡效率与公平、创新与安全的关系。`
+                        }, {
+                            id: 'q-22-2',
+                            title: '题目2：单位要组织一次网络安全宣传活动，领导让你负责，你会怎么组织？',
+                            level: 5,
+                            question: `为了提升单位员工的网络安全意识，领导决定组织一次网络安全宣传活动，并让你负责此次活动的组织工作。请谈谈你的工作思路和具体措施。`,
+                            answer: `【解析】
+1. 前期准备阶段：
+   - 调研需求：通过问卷了解员工网络安全知识薄弱环节
+   - 制定方案：确定活动主题、时间、地点、形式、预算等
+   - 组建团队：成立活动筹备小组，明确分工
+
+2. 宣传动员阶段：
+   - 多渠道宣传：通过OA系统、微信群、公告栏等发布活动通知
+   - 营造氛围：制作宣传海报、横幅，布置宣传展板
+   - 重点邀请：邀请网络安全专家、相关部门负责人参加
+
+3. 活动实施阶段：
+   - 专题讲座：邀请专家讲解网络安全法律法规、常见风险
+   - 案例分享：通过真实案例展示网络安全事件危害
+   - 技能培训：教授密码设置、数据备份、防钓鱼等实用技能
+   - 互动环节：设置知识问答、情景模拟等互动活动
+   - 资料发放：印制并发放网络安全手册、宣传单
+
+4. 创新形式：
+   - 线上宣传：利用短视频、H5页面等新媒体形式
+   - 实战演练：组织模拟网络攻击应急演练
+   - 竞赛活动：举办网络安全知识竞赛
+
+5. 后续工作：
+   - 效果评估：通过问卷调查、测试等方式评估活动效果
+   - 长效机制：建立常态化网络安全培训机制
+   - 资料归档：整理活动资料，总结经验教训
+
+通过以上措施，确保宣传活动取得实效，真正提升员工的网络安全意识和防护能力。`
+                        }]
+                    }, {
+                        id: 'level-4-2',
+                        title: '[251218]2025年下半年AI面试模考大赛-事业单位联考（第23季套题）[事考]',
+                        level: 4,
+                        type: 'article',
+                        date: '251218',
+                        category: '事考',
+                        questions: [{
+                            id: 'q-23-1',
+                            title: '题目1：请谈谈你对"基层减负"的理解。',
+                            level: 5,
+                            question: `近年来，中央多次强调要为基层减负，解决形式主义突出问题。请谈谈你对"基层减负"的理解，并提出具体建议。`,
+                            answer: `【解析】
+1. 概念理解："基层减负"是指减少基层干部不必要的负担，让他们有更多时间和精力抓落实、服务群众。
+
+2. 现实意义：
+   - 提高工作效率：减少文山会海，让干部回归主责主业
+   - 激发工作活力：减轻心理压力，提升工作积极性
+   - 密切干群关系：干部有更多时间深入群众、解决实际问题
+   - 促进政策落实：集中精力推动中央决策部署落地见效
+
+3. 当前问题：
+   - 会议文件过多：层层开会、重复发文
+   - 检查考核过频：各类督查检查考核过多过滥
+   - 表格填报过繁：重复填表、多头报送
+   - 责任层层加码：压力传导变成责任下移
+
+4. 具体建议：
+   - 精简会议文件：能合并的合并，能精简的精简
+   - 规范督查检查：统筹安排，避免多头重复
+   - 优化考核评价：注重实绩，减少痕迹管理
+   - 强化技术支撑：利用信息化手段提高效率
+   - 完善容错机制：为担当者担当，为负责者负责
+
+5. 长效机制：
+   - 建立基层减负长效机制
+   - 加强监督问责，防止反弹回潮
+   - 畅通基层干部诉求表达渠道
+   - 营造实干担当的良好氛围
+
+基层减负不是降低工作标准，而是优化工作方式，让基层干部轻装上阵，更好地服务群众、推动发展。`
+                        }, {
+                            id: 'q-23-2',
+                            title: '题目2：领导安排你和一位老同事共同完成一项紧急任务，但老同事不配合，你怎么办？',
+                            level: 5,
+                            question: `领导安排你与一位工作经验丰富的老同事共同完成一项紧急任务，但在合作过程中，老同事对你的工作安排不认同、不配合，导致工作进展缓慢。面对这种情况，你会如何处理？`,
+                            answer: `【解析】
+1. 端正态度，保持冷静：
+   - 尊重老同事：认可老同事的经验和贡献
+   - 不急于指责：避免激化矛盾，保持理性沟通
+   - 反思自身：检查自己的工作方式是否存在问题
+
+2. 主动沟通，了解原因：
+   - 选择合适的时机和场合进行沟通
+   - 以请教的态度了解老同事的想法和顾虑
+   - 认真倾听，理解老同事的立场和困难
+
+3. 分析问题，寻找共识：
+   - 梳理双方分歧点，分析原因
+   - 寻找共同目标：完成任务、保证质量
+   - 探讨折中方案，兼顾双方意见
+
+4. 具体措施：
+   - 调整分工：根据各自优势重新分配任务
+   - 优化流程：简化不必要的环节，提高效率
+   - 加强汇报：及时向领导汇报进展，争取支持
+   - 虚心请教：在专业问题上多听取老同事意见
+
+5. 特殊情况处理：
+   - 如果沟通无效，可请其他同事或领导协调
+   - 先推进无争议部分工作，避免全面停滞
+   - 做好预案，确保任务按时完成
+
+6. 事后总结：
+   - 任务完成后及时总结经验教训
+   - 维护良好同事关系，不计较个人得失
+   - 提升沟通协调能力，为今后合作打好基础
+
+在工作中遇到合作困难是正常的，关键是要以工作为重，讲究方法，既坚持原则又灵活处理，确保任务顺利完成。`
+                        }]
+                    }, {
+                        id: 'level-4-3',
+                        title: '[251220]2025年下半年AI面试模考大赛-事业单位联考（第24季套题）[事考]',
+                        level: 4,
+                        type: 'article',
+                        date: '251220',
+                        category: '事考',
+                        questions: [{
+                            id: 'q-24-1',
+                            title: '题目1：请谈谈你对"乡村振兴战略"的理解。',
+                            level: 5,
+                            question: `乡村振兴战略是新时代"三农"工作的总抓手。请谈谈你对"乡村振兴战略"的理解，并分析其在当前形势下的重要意义。`,
+                            answer: `【解析】
+1. 战略定位：乡村振兴战略是党的十九大提出的重大战略，是全面建设社会主义现代化国家的重大历史任务。
+
+2. 总体要求：产业兴旺、生态宜居、乡风文明、治理有效、生活富裕。
+
+3. 核心内容：
+   - 产业振兴：发展现代农业，促进农村一二三产业融合
+   - 人才振兴：培养新型职业农民，吸引各类人才返乡创业
+   - 文化振兴：传承发展农耕文明，培育文明乡风
+   - 生态振兴：推行绿色发展，建设美丽乡村
+   - 组织振兴：加强农村基层党组织建设，完善乡村治理
+
+4. 重要意义：
+   - 解决发展不平衡不充分问题的必然要求
+   - 实现全体人民共同富裕的必然选择
+   - 全面建设社会主义现代化国家的基础工程
+   - 传承中华优秀传统文化的重要途径
+   - 维护国家粮食安全的根本保障
+
+5. 实施路径：
+   - 坚持农业农村优先发展
+   - 建立健全城乡融合发展体制机制
+   - 巩固拓展脱贫攻坚成果
+   - 深化农村改革
+   - 强化政策支持和要素保障
+
+6. 当前重点：
+   - 保障粮食和重要农产品稳定安全供给
+   - 扎实推进乡村发展、建设、治理
+   - 拓宽农民增收致富渠道
+   - 推进宜居宜业和美乡村建设
+
+乡村振兴是一项长期的历史任务，需要保持战略定力，久久为功，逐步实现农业强、农村美、农民富的目标。`
+                        }, {
+                            id: 'q-24-2',
+                            title: '题目2：如果你被录用，你将如何适应新岗位？',
+                            level: 5,
+                            question: `如果你顺利通过本次面试并被录用，面对全新的工作环境和岗位要求，你将如何尽快适应新岗位，成为一名合格的事业单位工作人员？`,
+                            answer: `【解析】
+1. 端正心态，准确定位：
+   - 归零心态：放下过往成绩，从头开始学习
+   - 服务意识：牢记为人民服务的宗旨
+   - 责任担当：尽快进入工作角色
+
+2. 加强学习，提升能力：
+   - 学习政策法规：掌握相关法律法规和政策文件
+   - 熟悉业务流程：了解单位规章制度和工作流程
+   - 学习业务知识：钻研岗位所需的专业知识和技能
+   - 向同事请教：虚心向领导和老同事学习经验
+
+3. 主动融入，建立关系：
+   - 尽快熟悉同事，建立良好人际关系
+   - 积极参加集体活动，增强团队归属感
+   - 尊重单位文化，遵守行为规范
+
+4. 积极实践，勇于担当：
+   - 从小事做起，认真完成领导交办的各项任务
+   - 主动承担力所能及的工作，不怕吃苦
+   - 在实践中积累经验，提升解决实际问题的能力
+
+5. 勤于总结，持续改进：
+   - 定期总结工作得失，查找不足
+   - 听取领导和同事的意见建议，及时改进
+   - 制定个人成长计划，明确努力方向
+
+6. 严守纪律，廉洁自律：
+   - 遵守政治纪律和政治规矩
+   - 遵守工作纪律和廉洁纪律
+   - 维护单位形象，保守工作秘密
+
+适应新岗位是一个持续的过程，我会以积极的态度、务实的精神，尽快完成角色转变，努力成为一名让组织放心、让群众满意的合格工作人员。`
+                        }]
+                    }, {
+                        id: 'level-4-4',
+                        title: '[251222]2025年下半年AI面试模考大赛-事业单位联考（第25季套题）[事考]',
+                        level: 4,
+                        type: 'article',
+                        date: '251222',
+                        category: '事考',
+                        questions: [{
+                            id: 'q-25-1',
+                            title: '题目1：请谈谈你对"碳达峰、碳中和"的理解。',
+                            level: 5,
+                            question: `我国明确提出2030年前实现碳达峰、2060年前实现碳中和的目标。请谈谈你对"碳达峰、碳中和"的理解，并分析其对经济社会发展的影响。`,
+                            answer: `【解析】
+1. 概念理解：
+   - 碳达峰：指二氧化碳排放量达到历史最高值后，进入下降阶段
+   - 碳中和：指通过植树造林、节能减排等形式，抵消自身产生的二氧化碳排放量，实现二氧化碳"净零排放"
+
+2. 战略意义：
+   - 应对全球气候变化：履行大国责任，推动构建人类命运共同体
+   - 推动高质量发展：倒逼经济结构转型升级
+   - 保障能源安全：减少对化石能源的依赖
+   - 促进技术创新：催生绿色低碳新技术、新产业
+
+3. 主要挑战：
+   - 能源结构偏煤：我国能源消费结构中煤炭占比仍较高
+   - 产业结构偏重：重化工业比重较大，能耗高
+   - 技术储备不足：部分低碳技术仍处于研发阶段
+   - 经济成本压力：转型过程中可能带来短期成本上升
+
+4. 实施路径：
+   - 调整能源结构：大力发展可再生能源
+   - 优化产业结构：推动传统产业绿色转型
+   - 发展循环经济：提高资源利用效率
+   - 建设低碳交通：推广新能源汽车
+   - 发展碳汇能力：加强生态保护和植树造林
+
+5. 经济社会影响：
+   - 催生新产业：新能源、节能环保等产业迎来发展机遇
+   - 创造新就业：绿色低碳领域将创造大量就业岗位
+   - 推动技术创新：促进低碳技术研发和应用
+   - 改善生态环境：减少污染排放，改善空气质量
+
+实现碳达峰、碳中和是一场广泛而深刻的经济社会系统性变革，需要统筹协调、系统推进。`
+                        }, {
+                            id: 'q-25-2',
+                            title: '题目2：你负责的项目进展不顺利，领导不满意，你怎么办？',
+                            level: 5,
+                            question: `你负责的一个重要项目进展不顺利，未能达到预期目标，领导对此表示不满意。面对这种情况，你会如何处理？`,
+                            answer: `【解析】
+1. 端正态度，正视问题：
+   - 不推诿、不逃避，主动承担责任
+   - 认真听取领导的批评意见
+   - 保持冷静，理性分析问题
+
+2. 深入分析，查找原因：
+   - 客观分析项目进展不顺利的具体原因
+   - 区分主观原因和客观原因
+   - 找出关键症结所在
+
+3. 制定改进措施：
+   - 调整项目计划：根据实际情况重新制定切实可行的计划
+   - 优化资源配置：合理调配人力、物力、财力
+   - 加强过程管理：建立更严格的进度监控机制
+   - 寻求外部支持：必要时向上级或相关部门请求协助
+
+4. 主动汇报，争取支持：
+   - 向领导详细汇报问题分析和改进方案
+   - 征求领导对改进方案的意见建议
+   - 争取领导的理解和支持
+
+5. 狠抓落实，确保效果：
+   - 严格按改进方案推进工作
+   - 加强团队沟通协作，形成工作合力
+   - 定期检查评估，及时调整优化
+
+6. 事后总结，提升能力：
+   - 项目完成后进行全面总结
+   - 提炼经验教训，避免类似问题再次发生
+   - 提升项目管理能力和应急处理能力
+
+工作中遇到挫折是难免的，关键是要有面对问题的勇气和解决问题的能力，把压力转化为改进工作的动力。`
+                        }]
+                    }, {
+                        id: 'level-4-5',
+                        title: '[251224]2025年下半年AI面试模考大赛-事业单位联考（第26季套题）[事考]',
+                        level: 4,
+                        type: 'article',
+                        date: '251224',
+                        category: '事考',
+                        questions: [{
+                            id: 'q-26-1',
+                            title: '题目1：请谈谈你对"数字政府"建设的理解。',
+                            level: 5,
+                            question: `当前，各地都在加快推进"数字政府"建设。请谈谈你对"数字政府"建设的理解，并分析其在提升治理能力现代化方面的作用。`,
+                            answer: `【解析】
+1. 概念理解："数字政府"是指运用互联网、大数据、人工智能等数字技术，构建数字化、智能化的政府运行模式。
+
+2. 建设目标：
+   - 实现政府决策科学化
+   - 实现社会治理精准化
+   - 实现公共服务高效化
+   - 实现政府运行透明化
+
+3. 主要特征：
+   - 数据驱动：以数据为基础进行决策和管理
+   - 平台支撑：建设统一的数据共享交换平台
+   - 协同高效：打破部门壁垒，实现跨部门协同
+   - 智能便捷：提供智能化、个性化的政务服务
+
+4. 重要作用：
+   - 提高行政效率：减少办事环节，缩短办理时间
+   - 优化营商环境：为企业提供便捷高效的政务服务
+   - 增强治理能力：实现精准治理、智能治理
+   - 促进反腐倡廉：通过技术手段规范权力运行
+   - 提升群众满意度：提供更优质、更便捷的公共服务
+
+5. 建设重点：
+   - 基础设施：建设统一完善的数字基础设施
+   - 数据共享：打破数据孤岛，实现数据互通共享
+   - 应用创新：开发适应需求的数字化应用场景
+   - 安全保障：建立健全网络安全保障体系
+   - 制度规范：完善相关法律法规和标准规范
+
+6. 面临的挑战：
+   - 数据安全和隐私保护问题
+   - 数字鸿沟问题
+   - 体制机制障碍
+   - 人才队伍建设
+
+"数字政府"建设是推进国家治理体系和治理能力现代化的重要途径，需要统筹规划、稳步推进。`
+                        }, {
+                            id: 'q-26-2',
+                            title: '题目2：群众对你单位的工作有意见，在网上发表负面言论，你怎么办？',
+                            level: 5,
+                            question: `有群众对你单位的工作不满意，在网络上发表了一些负面言论，引起了较多关注。领导让你处理此事，你会怎么办？`,
+                            answer: `【解析】
+1. 迅速反应，及时上报：
+   - 第一时间发现并核实网络负面言论
+   - 立即向领导汇报情况，请示处理意见
+   - 保持冷静，避免过度反应
+
+2. 调查核实，弄清真相：
+   - 详细了解群众反映的具体问题和诉求
+   - 调查核实相关情况，查明事实真相
+   - 区分合理诉求和不实信息
+
+3. 分类处理，妥善应对：
+   - 对合理的意见建议：虚心接受，认真整改
+   - 对误解误读：耐心解释说明，澄清事实
+   - 对不实信息：依法依规进行处置
+   - 对恶意攻击：保留追究法律责任的权利
+
+4. 主动沟通，积极回应：
+   - 及时通过官方渠道发布情况说明
+   - 与反映问题的群众进行沟通，听取意见
+   - 公开承诺整改措施和时限
+
+5. 解决问题，改进工作：
+   - 针对群众反映的问题，制定整改方案
+   - 切实解决群众合理诉求
+   - 举一反三，完善相关工作制度
+
+6. 跟踪反馈，化解矛盾：
+   - 及时向群众反馈问题处理进展和结果
+   - 继续关注网络舆情动态
+   - 建立长效机制，防止类似问题再次发生
+
+7. 总结经验，提升能力：
+   - 总结此次事件处理的经验教训
+   - 提升应对网络舆情的能力
+   - 完善群众诉求回应机制
+
+网络舆情处置要坚持实事求是、公开透明、及时有效的原则，既维护单位形象，又切实解决群众问题。`
+                        }]
+                    }]
+                }]
+            }]
+        }];
+
+        // 确保DOM完全加载后再执行JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+
+                    class InterviewSite {
+                        constructor(data) {
+                            this.categoryData = data;
+                            this.flatItems = []; // 所有目录项平铺
+                            this.flatQuestions = []; // 所有题目平铺
+                            this.allDirectoryItems = []; // 所有目录项（用于左侧显示）
+                            this.searchTimeout = null;
+                            this.currentActiveId = null;
+                            this.scrollTimeout = null;
+                            this.isScrolling = false;
+                            this.articlePositions = []; // 套题位置
+                            this.questionPositions = []; // 题目位置
+
+                            this.init();
+                        }
+
+                        init() {
+                            // 扁平化数据
+                            this.flattenData();
+
+                            // 渲染目录列表
+                            this.renderDirectoryList();
+
+                            // 渲染所有题目
+                            this.renderAllQuestions();
+
+                            // 绑定事件
+                            this.bindEvents();
+
+                            // 设置滚动监听
+                            this.setupScrollTracking();
+                        }
+
+                        // 扁平化数据
+                        flattenData() {
+                            const traverse = (items, level) => {
+                                items.forEach(item => {
+                                    // 添加到目录项
+                                    this.allDirectoryItems.push({
+                                        id: item.id,
+                                        title: item.title,
+                                        level: item.level,
+                                        type: item.type || 'category',
+                                        date: item.date,
+                                        category: item.category
+                                    });
+
+                                    // 如果是套题（四级目录），添加到flatItems
+                                    if (item.type === 'article') {
+                                        this.flatItems.push({
+                                            id: item.id,
+                                            title: item.title,
+                                            level: item.level,
+                                            type: 'article',
+                                            date: item.date,
+                                            category: item.category,
+                                            questions: item.questions || []
+                                        });
+
+                                        // 添加题目到flatQuestions
+                                        if (item.questions && item.questions.length > 0) {
+                                            item.questions.forEach(question => {
+                                                this.flatQuestions.push({
+                                                    id: question.id,
+                                                    title: question.title,
+                                                    level: question.level,
+                                                    type: 'question',
+                                                    question: question.question,
+                                                    answer: question.answer,
+                                                    parentId: item.id
+                                                });
+
+                                                // 添加到目录项
+                                                this.allDirectoryItems.push({
+                                                    id: question.id,
+                                                    title: question.title,
+                                                    level: question.level,
+                                                    type: 'question'
+                                                });
+                                            });
+                                        }
+                                    }
+
+                                    // 递归处理子项
+                                    if (item.children && item.children.length > 0) {
+                                        traverse(item.children, level + 1);
+                                    }
+                                });
+                            };
+
+                            traverse(this.categoryData, 1);
+                        }
+
+                        // 渲染目录列表
+                        renderDirectoryList(filteredItems = null) {
+                            const listContainer = document.getElementById('directory-list');
+                            const categoryCount = document.getElementById('category-count');
+
+                            const itemsToRender = filteredItems || this.allDirectoryItems;
+
+                            if (itemsToRender.length === 0) {
+                                listContainer.innerHTML = '<div class="empty-state"><p>没有找到匹配的目录</p></div>';
+                                categoryCount.textContent = `0 个目录项`;
+                                return;
+                            }
+
+                            listContainer.innerHTML = itemsToRender.map(item => {
+                                const isActive = this.currentActiveId === item.id;
+                                const levelClass = `level-${item.level}`;
+
+                                return `
+                            <div class="directory-item ${levelClass} ${isActive ? 'active' : ''}" 
+                                 data-id="${item.id}" data-type="${item.type}">
+                                ${item.title}
+                            </div>
+                        `;
+                            }).join('');
+
+                            categoryCount.textContent = `${itemsToRender.length} 个目录项`;
+
+                            // 绑定点击事件
+                            this.bindDirectoryEvents();
+                        }
+
+                        // 绑定目录点击事件
+                        bindDirectoryEvents() {
+                            const listContainer = document.getElementById('directory-list');
+
+                            listContainer.querySelectorAll('.directory-item').forEach(item => {
+                                item.addEventListener('click', () => {
+                                    const itemId = item.dataset.id;
+                                    const itemType = item.dataset.type;
+
+                                    if (itemType === 'article') {
+                                        // 点击套题，滚动到套题位置
+                                        this.scrollToArticle(itemId);
+                                    } else if (itemType === 'question') {
+                                        // 点击题目，滚动到题目位置
+                                        this.scrollToQuestion(itemId);
+                                    } else {
+                                        // 点击分类，滚动到顶部
+                                        document.getElementById('all-questions-container').scrollTop = 0;
+                                    }
+                                });
+                            });
+                        }
+
+                        // 滚动到套题
+                        scrollToArticle(articleId) {
+                            const articleElement = document.getElementById(articleId);
+                            if (articleElement) {
+                                articleElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }
+
+                        // 滚动到题目
+                        scrollToQuestion(questionId) {
+                            const questionElement = document.getElementById(questionId);
+                            if (questionElement) {
+                                questionElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }
+
+                        // 渲染所有题目
+                        renderAllQuestions() {
+                                const container = document.getElementById('all-questions-container');
+
+                                if (this.flatItems.length === 0) {
+                                    container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-file-alt"></i>
+                                <h3>暂无题目</h3>
+                                <p>暂时没有面试题目。</p>
+                            </div>
+                        `;
+                                    return;
+                                }
+
+                                container.innerHTML = this.flatItems.map(article => {
+                                            return `
+                            <div class="article-container" id="${article.id}">
+                                <div class="article-header">
+                                    <h1 class="article-title-full">${article.title}</h1>
+                                    <div class="article-meta">
+                                        <span class="article-date">${article.date}</span>
+                                        <span class="article-category">${article.category}</span>
+                                    </div>
+                                </div>
+                                <div class="article-body">
+                                    ${article.questions.map((question, index) => `
+                                        <div class="question-container" id="${question.id}">
+                                            <h2 class="question-title">题目 ${index + 1}</h2>
+                                            <pre class="question-content">${question.question}</pre>
+                                            <button class="answer-toggle-btn" data-question-id="${question.id}">
+                                                显示解析
+                                            </button>
+                                            <div class="answer-container" id="answer-${question.id}">
+                                                <h2 class="answer-title">解析 ${index + 1}</h2>
+                                                <pre class="answer-content">${question.answer}</pre>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // 绑定解析按钮事件
+                    this.bindAnswerToggleEvents();
+                    
+                    // 计算位置
+                    setTimeout(() => {
+                        this.calculatePositions();
+                    }, 300);
+                }
+                
+                // 绑定解析按钮事件
+                bindAnswerToggleEvents() {
+                    const container = document.getElementById('all-questions-container');
+                    
+                    container.querySelectorAll('.answer-toggle-btn').forEach(btn => {
+                        const questionId = btn.dataset.questionId;
+                        const answerContainer = document.getElementById(`answer-${questionId}`);
+                        
+                        btn.addEventListener('click', function() {
+                            if (answerContainer.classList.contains('show')) {
+                                answerContainer.classList.remove('show');
+                                this.textContent = '显示解析';
+                            } else {
+                                answerContainer.classList.add('show');
+                                this.textContent = '隐藏解析';
+                            }
+                        });
+                    });
+                }
+                
+                // 计算套题和题目位置
+                calculatePositions() {
+                    this.articlePositions = [];
+                    this.questionPositions = [];
+                    
+                    const container = document.getElementById('all-questions-container');
+                    const articles = container.querySelectorAll('.article-container');
+                    const questions = container.querySelectorAll('.question-container');
+                    
+                    articles.forEach(article => {
+                        const rect = article.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+                        const relativeTop = rect.top - containerRect.top + container.scrollTop;
+                        
+                        this.articlePositions.push({
+                            id: article.id,
+                            top: relativeTop,
+                            bottom: relativeTop + rect.height
+                        });
+                    });
+                    
+                    questions.forEach(question => {
+                        const rect = question.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+                        const relativeTop = rect.top - containerRect.top + container.scrollTop;
+                        
+                        this.questionPositions.push({
+                            id: question.id,
+                            top: relativeTop,
+                            bottom: relativeTop + rect.height
+                        });
+                    });
+                }
+                
+                // 设置滚动跟踪
+                setupScrollTracking() {
+                    const container = document.getElementById('all-questions-container');
+                    
+                    container.addEventListener('scroll', () => {
+                        if (this.isScrolling) return;
+                        
+                        this.isScrolling = true;
+                        
+                        if (this.scrollTimeout) {
+                            clearTimeout(this.scrollTimeout);
+                        }
+                        
+                        this.scrollTimeout = setTimeout(() => {
+                            this.handleScroll();
+                            this.isScrolling = false;
+                        }, 100);
+                    });
+                    
+                    // 初始计算位置
+                    setTimeout(() => this.calculatePositions(), 500);
+                }
+                
+                // 处理滚动
+                handleScroll() {
+                    if (this.articlePositions.length === 0 || this.questionPositions.length === 0) {
+                        return;
+                    }
+                    
+                    const container = document.getElementById('all-questions-container');
+                    const scrollTop = container.scrollTop;
+                    const containerHeight = container.clientHeight;
+                    
+                    // 先检查题目位置
+                    let currentId = null;
+                    const referencePoint = scrollTop + containerHeight * 0.3;
+                    
+                    // 查找当前题目
+                    for (let i = 0; i < this.questionPositions.length; i++) {
+                        const question = this.questionPositions[i];
+                        
+                        if (referencePoint >= question.top && referencePoint <= question.bottom) {
+                            currentId = question.id;
+                            break;
+                        }
+                        
+                        // 如果滚动位置在题目之间
+                        if (i < this.questionPositions.length - 1) {
+                            const nextQuestion = this.questionPositions[i + 1];
+                            if (referencePoint > question.bottom && referencePoint < nextQuestion.top) {
+                                // 选择上一个题目
+                                currentId = question.id;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 如果没找到题目，检查套题位置
+                    if (!currentId) {
+                        for (let i = 0; i < this.articlePositions.length; i++) {
+                            const article = this.articlePositions[i];
+                            
+                            if (referencePoint >= article.top && referencePoint <= article.bottom) {
+                                currentId = article.id;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 更新左侧高亮
+                    if (currentId && currentId !== this.currentActiveId) {
+                        this.currentActiveId = currentId;
+                        this.highlightCurrentItem();
+                        
+                        // 确保左侧目录可见
+                        const activeElement = document.querySelector(`.directory-item[data-id="${currentId}"]`);
+                        if (activeElement) {
+                            const listContainer = document.getElementById('directory-list');
+                            const itemRect = activeElement.getBoundingClientRect();
+                            const listRect = listContainer.getBoundingClientRect();
+                            
+                            if (itemRect.top < listRect.top) {
+                                // 项目在可见区域上方，滚动到顶部
+                                activeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            } else if (itemRect.bottom > listRect.bottom) {
+                                // 项目在可见区域下方，滚动到底部
+                                activeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            }
+                        }
+                    }
+                }
+                
+                // 高亮当前项
+                highlightCurrentItem() {
+                    const listContainer = document.getElementById('directory-list');
+                    
+                    listContainer.querySelectorAll('.directory-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (item.dataset.id === this.currentActiveId) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
+                
+                // 搜索内容
+                searchContent(query) {
+                    clearTimeout(this.searchTimeout);
+                    
+                    this.searchTimeout = setTimeout(() => {
+                        const searchLower = query.toLowerCase().trim();
+                        const searchResultCount = document.getElementById('search-result-count');
+                        
+                        if (!searchLower) {
+                            this.renderDirectoryList();
+                            searchResultCount.textContent = `找到 ${this.allDirectoryItems.length} 个内容`;
+                            return;
+                        }
+                        
+                        // 搜索所有内容
+                        const searchResults = [];
+                        
+                        // 搜索目录项
+                        const directoryResults = this.allDirectoryItems.filter(item => {
+                            return item.title && item.title.toLowerCase().includes(searchLower);
+                        });
+                        
+                        // 搜索题目内容
+                        const questionResults = this.flatQuestions.filter(question => {
+                            return (question.question && question.question.toLowerCase().includes(searchLower)) ||
+                                   (question.answer && question.answer.toLowerCase().includes(searchLower));
+                        });
+                        
+                        // 合并结果
+                        const allResults = [...directoryResults, ...questionResults];
+                        
+                        // 去重
+                        const uniqueResults = [];
+                        const seenIds = new Set();
+                        
+                        allResults.forEach(item => {
+                            if (!seenIds.has(item.id)) {
+                                seenIds.add(item.id);
+                                uniqueResults.push(item);
+                            }
+                        });
+                        
+                        // 渲染搜索结果
+                        this.renderDirectoryList(uniqueResults);
+                        
+                        // 显示搜索结果数量
+                        searchResultCount.textContent = `找到 ${uniqueResults.length} 个内容`;
+                        
+                        // 如果有搜索结果，滚动到第一个结果
+                        if (uniqueResults.length > 0) {
+                            const firstResult = uniqueResults[0];
+                            this.currentActiveId = firstResult.id;
+                            this.highlightCurrentItem();
+                            
+                            if (firstResult.type === 'question') {
+                                this.scrollToQuestion(firstResult.id);
+                            } else if (firstResult.type === 'article') {
+                                this.scrollToArticle(firstResult.id);
+                            }
+                        }
+                    }, 300);
+                }
+                
+                // 绑定事件
+                bindEvents() {
+                    const searchInput = document.getElementById('search-input');
+                    const clearSearch = document.getElementById('clear-search');
+                    
+                    // 搜索输入事件
+                    searchInput.addEventListener('input', (e) => {
+                        this.searchContent(e.target.value);
+                    });
+                    
+                    // 清除搜索
+                    clearSearch.addEventListener('click', () => {
+                        searchInput.value = '';
+                        this.searchContent('');
+                        searchInput.focus();
+                    });
+                    
+                    // 窗口大小变化时重新计算位置
+                    window.addEventListener('resize', () => {
+                        setTimeout(() => {
+                            this.calculatePositions();
+                        }, 200);
+                    });
+                    
+                    // 键盘快捷键
+                    document.addEventListener('keydown', (e) => {
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                            e.preventDefault();
+                            searchInput.focus();
+                        }
+                        
+                        if (e.key === 'Escape' && document.activeElement === searchInput) {
+                            searchInput.value = '';
+                            this.searchContent('');
+                            searchInput.blur();
+                        }
+                    });
+                }
+            }
+            
+            // 初始化应用，传入数据
+            new InterviewSite(interviewData);
+        });
+    </script>
+</body>
+
+</html>
