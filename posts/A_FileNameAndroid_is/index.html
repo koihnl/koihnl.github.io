@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安卓U盘默认文件夹说明</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft Yahei", system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: #f3f5f9;
+            padding: 30px 15px;
+            line-height: 1.65;
+        }
+        
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        h1 {
+            color: #223;
+            font-size: 24px;
+            margin-bottom: 14px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 12px;
+        }
+        
+        .tip-block {
+            background: #eff6ff;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin: 18px 0;
+            color: #1e40af;
+        }
+        
+        h2 {
+            font-size: 19px;
+            margin: 22px 0 10px;
+            color: #2d3748;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        
+        th,
+        td {
+            border: 1px solid #e2e8f0;
+            padding: 11px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .risk-safe {
+            display: none;
+            color: #16a34a;
+            font-weight: 500
+        }
+        
+        .risk-caution {
+            display: none;
+            color: #d97706;
+            font-weight: 500
+        }
+        
+        .risk-ban {
+            display: none;
+            color: #dc2626;
+            font-weight: 500
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>安卓U盘自动生成文件夹详解</h1>
+        <div class="tip-block">
+            <b>生成原因：</b>U盘接入安卓手机/电视盒子/车载安卓设备，系统为规范媒体文件分类、方便系统检索素材，自动批量创建目录，不属于病毒；格式化U盘后再次接入安卓设备会重建目录。
+        </div>
+
+        <h2>一、截图里自带的文件夹</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>文件夹名</th>
+                    <th>用途解释</th>
+                    <th style="display: none;">删除风险</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alarms</td>
+                    <td>存储闹钟专属铃声</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+                <tr>
+                    <td>Android</td>
+                    <td>APP缓存、应用私有数据、游戏数据包</td>
+                    <td class="risk-ban">内含数据禁止删除，空目录可删</td>
+                </tr>
+                <tr>
+                    <td>Audiobooks</td>
+                    <td>存放有声书音频资源</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+                <tr>
+                    <td>DCIM</td>
+                    <td>相机实拍照片、录像、截图（数码相机图像标准目录）</td>
+                    <td class="risk-caution">会丢失拍摄的影像素材</td>
+                </tr>
+                <tr>
+                    <td>Documents</td>
+                    <td>PDF、Word、Excel等办公文档</td>
+                    <td class="risk-caution">文档会被一并清除</td>
+                </tr>
+                <tr>
+                    <td>Download</td>
+                    <td>浏览器、各类APP下载的文件</td>
+                    <td class="risk-caution">下载资源会丢失</td>
+                </tr>
+                <tr>
+                    <td>Movies</td>
+                    <td>电影、长视频文件</td>
+                    <td class="risk-safe">空目录可安全删除</td>
+                </tr>
+                <tr>
+                    <td>Music</td>
+                    <td>日常用来播放的普通音乐音频</td>
+                    <td class="risk-safe">空目录可安全删除</td>
+                </tr>
+                <tr>
+                    <td>MyFiles</td>
+                    <td>手机自带文件管理器生成的分类目录</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+                <tr>
+                    <td>Notifications</td>
+                    <td>短信、软件推送的通知提示音</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+                <tr>
+                    <td>Pictures</td>
+                    <td>壁纸、聊天保存图片、零散截图</td>
+                    <td class="risk-caution">存放的图片会被清除</td>
+                </tr>
+                <tr>
+                    <td>Podcasts</td>
+                    <td>播客、电台音频节目</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+                <tr>
+                    <td>Recordings</td>
+                    <td>录音机录音、通话录音文件</td>
+                    <td class="risk-caution">本地录音素材会丢失</td>
+                </tr>
+                <tr>
+                    <td>Ringtones</td>
+                    <td>手机来电自定义铃声</td>
+                    <td class="risk-safe">可安全删除（空目录）</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>二、安卓系统额外常见的默认文件夹</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>文件夹名</th>
+                    <th>用途解释</th>
+                    <th style="display: none;">删除风险</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Backups</td>
+                    <td>联系人、系统配置、应用的备份文件</td>
+                    <td class="risk-caution">备份资料会直接丢失</td>
+                </tr>
+                <tr>
+                    <td>Downloads</td>
+                    <td>谷歌规范标准下载目录（截图是简写Download）</td>
+                    <td class="risk-caution">下载资源会丢失</td>
+                </tr>
+                <tr>
+                    <td>Bluetooth</td>
+                    <td>蓝牙配对传输接收的文件</td>
+                    <td class="risk-safe">空目录可安全删除</td>
+                </tr>
+                <tr>
+                    <td>Screenshots（根目录）</td>
+                    <td>部分机型单独存放系统截图</td>
+                    <td class="risk-caution">截图图片会被清除</td>
+                </tr>
+                <tr>
+                    <td>Temp</td>
+                    <td>系统、APP读写U盘生成的临时缓存</td>
+                    <td class="risk-safe">可安全删除</td>
+                </tr>
+                <tr>
+                    <td>WeChat</td>
+                    <td>微信聊天缓存、收发的图片视频文档</td>
+                    <td class="risk-caution">本地微信聊天素材丢失</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
