@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPPO ADB卸载预装软件完整教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.7;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2277cc;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 26px;
+        }
+        h2 {
+            margin: 24px 0 12px;
+            color: #2d3748;
+            border-left: 5px solid #2277cc;
+            padding-left: 10px;
+            font-size: 20px;
+        }
+        h3 {
+            margin: 18px 0 8px;
+            font-size: 17px;
+            color: #34495e;
+        }
+        p {
+            margin: 8px 0;
+        }
+        ul, ol {
+            padding-left: 25px;
+            margin: 10px 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #a5f3fc;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #fff;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background: #e8f4ff;
+        }
+        .warn {
+            background: #fff3cd;
+            border: 1px solid #ffd699;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .danger {
+            background: #ffe8e8;
+            border: 1px solid #ffb3b3;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .tip {
+            background: #e6f7ff;
+            border: 1px solid #91caff;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>OPPO手机电脑ADB卸载预装流氓软件完整教程（免Root、USB调试）</h1>
+
+    <h2>一、手机端：开启USB调试（ColorOS全版本通用）</h2>
+    <h3>1. 打开开发者模式</h3>
+    <ol>
+        <li>打开「设置」→ <strong>关于本机/关于手机</strong> → 版本信息</li>
+        <li>连续点击<strong>版本号7次</strong>，输入锁屏密码，提示「已进入开发者模式」</li>
+    </ol>
+    <h3>2. 开启USB调试关键开关</h3>
+    <p>返回设置：</p>
+    <ul>
+        <li>ColorOS13/14/15：设置 → <strong>其他设置</strong> → 开发者选项</li>
+        <li>ColorOS16：设置 → 系统与更新 → 开发者选项</li>
+    </ul>
+    <p>必须打开3个开关：</p>
+    <ol>
+        <li>USB调试（核心）</li>
+        <li>USB安装</li>
+        <li>【可选】OEM解锁（部分新机型不打开电脑识别不到设备）</li>
+    </ol>
+    <p>弹出安全警告全部点<strong>允许/确定</strong></p>
+
+    <h2>二、电脑端：安装ADB工具（Windows）</h2>
+    <ol>
+        <li>官网下载安卓SDK平台工具（ADB压缩包），<strong>解压到无中文路径</strong>（例：D:\adb）</li>
+        <li>打开解压文件夹，空白处按住Shift+鼠标右键 → 在此处打开PowerShell/命令提示符</li>
+        <li>数据线连接手机，手机弹窗选择<strong>传输文件（MTP）</strong>，手机弹出「允许此电脑USB调试」勾选始终允许+确定</li>
+        <li>输入检测命令，验证连接成功：</li>
+    </ol>
+    <div class="code-block">adb devices</div>
+    <p>出现一串设备序列号=连接正常；空白/无设备=没开调试/数据线故障</p>
+
+    <h2>三、核心操作：查询软件包名+卸载命令</h2>
+    <h3>方式1：电脑查看全部应用包名（推荐）</h3>
+    <div class="code-block">adb shell pm list packages</div>
+    <p>会列出手机所有软件，格式`包名`</p>
+    <p>精准搜索某款软件（例：浏览器）：</p>
+    <div class="code-block">adb shell pm list packages | findstr browser</div>
+
+    <h3>方式2：手机APP快速查包名</h3>
+    <p>手机安装雪豹速清 → 工具箱-安装包提取-系统应用，直接复制流氓软件包名，不用电脑翻找</p>
+
+    <h3>两种卸载命令（按需选）</h3>
+    <p>1. <strong>保留数据卸载（后悔可恢复）推荐</strong></p>
+    <div class="code-block">adb shell pm uninstall -k --user 0 包名</div>
+    <p>2. <strong>彻底删除软件+全部数据</strong></p>
+    <div class="code-block">adb shell pm uninstall --user 0 包名</div>
+    <p>示例：卸载OPPO自带浏览器</p>
+    <div class="code-block">adb shell pm uninstall -k --user 0 com.heytap.browser</div>
+
+    <h2>四、OPPO可安全卸载预装流氓软件清单（无风险，不砖机、不影响更新）</h2>
+    <table>
+        <tr>
+            <th>软件用途</th>
+            <th>对应包名</th>
+        </tr>
+        <tr>
+            <td>游戏中心</td>
+            <td>com.coloros.gamespace</td>
+        </tr>
+        <tr>
+            <td>OPPO浏览器</td>
+            <td>com.heytap.browser</td>
+        </tr>
+        <tr>
+            <td>乐划锁屏资讯广告</td>
+            <td>com.coloros.screensaver</td>
+        </tr>
+        <tr>
+            <td>钱包/分期金融</td>
+            <td>com.oppo.wallet</td>
+        </tr>
+        <tr>
+            <td>视频/影视</td>
+            <td>com.heytap.video</td>
+        </tr>
+        <tr>
+            <td>阅读/小说</td>
+            <td>com.heytap.reader</td>
+        </tr>
+        <tr>
+            <td>趣玩小游戏</td>
+            <td>com.coloros.minigame</td>
+        </tr>
+        <tr>
+            <td>用户体验计划（收集后台数据）</td>
+            <td>com.coloros.feedback</td>
+        </tr>
+        <tr>
+            <td>Breeno速览/负一屏广告</td>
+            <td>com.coloros.assistantscreen</td>
+        </tr>
+        <tr>
+            <td>欢太商城</td>
+            <td>com.heytap.mall</td>
+        </tr>
+        <tr>
+            <td>健康运动（不用可删）</td>
+            <td>com.coloros.health</td>
+        </tr>
+    </table>
+
+    <h2>五、绝对不能卸载的核心系统软件（删了直接变砖/功能失效）</h2>
+    <div class="danger">
+        电话、短信、设置、相机、文件管理、软件商店、系统桌面、ColorOS框架、权限管理、蓝牙通话组件。
+        <br>包名带 system、phone、settings 一律不动。
+    </div>
+
+    <h2>六、重要避坑提醒</h2>
+    <div class="tip">
+        <ol>
+            <li>不Root！ADB只是用户级卸载，不修改底层分区，不丢保修、不影响OTA系统更新；</li>
+            <li>卸载前优先备份照片、聊天记录，避免意外；</li>
+            <li>卸载后想恢复：软件商店直接搜名称重装，或刷机恢复；</li>
+            <li>操作完成后，开发者选项可以关闭USB调试，防止电脑随意读写手机；</li>
+            <li>不要一次性批量卸载10个以上，卸载3个重启一次手机，排查异常。</li>
+        </ol>
+    </div>
+
+    <h2>七、常见报错解决</h2>
+    <ul>
+        <li><strong>device unauthorized</strong>：手机重新插拔数据线，重新勾选允许USB调试；</li>
+        <li><strong>卸载命令执行失败</strong>：该软件是系统核心组件，只能<strong>禁用</strong>不能卸载，使用冻结命令：</li>
+    </ul>
+    <div class="code-block">adb shell pm disable-user --user 0 包名</div>
+    <ul>
+        <li>电脑识别不到手机：换原装数据线、机箱后置USB接口、重装OPPO官方驱动。</li>
+    </ul>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPPO ADB 应用包名禁用参考清单（仅冻结，不卸载）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft Yahei", Consolas, monospace;
+            background-color: #f6f8fa;
+            color: #24292f;
+            line-height: 1.75;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        h1 {
+            color: #1f6feb;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 26px;
+        }
+        h2 {
+            margin: 30px 0 14px;
+            padding-left: 12px;
+            border-left: 6px solid #1f6feb;
+            font-size: 21px;
+            color: #2c3e50;
+        }
+        h3 {
+            margin: 20px 0 10px;
+            font-size: 18px;
+            color: #34495e;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul, ol {
+            padding-left: 26px;
+            margin: 12px 0;
+        }
+        .code-block {
+            background-color: #161b22;
+            color: #7ee787;
+            padding: 14px 18px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas;
+            margin: 12px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            margin: 16px 0;
+        }
+        table th, table td {
+            border: 1px solid #d0d7de;
+            padding: 11px 14px;
+            text-align: left;
+        }
+        table th {
+            background-color: #eef8ff;
+        }
+        .safe {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .warn {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .danger {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .tip-box {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>OPPO ADB 应用包名禁用参考清单（推荐冻结，不卸载）</h1>
+
+    <div class="tip-box">
+        <h3>核心重要说明</h3>
+        <p>1. 优先选择 <strong>禁用冻结</strong>，风险远低于卸载，随时可以恢复；</p>
+        <p>冻结命令：</p>
+        <div class="code-block">adb shell pm disable-user --user 0 包名</div>
+        <p>恢复启用命令：</p>
+        <div class="code-block">adb shell pm enable --user 0 包名</div>
+        <p>2. 操作原则：一次最多禁用3个，执行完成重启手机验证稳定性；</p>
+        <p>3. 建议把操作过的包名保存到记事本，出现异常方便回滚；</p>
+        <p>4. 需要升级系统前，请先启用系统更新相关组件。</p>
+    </div>
+
+    <h2>✅ 放心安全禁用｜广告/预装推广类，副作用极小</h2>
+    <div class="safe">
+        <p>不需要对应功能直接冻结，日常使用几乎无负面影响。</p>
+    </div>
+    <table>
+        <tr>
+            <th>应用包名</th>
+            <th>软件说明</th>
+            <th>冻结后影响</th>
+        </tr>
+        <tr>
+            <td>com.heytap.browser</td>
+            <td>OPPO自带浏览器</td>
+            <td>自带浏览器无法打开，可更换第三方浏览器</td>
+        </tr>
+        <tr>
+            <td>com.coloros.assistantscreen</td>
+            <td>Breeno速览 / 桌面负一屏资讯广告</td>
+            <td>桌面负一屏直接消失</td>
+        </tr>
+        <tr>
+            <td>com.heytap.pictorial</td>
+            <td>乐划锁屏（锁屏画报、锁屏广告）</td>
+            <td>锁屏不再自动更换壁纸、锁屏资讯消失</td>
+        </tr>
+        <tr>
+            <td>com.oplus.games</td>
+            <td>游戏中心</td>
+            <td>游戏空间、游戏礼包推送全部失效</td>
+        </tr>
+        <tr>
+            <td>com.coloros.video</td>
+            <td>系统视频播放器</td>
+            <td>自带视频无法打开，第三方播放器不受影响</td>
+        </tr>
+        <tr>
+            <td>com.heytap.reader</td>
+            <td>欢太阅读/小说APP</td>
+            <td>自带小说软件失效</td>
+        </tr>
+        <tr>
+            <td>com.heytap.quicksearchbox</td>
+            <td>桌面全局搜索资讯推荐</td>
+            <td>系统搜索推荐弱化，基础搜索可用</td>
+        </tr>
+        <tr>
+            <td>com.opos.ads</td>
+            <td>系统底层商业广告推送服务</td>
+            <td>显著减少系统弹窗广告，精简首选</td>
+        </tr>
+        <tr>
+            <td>com.nearme.instant.platform</td>
+            <td>快应用平台</td>
+            <td>所有快应用无法启动，不用快应用可放心冻结</td>
+        </tr>
+        <tr>
+            <td>com.coloros.weather2</td>
+            <td>自带天气</td>
+            <td>系统天气APP失效，可用第三方天气</td>
+        </tr>
+        <tr>
+            <td>com.oplus.themestore</td>
+            <td>主题商店</td>
+            <td>无法下载官方主题、在线壁纸</td>
+        </tr>
+        <tr>
+            <td>com.coloros.childrenspace</td>
+            <td>儿童空间</td>
+            <td>儿童模式无法启动</td>
+        </tr>
+        <tr>
+            <td>com.coloros.oshare</td>
+            <td>OPPO互传 O+Share</td>
+            <td>手机之间免流量互传功能失效</td>
+        </tr>
+    </table>
+
+    <h2>⚠️ 谨慎禁用｜取舍型，冻结会丢失对应功能，按需选择</h2>
+    <div class="warn">
+        <p>确认不需要相关功能再操作，部分组件会影响云同步、推送、系统更新。</p>
+    </div>
+    <table>
+        <tr>
+            <th>应用包名</th>
+            <th>软件说明</th>
+            <th>冻结代价</th>
+        </tr>
+        <tr>
+            <td>com.heytap.mcs</td>
+            <td>欢太厂商推送服务</td>
+            <td><strong>高危！微信QQ容易收不到离线消息，不建议冻结</strong></td>
+        </tr>
+        <tr>
+            <td>com.heytap.market</td>
+            <td>软件商店</td>
+            <td>无法使用官方应用商店下载软件</td>
+        </tr>
+        <tr>
+            <td>com.oplus.romupdate<br>com.oplus.ota<br>com.oplus.sau</td>
+            <td>系统更新组件</td>
+            <td>无法接收ColorOS官方升级推送</td>
+        </tr>
+        <tr>
+            <td>com.heytap.cloud</td>
+            <td>欢太云服务</td>
+            <td>照片、联系人、备忘录云同步失效</td>
+        </tr>
+        <tr>
+            <td>com.oplus.account</td>
+            <td>OPPO账号服务</td>
+            <td>云、主题、游戏中心账号登录失效</td>
+        </tr>
+        <tr>
+            <td>com.coloros.backuprestore</td>
+            <td>系统备份还原</td>
+            <td>无法整机备份手机数据</td>
+        </tr>
+        <tr>
+            <td>com.oplus.consumerIRApp</td>
+            <td>红外遥控</td>
+            <td>手机红外遥控失效；无红外模块可无视</td>
+        </tr>
+    </table>
+
+    <h2>❌ 绝对禁止禁用/冻结！极易系统崩溃、无限重启</h2>
+    <div class="danger">
+        <p>以下系统核心组件不要触碰，否则会出现死机、无法开机、功能瘫痪。</p>
+    </div>
+    <ul>
+        <li>com.oplus.safecenter — 安全中心（权限、安装校验核心）</li>
+        <li>com.android.systemui — 状态栏、锁屏系统UI</li>
+        <li>com.android.settings — 设置</li>
+        <li>com.android.launcher — 系统桌面启动器</li>
+        <li>所有包含 qualcomm / qti 的高通底层通信驱动</li>
+        <li>com.android.phone、com.android.mms — 电话、短信</li>
+        <li>com.oplus.securitykeyboard — 安全键盘（网银密码输入）</li>
+        <li>com.coloros.securityguard — 系统安全监控</li>
+    </ul>
+
+    <h2>可直接复制批量冻结脚本（广告精简推荐）</h2>
+    <div class="code-block">
+adb shell pm disable-user --user 0 com.heytap.browser
+adb shell pm disable-user --user 0 com.coloros.assistantscreen
+adb shell pm disable-user --user 0 com.heytap.pictorial
+adb shell pm disable-user --user 0 com.oplus.games
+adb shell pm disable-user --user 0 com.opos.ads
+adb shell pm disable-user --user 0 com.nearme.instant.platform
+    </div>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorOS ADB指令报错解决方案与状态识别表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft Yahei", Consolas, monospace;
+            background-color: #f6f8fa;
+            color: #24292f;
+            line-height: 1.75;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        h1 {
+            color: #1f6feb;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 26px;
+        }
+        h2 {
+            margin: 30px 0 14px;
+            padding-left: 12px;
+            border-left: 6px solid #1f6feb;
+            font-size: 21px;
+            color: #2c3e50;
+        }
+        h3 {
+            margin: 20px 0 10px;
+            font-size: 18px;
+            color: #34495e;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul, ol {
+            padding-left: 26px;
+            margin: 12px 0;
+        }
+        .code-block {
+            background-color: #161b22;
+            color: #7ee787;
+            padding: 14px 18px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas;
+            margin: 12px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            margin: 16px 0;
+        }
+        table th, table td {
+            border: 1px solid #d0d7de;
+            padding: 11px 14px;
+            text-align: left;
+        }
+        table th {
+            background-color: #eef8ff;
+        }
+        .safe {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .warn {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .danger {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+        .tip-box {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>ColorOS ADB指令报错 · 可行方案分级 + 返回状态识别表</h1>
+
+    <h2>可行方案分级（按照安全程度从高到低排序）</h2>
+    <div class="safe">
+        <h3>方案1：系统设置手动限流（零风险，保底首选）</h3>
+        <p>适用场景：ADB disable-user 被系统拦截，返回 new state: default</p>
+        <ol>
+            <li>设置 → 应用 → 应用管理，找到目标App</li>
+            <li>关闭【自启动】、【后台活动】</li>
+            <li>关闭全部通知权限</li>
+            <li>关闭关联启动、后台联网权限</li>
+        </ol>
+        <p>优点：完全不需要电脑、无系统损坏风险、不影响OTA升级；</p>
+        <p>缺点：无法隐藏应用图标，仅限制后台弹窗与偷跑。</p>
+    </div>
+
+    <div class="warn">
+        <h3>方案2：尝试 pm suspend 暂停指令（Android13及以上可用）</h3>
+        <p>作用：暂停应用，阻止应用启动，效果接近禁用。</p>
+        <p>暂停指令：</p>
+        <div class="code-block">adb shell pm suspend --user 0 包名</div>
+        <p>恢复指令：</p>
+        <div class="code-block">adb shell pm unsuspend --user 0 包名</div>
+        <p>注意：新版ColorOS依然可能拦截此指令；执行后测试App是否还能打开。</p>
+    </div>
+
+    <div class="warn">
+        <h3>方案3：Shizuku 进阶方案（无Root，中等风险）</h3>
+        <p>原理：借助Shizuku获取system级权限，绕过普通ADB shell权限限制。</p>
+        <ul>
+            <li>风险提示：存在一定操作门槛；部分最新ColorOS版本依旧封堵；</li>
+            <li>禁止使用网络上各类“一键精简、破解冰箱”捆绑工具。</li>
+        </ul>
+    </div>
+
+    <div class="danger">
+        <h3>❌强烈不推荐方案（风险极高）</h3>
+        <ol>
+            <li>解锁Bootloader获取Root权限：大概率直接失去保修，系统升级极易变砖；</li>
+            <li>各类破解版冰箱、黑域深度冻结工具：容易触发系统安全机制，造成无限重启。</li>
+        </ol>
+    </div>
+
+    <h2>ADB 禁用指令返回状态快速识别表</h2>
+    <table>
+        <tr>
+            <th>命令返回信息</th>
+            <th>结果判定</th>
+            <th>说明</th>
+        </tr>
+        <tr>
+            <td>new state: disabled</td>
+            <td>✅ 冻结成功</td>
+            <td>应用被禁用，无法主动启动；需要使用时执行启用命令恢复。</td>
+        </tr>
+        <tr>
+            <td>new state: default</td>
+            <td>❌ 冻结失败</td>
+            <td>ColorOS系统防护拦截指令，软件维持启用状态，重复执行无效。</td>
+        </tr>
+        <tr>
+            <td>直接抛出Exception异常</td>
+            <td>❌ 执行失败</td>
+            <td>大概率是命令语法书写错误、参数顺序错误，核对指令格式。</td>
+        </tr>
+        <tr>
+            <td>new state: enabled</td>
+            <td>✅ 恢复启用成功</td>
+            <td>已经被冻结的软件执行恢复命令，成功解除禁用。</td>
+        </tr>
+    </table>
+
+    <h2>重要语法易错提醒</h2>
+    <div class="tip-box">
+        <p>标准正确格式：<code>adb shell pm disable-user --user 0 包名</code></p>
+        <p>常见错误：漏写 <strong>0</strong>，把包名识别成用户ID，直接抛出异常。</p>
+        <p>错误示例（你之前执行的错误命令）：</p>
+        <div class="code-block">adb shell pm disable-user --user com.nearme.instant.platform</div>
+    </div>
+
+</body>
+</html>
