@@ -211,7 +211,7 @@ button[style*="background-color: #ff4757"]:hover{
         <button onclick="changeDate(1)">后一天</button>
     </div>
     <div class="action-buttons">
-        <button onclick="copyToClipboard()">复制内容</button>
+        <button id="btnCopy" onclick="copyToClipboard()">复制内容</button>
         <button onclick="exportMarkdown()">导出MD</button>
         <button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button>
         <button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button>
@@ -509,18 +509,51 @@ function exportMarkdown(){
 
 function copyToClipboard(){
     const dateStr=formatDate(currentDate);
-    let content=`${'='.repeat(30)}\n${dateStr}\n`;
+    const typeMap = {
+        meeting:"会议",
+        document:"取文",
+        other:"其他"
+    };
+    let md = `|日期|时间|事项|内容|\n|----|----|----|----|\n`;
     entries.forEach(entry=>{
-        content+=`[${entry.time}] ${entry.content.replace(/\n/g,' ')}\n`;
-    });
-    navigator.clipboard.writeText(content).then(()=>{}).catch(err=>{
+        const text = entry.content.replace(/\n/g,"<br>");
+        const typeName = typeMap[entry.type] || "其他";
+        md += `|${dateStr}|${entry.time}|${typeName}|${text}|\n`;
+    })
+
+    const copyBtn = document.getElementById("btnCopy");
+    // 防止多次点击叠加定时器
+    if(copyBtn.dataset.loading === "1") return;
+
+    navigator.clipboard.writeText(md).then(()=>{
+        // 成功状态
+        copyBtn.textContent = "已复制！";
+        copyBtn.style.background = "#28a745";
+        copyBtn.dataset.loading = "1";
+
+        setTimeout(()=>{
+            copyBtn.textContent = "复制内容";
+            copyBtn.style.background = "";
+            copyBtn.dataset.loading = "0";
+        },2000);
+    }).catch(err=>{
         console.error('复制失败:',err);
+        // 兼容低版本浏览器兜底复制
         const textarea=document.createElement('textarea');
-        textarea.value=content;
+        textarea.value=md;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
+
+        copyBtn.textContent = "已复制！";
+        copyBtn.style.background = "#28a745";
+        copyBtn.dataset.loading = "1";
+        setTimeout(()=>{
+            copyBtn.textContent = "复制内容";
+            copyBtn.style.background = "";
+            copyBtn.dataset.loading = "0";
+        },2000);
     });
 }
 function deleteEntry(index){
