@@ -254,8 +254,30 @@ button[style*="background-color: #ff4757"]:hover{
 </div>
 
 <script>
-let currentDate=new Date();
-let entries=[];
+// ======================【全局配置区，统一维护类型】======================
+// 类型前缀配置【新增分类只需要修改此处一处】
+const TYPE_PREFIX = {
+    meeting: "会议：",
+    dacument: "报件：",
+    document: "取件：",
+    other: ""
+};
+
+// 自动生成导出使用的【类型中文名称映射】，保证全局统一，不再多处重复定义
+const TYPE_MAP = {};
+Object.keys(TYPE_PREFIX).forEach(key => {
+    if(key === "meeting") TYPE_MAP[key] = "会议";
+    if(key === "dacument") TYPE_MAP[key] = "报件";
+    if(key === "document") TYPE_MAP[key] = "取件";
+    if(key === "other") TYPE_MAP[key] = "其他";
+});
+
+// 所有前缀正则，用于清理头部重复文字（已加入报件：）
+const ALL_PREFIX_REG = /^(会议：|报件：|取件：)+/;
+
+// ======================【全局变量】======================
+let currentDate = new Date();
+let entries = [];
 let popupLock = false; // 弹窗防重复点击锁
 
 // 弹窗临时缓存
@@ -265,20 +287,12 @@ let popupCache = {
     content: ""
 };
 
-// 类型前缀配置【在这里扩展单选！】
-const TYPE_PREFIX = {
-    meeting: "会议：",
-    dacument: "报件：",
-    document: "取件：",
-    other: ""
-};
-
-// 所有前缀正则，用于清理重复头部前缀
-const ALL_PREFIX_REG = /^(会议：|取文：)+/;
-
+// ======================【初始化入口】======================
 function init(){
     updateDateDisplay();
     loadData();
+
+    // 30秒自动保存
     setInterval(()=>{
         saveData();
     },30000);
@@ -324,6 +338,8 @@ function init(){
     })
 }
 
+// ======================【弹窗相关函数】======================
+// 更新文本框占位符
 function refreshPlaceholder(){
     const input = document.getElementById("popContent");
     input.placeholder = TYPE_PREFIX[popupCache.type];
@@ -334,54 +350,12 @@ function cleanRepeatPrefix(text){
     return text.replace(ALL_PREFIX_REG, '');
 }
 
-function formatDate(date){
-    return`${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;
-}
-function getDateKey(date){
-    return`${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
-}
-function pad(num){
-    return num.toString().padStart(2,'0');
-}
-function updateDateDisplay(){
-    const dateString=`${currentDate.getFullYear()}-${pad(currentDate.getMonth()+1)}-${pad(currentDate.getDate())}`;
-    document.getElementById('datePicker').value=dateString;
-}
-document.getElementById('datePicker').addEventListener('change',function(e){
-    const selectedDate=new Date(e.target.value);
-    currentDate.setFullYear(selectedDate.getFullYear());
-    currentDate.setMonth(selectedDate.getMonth());
-    currentDate.setDate(selectedDate.getDate());
-    loadData();
-});
-function saveData(){
-    localStorage.setItem(getDateKey(currentDate),JSON.stringify({entries:entries,updatedAt:new Date().toISOString()}));
-}
-function loadData(){
-    const data=localStorage.getItem(getDateKey(currentDate));
-    entries=[];
-    if(data){
-        const parseObj = JSON.parse(data);
-        const rawList = parseObj.entries || [];
-        // 兼容旧数据：旧条目没有type字段，自动赋值other
-        rawList.forEach(item=>{
-            entries.push({
-                time: item.time,
-                content: item.content,
-                type: item.type || "other"
-            })
-        })
-    }
-    renderEntries();
-}
-
-// 打开弹窗（替换原来的addEntry）
+// 打开弹窗
 function openPopup(){
     if(popupLock) return;
     popupLock = true;
     setTimeout(()=>{popupLock=false}, 600);
 
-    // 获取当前时间
     const now = new Date();
     popupCache.timeStr = now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
 
@@ -395,12 +369,11 @@ function openPopup(){
     mask.style.display = "flex";
     setTimeout(()=>{
         mask.classList.add("show");
-        // 自动聚焦输入框
         document.getElementById("popContent").focus();
     },10)
 }
 
-// 关闭弹窗（保留内容不清除）
+// 关闭弹窗（保留草稿）
 function closePopup(){
     const mask = document.getElementById("popupMask");
     mask.classList.remove("show");
@@ -441,7 +414,7 @@ function submitNewRecord(){
         finalContent = pureText;
     }
 
-    // 添加条目到列表，附带type类型
+    // 新增条目
     entries.unshift({
         time: popupCache.timeStr,
         content: finalContent,
@@ -453,11 +426,65 @@ function submitNewRecord(){
 
     closePopup();
 
-    // =========【提交成功后清空缓存】=========
+    // 提交成功清空缓存
     popupCache.content = "";
     document.getElementById("popContent").value = "";
 }
 
+// ======================【存储、日期工具函数】======================
+function formatDate(date){
+    return`${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;
+}
+function getDateKey(date){
+    return`${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+}
+function pad(num){
+    return num.toString().padStart(2,'0');
+}
+function updateDateDisplay(){
+    const dateString=`${currentDate.getFullYear()}-${pad(currentDate.getMonth()+1)}-${pad(currentDate.getDate())}`;
+    document.getElementById('datePicker').value=dateString;
+}
+
+// 日期切换监听
+document.getElementById('datePicker').addEventListener('change',function(e){
+    const selectedDate=new Date(e.target.value);
+    currentDate.setFullYear(selectedDate.getFullYear());
+    currentDate.setMonth(selectedDate.getMonth());
+    currentDate.setDate(selectedDate.getDate());
+    loadData();
+});
+
+// 保存当日数据
+function saveData(){
+    localStorage.setItem(getDateKey(currentDate),JSON.stringify({entries:entries,updatedAt:new Date().toISOString()}));
+}
+
+// 加载当日数据，兼容旧数据
+function loadData(){
+    const data=localStorage.getItem(getDateKey(currentDate));
+    entries=[];
+    if(data){
+        const parseObj = JSON.parse(data);
+        const rawList = parseObj.entries || [];
+        rawList.forEach(item=>{
+            entries.push({
+                time: item.time,
+                content: item.content,
+                type: item.type || "other"
+            })
+        })
+    }
+    renderEntries();
+}
+
+function changeDate(offset){
+    currentDate.setDate(currentDate.getDate()+offset);
+    updateDateDisplay();
+    loadData();
+}
+
+// ======================【页面渲染】======================
 function renderEntries(){
     const container=document.getElementById('entries');
     container.innerHTML='';
@@ -466,7 +493,7 @@ function renderEntries(){
         entryDiv.className=`time-block type-${entry.type||'other'}`;
         entryDiv.innerHTML=`<div class="time">${entry.time}</div><textarea class="content" rows="2">${entry.content}</textarea><button onclick="deleteEntry(${index})" style="margin-left: 10px;">删除</button>`;
 
-        // 文本框自动高度
+        // 文本框自适应高度
         const ta = entryDiv.querySelector('textarea.content');
         function autoResize(){
             ta.style.height = 'auto';
@@ -482,25 +509,15 @@ function renderEntries(){
         container.appendChild(entryDiv);
     });
 }
-function changeDate(offset){
-    currentDate.setDate(currentDate.getDate()+offset);
-    updateDateDisplay();
-    loadData();
-}
 
+// ======================【导出、复制功能】======================
 // 导出Markdown表格
 function exportMarkdown(){
     const dateStr=formatDate(currentDate);
     let md = `|日期|时间|事项|内容|\n|----|----|----|----|\n`;
-    // 类型映射
-    const typeMap = {
-        meeting:"会议",
-        document:"取文",
-        other:"其他"
-    };
     entries.forEach(entry=>{
         const text = entry.content.replace(/\n/g,"<br>");
-        const typeName = typeMap[entry.type] || "其他";
+        const typeName = TYPE_MAP[entry.type] || "其他";
         md += `|${dateStr}|${entry.time}|${typeName}|${text}|\n`;
     })
     const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
@@ -513,55 +530,47 @@ function exportMarkdown(){
     setTimeout(()=>URL.revokeObjectURL(link.href),100);
 }
 
+// 复制内容（与MD格式完全一致 + 按钮状态切换）
 function copyToClipboard(){
     const dateStr=formatDate(currentDate);
-    const typeMap = {
-        meeting:"会议",
-        document:"取文",
-        other:"其他"
-    };
     let md = `|日期|时间|事项|内容|\n|----|----|----|----|\n`;
     entries.forEach(entry=>{
         const text = entry.content.replace(/\n/g,"<br>");
-        const typeName = typeMap[entry.type] || "其他";
+        const typeName = TYPE_MAP[entry.type] || "其他";
         md += `|${dateStr}|${entry.time}|${typeName}|${text}|\n`;
     })
 
     const copyBtn = document.getElementById("btnCopy");
-    // 防止多次点击叠加定时器
     if(copyBtn.dataset.loading === "1") return;
 
     navigator.clipboard.writeText(md).then(()=>{
-        // 成功状态
-        copyBtn.textContent = "已复制！";
-        copyBtn.style.background = "#28a745";
-        copyBtn.dataset.loading = "1";
-
-        setTimeout(()=>{
-            copyBtn.textContent = "复制内容";
-            copyBtn.style.background = "";
-            copyBtn.dataset.loading = "0";
-        },2000);
+        setCopyBtnSuccess(copyBtn);
     }).catch(err=>{
         console.error('复制失败:',err);
-        // 兼容低版本浏览器兜底复制
+        // 低版本浏览器兼容方案
         const textarea=document.createElement('textarea');
         textarea.value=md;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-
-        copyBtn.textContent = "已复制！";
-        copyBtn.style.background = "#28a745";
-        copyBtn.dataset.loading = "1";
-        setTimeout(()=>{
-            copyBtn.textContent = "复制内容";
-            copyBtn.style.background = "";
-            copyBtn.dataset.loading = "0";
-        },2000);
+        setCopyBtnSuccess(copyBtn);
     });
 }
+
+// 抽取复制按钮状态切换逻辑
+function setCopyBtnSuccess(btn){
+    btn.textContent = "已复制！";
+    btn.style.background = "#28a745";
+    btn.dataset.loading = "1";
+    setTimeout(()=>{
+        btn.textContent = "复制内容";
+        btn.style.background = "";
+        btn.dataset.loading = "0";
+    },2000);
+}
+
+// ======================【删除功能】======================
 function deleteEntry(index){
     if(confirm('确定要删除此条记录吗？')){
         entries.splice(index,1);
@@ -591,6 +600,8 @@ function deleteAllData(){
         renderEntries();
     }
 }
+
+// 启动程序
 init();
 </script>
 </body>
