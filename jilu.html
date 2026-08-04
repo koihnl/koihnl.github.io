@@ -11,6 +11,7 @@
     --secondary-color:#ffa500;
     --danger-color:#ff4757;
     --meeting-color:#3478d9;
+    --dacument-color:#d95134;
     --document-color:#28a745;
     --other-color:#868e96;
 }
@@ -54,6 +55,9 @@ body{
 }
 .time-block.type-meeting{
     border-left-color: var(--meeting-color);
+}
+.time-block.type-dacument{
+    border-left-color: var(--dacument-color);
 }
 .time-block.type-document{
     border-left-color: var(--document-color);
@@ -231,7 +235,8 @@ button[style*="background-color: #ff4757"]:hover{
         </div>
         <div class="radio-group">
             <label><input type="radio" name="recordType" value="meeting" checked> 会议</label>
-            <label><input type="radio" name="recordType" value="document"> 取文</label>
+            <label><input type="radio" name="recordType" value="dacument"> 报件</label>
+            <label><input type="radio" name="recordType" value="document"> 取件</label>
             <label><input type="radio" name="recordType" value="other"> 其他</label>
         </div>
         <textarea class="pop-textarea" id="popContent" placeholder="会议："></textarea>
@@ -263,7 +268,8 @@ let popupCache = {
 // 类型前缀配置【在这里扩展单选！】
 const TYPE_PREFIX = {
     meeting: "会议：",
-    document: "取文：",
+    dacument: "报件：",
+    document: "取件：",
     other: ""
 };
 
