@@ -1,1 +1,558 @@
-<!DOCTYPE html><html lang="zh-CN"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><head><meta charset="UTF-8"><title>每日记录系统 | 锦鲤未离</title><script src="./js/logo.js"></script><style>:root{--primary-color:#2c3e50;--secondary-color:#ffa5007d;}body{margin:0;padding:70px 20px 150px;font-family:'Microsoft YaHei',sans-serif;min-height:100vh;box-sizing:border-box;background:#f8f9fa;}.header-container{position:fixed;top:0;left:0;right:0;background:white;padding:15px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:998;display:flex;justify-content:space-between;align-items:center;}.main-content{max-width:800px;margin:0 auto;padding:60px 0;}.time-block{display:flex;margin:20px 0;padding:15px;background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05);scroll-margin:100px;}.time{font-family:monospace;width:80px;color:var(--primary-color);padding-top:4px;}.content{flex:1;border:none;padding:5px;font-size:16px;line-height:1.6;resize:none;min-height:60px;}.footer-container{position:fixed;bottom:0;left:0;right:0;background:white;padding:15px 20px;box-shadow:0 -2px 10px rgba(0,0,0,0.1);z-index:1000;}.add-button{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);padding:12px 25px;border-radius:25px;font-size:16px;z-index:2000;}.action-buttons{display:flex;gap:10px;margin-top:10px;}button{background:var(--secondary-color);color:white;border:none;border-radius:5px;padding:8px 15px;cursor:pointer;transition:opacity 0.2s;}button:hover{opacity:0.9;}button[style*="background-color: #ff4757"]{background-color:#ff4757 !important;transition:all 0.3s;}button[style*="background-color: #ff4757"]:hover{opacity:0.8;transform:scale(1.05);}</style></head><body><div class="header-container"><div><input type="date" id="datePicker" style="border: 0; font-size: 16px; margin-right: 15px; padding: 3px; font-weight: bold; cursor: pointer;"><button onclick="changeDate(-1)">前一天</button><button onclick="changeDate(1)">后一天</button></div><div class="action-buttons"><button onclick="copyToClipboard()">复制内容</button><button onclick="exportTxt()">导出文本</button><button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button><button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button></div></div><div class="main-content" id="entries"></div><button class="add-button" onclick="addEntry()">➕ 新增记录</button><div class="footer-container"><div style="margin-bottom: 10px;">常用词组：</div><div class="action-buttons"><button onclick="insertPhrase('-送文。')">送文</button><button onclick="insertPhrase('-开会：《》')">开会</button><button onclick="insertPhrase('-毕。')">毕</button></div></div><script>let currentDate=new Date();let entries=[];function init(){updateDateDisplay();loadData();setInterval(()=>{localStorage.setItem(getDateKey(currentDate),JSON.stringify({entries:entries,updatedAt:new Date().toISOString()}));},30000);}function formatDate(date){return`${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;}function getDateKey(date){return`${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;}function pad(num){return num.toString().padStart(2,'0');}function updateDateDisplay(){const dateString=`${currentDate.getFullYear()}-${pad(currentDate.getMonth()+1)}-${pad(currentDate.getDate())}`;document.getElementById('datePicker').value=dateString;}document.getElementById('datePicker').addEventListener('change',function(e){const selectedDate=new Date(e.target.value);currentDate.setFullYear(selectedDate.getFullYear());currentDate.setMonth(selectedDate.getMonth());currentDate.setDate(selectedDate.getDate());loadData();});function saveData(){localStorage.setItem(getDateKey(currentDate),JSON.stringify({entries:entries,updatedAt:new Date().toISOString()}));}function loadData(){const data=localStorage.getItem(getDateKey(currentDate));entries=data?JSON.parse(data).entries:[];renderEntries();}function addEntry(){const time=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});entries.unshift({time,content:''});renderEntries();saveData();window.scrollTo({top:0,behavior:'smooth'});}function renderEntries(){const container=document.getElementById('entries');container.innerHTML='';entries.forEach((entry,index)=>{const entryDiv=document.createElement('div');entryDiv.className='time-block';entryDiv.innerHTML=`<div class="time">${entry.time}</div><textarea class="content" rows="2">${entry.content}</textarea><button onclick="deleteEntry(${index})" style="margin-left: 10px;">删除</button>`;entryDiv.querySelector('textarea').addEventListener('input',(e)=>{entries[index].content=e.target.value;saveData();});container.appendChild(entryDiv);});}function changeDate(offset){currentDate.setDate(currentDate.getDate()+offset);updateDateDisplay();loadData();}function insertPhrase(phrase){if(entries.length===0)addEntry();const firstEntry=entries[0];firstEntry.content+=phrase;renderEntries();saveData();window.scrollTo({top:0,behavior:'smooth'});}function exportTxt(){const dateStr=formatDate(currentDate);let content=`${'='.repeat(30)}\n${dateStr}\n`;entries.forEach(entry=>{content+=`[${entry.time}] ${entry.content.replace(/\n/g,' ')}\n`;});const blob=new Blob([content],{type:'text/plain;charset=utf-8'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`${dateStr}工作.txt`;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),100);}function copyToClipboard(){const dateStr=formatDate(currentDate);let content=`${'='.repeat(30)}\n${dateStr}\n`;entries.forEach(entry=>{content+=`[${entry.time}] ${entry.content.replace(/\n/g,' ')}\n`;});navigator.clipboard.writeText(content).then(()=>{}).catch(err=>{console.error('复制失败:',err);const textarea=document.createElement('textarea');textarea.value=content;document.body.appendChild(textarea);textarea.select();document.execCommand('copy');document.body.removeChild(textarea);});}function deleteEntry(index){if(confirm('确定要删除此条记录吗？')){entries.splice(index,1);renderEntries();saveData();}}function deleteCurrentDayData(){if(confirm('确定要删除本日所有记录吗？此操作不可撤销！')){const key=getDateKey(currentDate);localStorage.removeItem(key);entries=[];renderEntries();}}function deleteAllData(){if(confirm('即将永久删除所有记录！\n\n此操作不可恢复！\n确认要继续吗？')){const keys=[];for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(/^\d{4}-\d{2}-\d{2}$/.test(key)){keys.push(key);}}keys.forEach(key=>localStorage.removeItem(key));entries=[];renderEntries();}}init();</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<head>
+<meta charset="UTF-8">
+<title>每日记录系统2.1 | 锦鲤未离</title>
+<script src="./js/logo.js"></script>
+<style>
+:root{
+    --primary-color:#2c3e50;
+    --secondary-color:#ffa500;
+    --danger-color:#ff4757;
+    --meeting-color:#3478d9;
+    --document-color:#28a745;
+    --other-color:#868e96;
+}
+body{
+    margin:0;
+    padding:70px 20px 150px;
+    font-family:'Microsoft YaHei',sans-serif;
+    min-height:100vh;
+    box-sizing:border-box;
+    background:#f8f9fa;
+}
+.header-container{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    background:white;
+    padding:15px 20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    z-index:998;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap:10px;
+}
+.main-content{
+    max-width:800px;
+    margin:0 auto;
+    padding:60px 0;
+}
+.time-block{
+    display:flex;
+    margin:20px 0;
+    padding:15px;
+    background:white;
+    border-radius:8px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.05);
+    scroll-margin:100px;
+    border-left:5px solid var(--other-color);
+}
+.time-block.type-meeting{
+    border-left-color: var(--meeting-color);
+}
+.time-block.type-document{
+    border-left-color: var(--document-color);
+}
+.time-block.type-other{
+    border-left-color: var(--other-color);
+}
+.time{
+    font-family:monospace;
+    width:80px;
+    color:var(--primary-color);
+    padding-top:4px;
+}
+.content{
+    flex:1;
+    border:none;
+    padding:5px;
+    font-size:16px;
+    line-height:1.6;
+    resize:none;
+    min-height:60px;
+    overflow:hidden;
+}
+.add-button{
+    position:fixed;
+    bottom:120px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:12px 25px;
+    border-radius:25px;
+    font-size:16px;
+    z-index:2000;
+}
+.action-buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap: wrap;
+}
+button{
+    background:var(--secondary-color);
+    color:white;
+    border:none;
+    border-radius:5px;
+    padding:8px 15px;
+    cursor:pointer;
+    transition:opacity 0.2s;
+}
+button:hover{opacity:0.9;}
+button[style*="background-color: #ff4757"]{
+    background-color:#ff4757 !important;
+    transition:all 0.3s;
+}
+button[style*="background-color: #ff4757"]:hover{
+    opacity:0.8;
+    transform:scale(1.05);
+}
+
+/* ========== 弹窗样式 增加动画、滚动适配 ========== */
+.mask-layer{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    z-index:3000;
+    display:none;
+    align-items:flex-end;
+    opacity:0;
+    transition: opacity 0.25s ease;
+}
+.mask-layer.show{
+    display:flex;
+    opacity:1;
+}
+.popup-box{
+    width:100%;
+    background:#fff;
+    border-radius:16px 16px 0 0;
+    padding:20px;
+    box-sizing:border-box;
+    max-width:800px;
+    margin:0 auto;
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+}
+.mask-layer.show .popup-box{
+    transform: translateY(0);
+}
+.pop-time-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:15px;
+}
+.pop-time-row label{
+    white-space: nowrap;
+}
+.pop-time-row input{
+    border:1px solid #ddd;
+    border-radius:4px;
+    padding:6px;
+    font-size:16px;
+}
+.radio-group{
+    display:flex;
+    gap:24px;
+    margin-bottom:15px;
+    font-size:17px;
+}
+.radio-group input[type="radio"]{
+    width:16px;
+    height:16px;
+    accent-color: var(--secondary-color);
+}
+.pop-textarea{
+    width:100%;
+    min-height:120px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:10px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+.phrase-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:12px 0;
+}
+.phrase-group button{
+    padding:6px 10px;
+    font-size:14px;
+    background:#e9ecef;
+    color:#333;
+}
+.pop-bottom-bar{
+    display:flex;
+    gap:12px;
+    margin-top:15px;
+    justify-content:flex-end;
+}
+.btn-cancel{
+    background:#adb5bd;
+}
+.btn-submit{
+    background:var(--secondary-color);
+}
+</style>
+</head>
+<body>
+<div class="header-container">
+    <div>
+        <input type="date" id="datePicker" style="border: 0; font-size: 16px; margin-right: 15px; padding: 3px; font-weight: bold; cursor: pointer;">
+        <button onclick="changeDate(-1)">前一天</button>
+        <button onclick="changeDate(1)">后一天</button>
+    </div>
+    <div class="action-buttons">
+        <button onclick="copyToClipboard()">复制内容</button>
+        <button onclick="exportMarkdown()">导出MD</button>
+        <button onclick="deleteCurrentDayData()" style="background-color: #ff4757;">删除当日</button>
+        <button onclick="deleteAllData()" style="background-color: #ff4757;">删除全部</button>
+    </div>
+</div>
+
+<div class="main-content" id="entries"></div>
+
+<button class="add-button" onclick="openPopup()">➕ 新增记录</button>
+
+<!-- 新增记录弹窗 -->
+<div class="mask-layer" id="popupMask">
+    <div class="popup-box">
+        <div class="pop-time-row">
+            <label>记录时间：</label>
+            <input type="time" id="popTimeInput">
+        </div>
+        <div class="radio-group">
+            <label><input type="radio" name="recordType" value="meeting" checked> 会议</label>
+            <label><input type="radio" name="recordType" value="document"> 取文</label>
+            <label><input type="radio" name="recordType" value="other"> 其他</label>
+        </div>
+        <textarea class="pop-textarea" id="popContent" placeholder="会议："></textarea>
+        <div class="phrase-group">
+            <button onclick="insertPhraseToPopup('参会交流，研究相关工作事项。')">参会交流</button>
+            <button onclick="insertPhraseToPopup('对接业务，协调推进相关工作落实。')">业务对接</button>
+            <button onclick="insertPhraseToPopup('整理材料，完善台账资料。')">整理材料</button>
+            <button onclick="insertPhraseToPopup('走访沟通，了解相关情况。')">走访沟通</button>
+        </div>
+        <div class="pop-bottom-bar">
+            <button class="btn-cancel" onclick="closePopup()">取消</button>
+            <button class="btn-submit" onclick="submitNewRecord()">确认提交</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentDate=new Date();
+let entries=[];
+let popupLock = false; // 弹窗防重复点击锁
+
+// 弹窗临时缓存
+let popupCache = {
+    timeStr: "",
+    type: "meeting",
+    content: ""
+};
+
+// 类型前缀配置【在这里扩展单选！】
+const TYPE_PREFIX = {
+    meeting: "会议：",
+    document: "取文：",
+    other: ""
+};
+
+// 所有前缀正则，用于清理重复头部前缀
+const ALL_PREFIX_REG = /^(会议：|取文：)+/;
+
+function init(){
+    updateDateDisplay();
+    loadData();
+    setInterval(()=>{
+        saveData();
+    },30000);
+
+    // 页面关闭/刷新强制保存
+    window.addEventListener('beforeunload', ()=>{
+        saveData();
+    });
+
+    // 监听单选切换
+    document.querySelectorAll('input[name="recordType"]').forEach(radio=>{
+        radio.addEventListener("change", function(){
+            popupCache.type = this.value;
+            refreshPlaceholder();
+        })
+    })
+
+    // 监听文本框输入，缓存内容
+    document.getElementById("popContent").addEventListener("input", function(){
+        popupCache.content = this.value;
+    })
+
+    // 点击遮罩空白区域关闭弹窗
+    document.getElementById("popupMask").addEventListener("click", function(e){
+        if(e.target === this){
+            closePopup();
+        }
+    })
+
+    // 全局快捷键监听
+    document.addEventListener('keydown', (e)=>{
+        const mask = document.getElementById("popupMask");
+        if(!mask.classList.contains('show')) return;
+        // ESC关闭弹窗
+        if(e.key === 'Escape'){
+            closePopup();
+        }
+        // Ctrl+Enter 提交
+        if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+            e.preventDefault();
+            submitNewRecord();
+        }
+    })
+}
+
+function refreshPlaceholder(){
+    const input = document.getElementById("popContent");
+    input.placeholder = TYPE_PREFIX[popupCache.type];
+}
+
+// 清理重复前缀
+function cleanRepeatPrefix(text){
+    return text.replace(ALL_PREFIX_REG, '');
+}
+
+function formatDate(date){
+    return`${date.getFullYear()}年${pad(date.getMonth()+1)}月${pad(date.getDate())}日`;
+}
+function getDateKey(date){
+    return`${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+}
+function pad(num){
+    return num.toString().padStart(2,'0');
+}
+function updateDateDisplay(){
+    const dateString=`${currentDate.getFullYear()}-${pad(currentDate.getMonth()+1)}-${pad(currentDate.getDate())}`;
+    document.getElementById('datePicker').value=dateString;
+}
+document.getElementById('datePicker').addEventListener('change',function(e){
+    const selectedDate=new Date(e.target.value);
+    currentDate.setFullYear(selectedDate.getFullYear());
+    currentDate.setMonth(selectedDate.getMonth());
+    currentDate.setDate(selectedDate.getDate());
+    loadData();
+});
+function saveData(){
+    localStorage.setItem(getDateKey(currentDate),JSON.stringify({entries:entries,updatedAt:new Date().toISOString()}));
+}
+function loadData(){
+    const data=localStorage.getItem(getDateKey(currentDate));
+    entries=[];
+    if(data){
+        const parseObj = JSON.parse(data);
+        const rawList = parseObj.entries || [];
+        // 兼容旧数据：旧条目没有type字段，自动赋值other
+        rawList.forEach(item=>{
+            entries.push({
+                time: item.time,
+                content: item.content,
+                type: item.type || "other"
+            })
+        })
+    }
+    renderEntries();
+}
+
+// 打开弹窗（替换原来的addEntry）
+function openPopup(){
+    if(popupLock) return;
+    popupLock = true;
+    setTimeout(()=>{popupLock=false}, 600);
+
+    // 获取当前时间
+    const now = new Date();
+    popupCache.timeStr = now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+
+    // 恢复缓存数据
+    document.querySelector(`input[name="recordType"][value="${popupCache.type}"]`).checked = true;
+    document.getElementById("popContent").value = popupCache.content;
+    document.getElementById("popTimeInput").value = popupCache.timeStr;
+    refreshPlaceholder();
+
+    const mask = document.getElementById("popupMask");
+    mask.style.display = "flex";
+    setTimeout(()=>{
+        mask.classList.add("show");
+        // 自动聚焦输入框
+        document.getElementById("popContent").focus();
+    },10)
+}
+
+// 关闭弹窗（保留内容不清除）
+function closePopup(){
+    const mask = document.getElementById("popupMask");
+    mask.classList.remove("show");
+    setTimeout(()=>{
+        mask.style.display = "none";
+    },250)
+}
+
+// 快捷短语插入
+function insertPhraseToPopup(text){
+    const ta = document.getElementById("popContent");
+    ta.value += text;
+    popupCache.content = ta.value;
+}
+
+// 提交记录
+function submitNewRecord(){
+    const rawText = document.getElementById("popContent").value;
+    const inputTime = document.getElementById("popTimeInput").value;
+    if(!inputTime){
+        alert("请填写记录时间");
+        return;
+    }
+    popupCache.timeStr = inputTime;
+
+    const prefix = TYPE_PREFIX[popupCache.type];
+    const pureText = cleanRepeatPrefix(rawText.trim());
+
+    if(!pureText){
+        alert("内容不能为空！");
+        return;
+    }
+
+    let finalContent;
+    if(prefix){
+        finalContent = prefix + pureText;
+    }else{
+        finalContent = pureText;
+    }
+
+    // 添加条目到列表，附带type类型
+    entries.unshift({
+        time: popupCache.timeStr,
+        content: finalContent,
+        type: popupCache.type
+    });
+    renderEntries();
+    saveData();
+    window.scrollTo({top:0,behavior:'smooth'});
+
+    closePopup();
+
+    // =========【提交成功后清空缓存】=========
+    popupCache.content = "";
+    document.getElementById("popContent").value = "";
+}
+
+function renderEntries(){
+    const container=document.getElementById('entries');
+    container.innerHTML='';
+    entries.forEach((entry,index)=>{
+        const entryDiv=document.createElement('div');
+        entryDiv.className=`time-block type-${entry.type||'other'}`;
+        entryDiv.innerHTML=`<div class="time">${entry.time}</div><textarea class="content" rows="2">${entry.content}</textarea><button onclick="deleteEntry(${index})" style="margin-left: 10px;">删除</button>`;
+
+        // 文本框自动高度
+        const ta = entryDiv.querySelector('textarea.content');
+        function autoResize(){
+            ta.style.height = 'auto';
+            ta.style.height = ta.scrollHeight + 'px';
+        }
+        ta.addEventListener('input',autoResize);
+        autoResize();
+
+        ta.addEventListener('input',(e)=>{
+            entries[index].content=e.target.value;
+            saveData();
+        });
+        container.appendChild(entryDiv);
+    });
+}
+function changeDate(offset){
+    currentDate.setDate(currentDate.getDate()+offset);
+    updateDateDisplay();
+    loadData();
+}
+
+// 导出Markdown表格
+function exportMarkdown(){
+    const dateStr=formatDate(currentDate);
+    let md = `|日期|时间|事项|内容|\n|----|----|----|----|\n`;
+    // 类型映射
+    const typeMap = {
+        meeting:"会议",
+        document:"取文",
+        other:"其他"
+    };
+    entries.forEach(entry=>{
+        const text = entry.content.replace(/\n/g,"<br>");
+        const typeName = typeMap[entry.type] || "其他";
+        md += `|${dateStr}|${entry.time}|${typeName}|${text}|\n`;
+    })
+    const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+    const link=document.createElement('a');
+    link.href=URL.createObjectURL(blob);
+    const now = new Date();
+    const timeSuffix = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+    link.download=`${dateStr}工作记录_${timeSuffix}.md`;
+    link.click();
+    setTimeout(()=>URL.revokeObjectURL(link.href),100);
+}
+
+function copyToClipboard(){
+    const dateStr=formatDate(currentDate);
+    let content=`${'='.repeat(30)}\n${dateStr}\n`;
+    entries.forEach(entry=>{
+        content+=`[${entry.time}] ${entry.content.replace(/\n/g,' ')}\n`;
+    });
+    navigator.clipboard.writeText(content).then(()=>{}).catch(err=>{
+        console.error('复制失败:',err);
+        const textarea=document.createElement('textarea');
+        textarea.value=content;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    });
+}
+function deleteEntry(index){
+    if(confirm('确定要删除此条记录吗？')){
+        entries.splice(index,1);
+        renderEntries();
+        saveData();
+    }
+}
+function deleteCurrentDayData(){
+    if(confirm('确定要删除本日所有记录吗？此操作不可撤销！')){
+        const key=getDateKey(currentDate);
+        localStorage.removeItem(key);
+        entries=[];
+        renderEntries();
+    }
+}
+function deleteAllData(){
+    if(confirm('即将永久删除所有记录！\n\n此操作不可恢复！\n确认要继续吗？')){
+        const keys=[];
+        for(let i=0;i<localStorage.length;i++){
+            const key=localStorage.key(i);
+            if(/^\d{4}-\d{2}-\d{2}$/.test(key)){
+                keys.push(key);
+            }
+        }
+        keys.forEach(key=>localStorage.removeItem(key));
+        entries=[];
+        renderEntries();
+    }
+}
+init();
+</script>
+</body>
+</html>
