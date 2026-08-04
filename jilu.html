@@ -429,6 +429,9 @@ function submitNewRecord(){
     // 提交成功清空缓存
     popupCache.content = "";
     document.getElementById("popContent").value = "";
+    // 提交后重置默认选中会议
+    popupCache.type = "meeting";
+    refreshPlaceholder();
 }
 
 // ======================【存储、日期工具函数】======================
