@@ -17,8 +17,15 @@
         <script>document.querySelectorAll('.copyButton').forEach(button => {button.addEventListener('click', function() {const targetId = this.getAttribute('data-target');const codeSnippet = document.getElementById(targetId).innerText;const button = this;navigator.clipboard.writeText(codeSnippet).then(function() {button.textContent = "已复制";button.classList.add("copied");setTimeout(function() {button.textContent = "复制";button.classList.remove("copied");}, 2000);}).catch(function(err) {console.error('复制失败: ', err);button.textContent = "复制失败";setTimeout(() => button.textContent = "复制", 2000);});});});</script>
     </div>
           <p style="">Ⅰ：小工具</p>
-           <p id="toolsContainer"><a href="/ProgressBar.html" class="inlineBlock_KoiHNL">『进度条生成器』</a><a href="/ChiZi.html" class="inlineBlock_KoiHNL">『尺　　子』</a><a href="/jilu.html" class="inlineBlock_KoiHNL" style="
-		    color: white;">『记　　录』</a><a href="/DingCan.html" class="inlineBlock_KoiHNL">『订　　餐』</a><a href="/Devlog.html" class="inlineBlock_KoiHNL">『研发日志』</a><a href="/Disclaimer.html" class="inlineBlock_KoiHNL">『免责声明』</a></p>
+           <p id="toolsContainer">
+			   <a href="/ProgressBar.html" class="inlineBlock_KoiHNL">『进度条生成器』</a>
+			   <a href="/ChiZi.html" class="inlineBlock_KoiHNL">『尺　　子』</a>
+			   <a href="/jilu.html" class="inlineBlock_KoiHNL" style="color: white;">『记　　录』</a>
+			   <a href="/DingCan.html" class="inlineBlock_KoiHNL">『订　　餐』</a>
+			   <a href="/Devlog.html" class="inlineBlock_KoiHNL">『研发日志』</a>
+			   <a href="/Disclaimer.html" class="inlineBlock_KoiHNL">『免责声明』</a>
+		       <a href="/signature.html" class="inlineBlock_KoiHNL">『电子签』</a>
+		   </p>
           <p>Ⅱ：博文</p>
            <p id="postsContainer">
 			   <a href="/posts/FormatDiskBeforeUse/" class="inlineBlock_KoiHNL">『使用驱动器中的光盘之前需要将其格式化』</a>
