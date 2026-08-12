@@ -10,34 +10,38 @@
 <style>* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif; } body { min-height: 100vh; display: flex; align-items: center; justify-content:center; padding: 2rem 1.5rem; background: linear-gradient(145deg, #f7f3fc 0%, #ede6f5 100%); } .blog-card { max-width: 1000px; width: 100%; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(14px) saturate(180%); -webkit-backdrop-filter: blur(14px)saturate(180%); border-radius: 3rem; padding: 2.8rem 3rem; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08), 0 8px 24px -6px rgba(90, 60, 120, 0.06); border: 1px solid rgba(255, 255, 255, 0.6); transition: all 0.2s ease; } .section-title { font-size:1.5rem; font-weight: 550; letter-spacing: 0.5px; color: #2a1b38; background: linear-gradient(135deg, #3d2b52, #5b3f78); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; margin: 0 0 0.8rem0; padding-bottom: 0.2rem; border-bottom: 2px solid rgba(160, 130, 190, 0.2); } .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem 1.8rem; margin-bottom: 2.2rem; } .grid-item { background: rgba(255, 255, 255, 0.4); backdrop-filter:blur(2px); padding: 0.6rem 1.2rem; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.5); font-size: 1.02rem; color: #1b1425; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; transition:all 0.15s; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 450; letter-spacing: 0.2px; min-height: 48px; text-align: center; } .grid-item:hover { background: rgba(255, 255, 255, 0.75);border-color: #bba5d4; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(100, 70, 140, 0.06); } .grid-item.special { background: rgba(190, 160, 220, 0.2); border-color: #c9b0e0; font-weight: 500; } .grid-item.special:hover { background: rgba(200,175, 230, 0.3); } .grid-item.post { font-size: 0.95rem; padding: 0.4rem 1.2rem; background: rgba(255, 255, 255, 0.3); white-space: normal; word-break: break-word; text-align: center; min-height: 44px; } .grid-item.post:hover { background: rgba(255, 255,255, 0.7); } .footer-note { margin-top: 2rem; border-top: 1px solid rgba(160, 130, 190, 0.12); padding-top: 1.2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.8rem; color: #6a5580; opacity: 0.7; letter-spacing:0.2px; } .footer-note span { background: rgba(255, 255, 255, 0.2); padding: 0.1rem 1rem; border-radius: 40px; backdrop-filter: blur(2px); border: 1px solid rgba(255, 255, 255, 0.2); } .grid-item a, .grid-item { color: inherit; text-decoration: none; }.title-block { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.2rem; } @media (max-width: 700px) { .blog-card { padding: 1.8rem 1.2rem; border-radius: 2.4rem; } .grid-container { grid-template-columns: 1fr 1fr; gap:0.4rem 0.6rem; } .grid-item { font-size: 0.85rem; padding: 0.3rem 0.8rem; min-height: 40px; white-space: normal; } .section-title { font-size: 1.2rem; } } @media (max-width: 460px) { .grid-container { grid-template-columns: 1fr; gap: 0.3rem; } .blog-card{ padding: 1.2rem 0.8rem; } } .grid-item[data-tool="record"] { font-size: 1.1rem; background: rgba(200, 175, 230, 0.15); }</style>
 <!-- ------------------------------------------------------------------------------------------------ -->
 <div class="mainKoiHNL">
+	<style>.mainKoiHNL ol {    padding-left: 2em;    margin: 0.5rem 0 1rem 0;}.mainKoiHNL li {    margin: 4px 0;    list-style: decimal;}.mainKoiHNL a {    text-decoration: none;    color:#fff;}.mainKoiHNL p {    margin:12px 0 4px 0;    font-size:16px;}</style>
+<div class="mainKoiHNL">
 	<div class="centererlast" style="text-align: center;color: #fff;">
         <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet1">　</code></pre><button class="copyButton" data-target="codeSnippet1">复制</button></div>
         <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet2">〔2026〕</code></pre><button class="copyButton" data-target="codeSnippet2">复制</button></div>
         <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet3">•</code></pre><button class="copyButton" data-target="codeSnippet3">复制</button></div>
         <script>document.querySelectorAll('.copyButton').forEach(button => {button.addEventListener('click', function() {const targetId = this.getAttribute('data-target');const codeSnippet = document.getElementById(targetId).innerText;const button = this;navigator.clipboard.writeText(codeSnippet).then(function() {button.textContent = "已复制";button.classList.add("copied");setTimeout(function() {button.textContent = "复制";button.classList.remove("copied");}, 2000);}).catch(function(err) {console.error('复制失败: ', err);button.textContent = "复制失败";setTimeout(() => button.textContent = "复制", 2000);});});});</script>
     </div>
-          <p style="">Ⅰ：小工具</p>
-           <p id="toolsContainer">
-			   <a href="/ProgressBar.html" class="inlineBlock_KoiHNL">『进度条生成器』</a>
-			   <a href="/ChiZi.html" class="inlineBlock_KoiHNL">『尺　　子』</a>
-			   <a href="/jilu.html" class="inlineBlock_KoiHNL" style="color: white;">『记　　录』</a>
-			   <a href="/DingCan.html" class="inlineBlock_KoiHNL">『订　　餐』</a>
-			   <a href="/Devlog.html" class="inlineBlock_KoiHNL">『研发日志』</a>
-			   <a href="/Disclaimer.html" class="inlineBlock_KoiHNL">『免责声明』</a>
-		       <a href="/signature.html" class="inlineBlock_KoiHNL">『电子签』</a>
-		   </p>
-          <p>Ⅱ：博文</p>
-           <p id="postsContainer">
-			   <a href="/posts/FormatDiskBeforeUse/" class="inlineBlock_KoiHNL">『使用驱动器中的光盘之前需要将其格式化』</a>
-			   <a href="/posts/notFoundDLLRegisterServer" class="inlineBlock_KoiHNL">『模块已加载,但找不到入口点DLLRegisterServer』</a>
-			   <a href="/posts/EDc-sound/" class="inlineBlock_KoiHNL">『电脑⌊星13 Air⌉声音无法出现』</a>
-			   <a href="/posts/A_UPBKY/" class="inlineBlock_KoiHNL">『U盘位置不可用』</a>
-			   <a href="/posts/A_FileNameAndroid_is/" class="inlineBlock_KoiHNL">『安卓U盘自动生成文件夹详解』</a>
-			   <a href="/posts/A_OPPO_ADB_/" class="inlineBlock_KoiHNL">『OPPO ADB卸载预装软件』</a>
-			   <a href="/posts/A_XCF_GDCF260712/" class="inlineBlock_KoiHNL">『餐食A』</a>
-			   <a href="/posts/subtitleFormatGeneratedByAegisubInASS/" class="inlineBlock_KoiHNL">『由Aegisub生成的Ass字幕格式注解』</a><a href="/index_OLD.html" class="inlineBlock_KoiHNL">『前往“2024年1月1日”之前的博文处』</a>
-			   
-		   </p>
+    <p>Ⅰ：小工具</p>
+    <ol id="toolsContainer">
+        <li><a href="/ProgressBar.html">『进度条生成器』</a></li>
+        <li><a href="/ChiZi.html">『尺　　子』</a></li>
+        <li><a href="/jilu.html" style="color: white;">『记　　录』</a></li>
+        <li><a href="/DingCan.html">『订　　餐』</a></li>
+        <li><a href="/Devlog.html">『研发日志』</a></li>
+        <li><a href="/Disclaimer.html">『免责声明』</a></li>
+        <li><a href="/signature.html">『电子签』</a></li>
+    </ol>
+    <p>Ⅱ：博文</p>
+    <ol id="postsContainer">
+        <li><a href="/posts/FormatDiskBeforeUse/">『使用驱动器中的光盘之前需要将其格式化』</a></li>
+        <li><a href="/posts/notFoundDLLRegisterServer">『模块已加载,但找不到入口点DLLRegisterServer』</a></li>
+        <li><a href="/posts/EDc-sound/">『电脑⌊星13 Air⌉声音无法出现』</a></li>
+        <li><a href="/posts/A_UPBKY/">『U盘位置不可用』</a></li>
+        <li><a href="/posts/A_FileNameAndroid_is/">『安卓U盘自动生成文件夹详解』</a></li>
+        <li><a href="/posts/A_OPPO_ADB_/">『OPPO ADB卸载预装软件』</a></li>
+        <li><a href="/posts/A_XCF_GDCF260712/">『餐食A』</a></li>
+        <li><a href="/posts/subtitleFormatGeneratedByAegisubInASS/">『由Aegisub生成的Ass字幕格式注解』</a></li>
+        <li><a href="/index_OLD.html">『前往“2024年1月1日”之前的博文处』</a></li>
+    </ol>
+</div>
+	
         </div>
         
       </div>
