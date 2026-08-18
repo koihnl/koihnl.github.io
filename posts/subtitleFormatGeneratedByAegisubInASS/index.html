@@ -1,18 +1,119 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>由Aegisub生成的Ass字幕格式 | 锦鲤未离</title>
     <script src="../../js/logo.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-page: #f7f9fc;
+            --bg-card: #ffffff;
+            --text-main: #2c3340;
+            --text-secondary: #5a6373;
+            --accent: #3b7ddd;
+            --accent-light: #6399e8;
+            --border: #e2e8f0;
+            --toc-bg: rgba(255,255,255,0.94);
+            --old-orange:#ff7200;
+        }
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            max-width: 64%;
+            margin: 0 auto;
+            padding: 32px 24px;
+            line-height: 1.75;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            scroll-behavior: smooth;
+        }
+        h1,h2 {
+            color: var(--text-main);
+            margin:24px 0 12px;
+        }
+        mark {
+            background-color: #fff2b3;
+            padding:0 3px;
+        }
+        .highlight {
+            color:#e53e3e;
+        }
+        .orange-text{
+            color:var(--old-orange);
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 15px;
+            font-family: Consolas,"Microsoft YaHei",monospace;
+            background-color: var(--bg-card);
+            padding:20px 24px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            margin:12px 0 20px;
+            color:var(--text-main);
+        }
+        hr {
+            border:none;
+            height:1px;
+            background:#d8dee8;
+            margin:20px 0;
+        }
+        /*悬浮目录*/
+        #toc {
+            width:290px;
+            max-height:90vh;
+            overflow-y:auto;
+            position:fixed;
+            top:0;
+            left:0;
+            background:var(--toc-bg);
+            box-shadow:2px 0 12px rgba(0,0,0,0.08);
+            padding:14px 12px;
+            border-radius:0 0 12px 0;
+            z-index:100;
+            border-right:1px solid var(--border);
+            border-bottom:1px solid var(--border);
+        }
+        #toc > p {
+            font-size:13px;
+            color:#777;
+            margin-bottom:10px;
+        }
+        #toc-list {
+            list-style:none;
+        }
+        #toc-list li {
+            font-size:14px;
+            line-height:1.55;
+            margin:5px 0;
+        }
+        #toc-list a {
+            color:var(--accent);
+            text-decoration:none;
+        }
+        #toc-list a:hover {
+            color:var(--accent-light);
+            text-decoration:underline;
+        }
+        @media(max-width:900px){
+            body {
+                max-width:94%;
+                padding:20px 14px;
+            }
+            #toc {
+                width:240px;
+            }
+        }
+    </style>
 </head>
-
-<body> 
-
-    <style>pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; font-size: 16px; font-family: auto; } #toc { max-width: 60%; position: fixed; top: 0; left: 0; background-color: #ffffffe0; padding: 10px; max-height: 90vh; overflow-y: auto; display: block; } mark { background-color: yellow; } .highlight { color: red; } body { max-width: 60%; width: 100%; margin: 0 auto; background-color: #faebd7; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); } @media (max-width: 768px) { body { max-width: 90%; } } </style>
-
-    <pre>
+<body>
+<pre>
 <span style="font-weight: 700;font-size: 28px;">由Aegisub生成的Ass字幕格式</span><hr>
 [Script Info]  
 ; 脚本信息部分，包含一些元数据
@@ -23,12 +124,12 @@ ScriptType: v4.00+  ; 脚本类型，表示ASS格式的版本
 WrapStyle: 0  ; 自动换行样式，0表示智能换行
 ScaledBorderAndShadow: yes  ; 是否缩放边框和阴影，yes表示启用
 YCbCr Matrix: TV.709  ; YCbCr颜色矩阵，TV.709是HDTV的标准
-PlayResX: 1920  ; 视频的横向分辨率，设置为1920像素
-PlayResY: 1080  ; 视频的纵向分辨率，设置为1080像素
+PlayResX: 1920  ; 字幕逻辑画布横向分辨率，不等于视频像素分辨率
+PlayResY: 1080  ; 字幕逻辑画布纵向分辨率
 Original Script: KoiHNL  ; 原始脚本作者，KoiHNL
 <hr>
 [Aegisub Project Garbage]  
-; Aegisub项目垃圾数据部分，通常用于记录软件的临时信息
+; Aegisub私有扩展数据，不属于标准ASS格式，播放器会直接忽略；仅保存软件项目临时状态
 Last Style Storage: Default  ; 上次使用的样式存储名称
 Audio File: 锦鲤未离.mkv  ; 项目中加载的音频文件路径
 Video File: 锦鲤未离.mkv  ; 项目中加载的视频文件路径
@@ -54,15 +155,16 @@ SecondaryColour：次要颜色，以 `&HAABBGGRR` 格式表示。通常用于卡
 OutlineColour：字幕边框的颜色，以 `&HAABBGGRR` 格式表示。
 BackColour：字幕背景的颜色，以 `&HAABBGGRR` 格式表示，通常在使用盒装边框（`BorderStyle = 3`）时使用。
 Bold：粗体（-1启用0禁用）
-Italic：斜体(1启用0禁用)
-Underline：下划线（1启用0禁用）
-StrikeOut：删除线（1启用0禁用）
+Italic：斜体(-1启用0禁用)
+Underline：下划线（-1启用0禁用）
+StrikeOut：删除线（-1启用0禁用）
 ScaleX：水平缩放。水平方向的缩放比例，以百分比表示。`100` 表示原始宽度，`200` 表示两倍宽度。
 ScaleY：垂直缩放。
 Spacing：字符间距，单位为像素。
 Angle：旋转角度。文本相对于屏幕的旋转角度，单位为度。
 BorderStyle：边框样式
     - `1` 表示文本有边框（即轮廓描边），`3` 表示文本有背景框（矩形框）。
+    - 注意：BorderStyle=3时，Outline不再代表描边宽度，而是背景框的向内边距。
     - 如果不想显示任何边框或背景框，只需将 Outline 和 Shadow 设置为 0 即可，BorderStyle 可以保持为 1。
 Outline：描边宽(厚)度，单位为像素。设置越大，边框越粗。
 Shadow：阴影距离，字幕阴影的偏移距离，单位为像素。设置越大，阴影距离越远。
@@ -80,11 +182,11 @@ Alignment：对齐方式
 MarginL：左边距，文本相对于屏幕左侧的距离，单位为像素。
 MarginR：右边距。
 MarginV：垂直边距，文本相对于屏幕顶部或底部的距离，具体取决于对齐方式。
-Encoding：字符编码。
-      - `0`：默认 ANSI
+Encoding：字符编码（Windows代码页，现代播放器基本忽略）。
+      - `0`：系统默认代码页
       - `1`：日文
-      - `134`：简体中文
-      - `136`：繁体中文
+      - `134`：简体中文 GB2312
+      - `136`：繁体中文 Big5
 <hr>
 <span style="font-weight: 700;">
 [Events]
@@ -123,19 +225,31 @@ Dialogue: 0,0:03:23.60,0:03:30.56,Default,title,0,0,0,,{\an5\fs75\pos(960,780)\i
 ; \3c&HFFFFFF - 设置边框颜色为HFFFFFF（白色）。
 ; \4c&HB16E9D - 设置阴影颜色为HB16E9D（粉紫色）。
 ; \fad(1250,0) - 淡入时间1250毫秒，淡出时间0毫秒。
-; \t(0,1250,1,\fs100) - 在0到1250毫秒内，字体大小从120变为100。
+; \t(t1,t2,accel,\fsXX) - 在字幕的t1~t2毫秒区间，按accel加速度做变换。示例{\fs60}{\t(0,1250,1,\fs70)}代表0‑1250ms字体由60平滑过渡到70；accel=1为线性变化。
 ; 显示内容为 "锦鲤未离"，并且单独给"鲤未离"部分添加了颜色（HBFA3F3）。
 
 
 
 
+</pre>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toc = document.getElementById('toc');
+    const tocList = document.getElementById('toc-list');
+    let tocVisible = true;
 
-  
+    tocList.innerHTML = `<li><a href="#">页面顶部</a></li>`;
 
-    </pre>
-    <script> document.addEventListener('DOMContentLoaded', function () { let toc = document.getElementById('toc'); let tocList = document.getElementById('toc-list'); let headings = document.getElementsByTagName('h4'); let filterInput = document.getElementById('filter'); function generateToc(keyword = '') { tocList.innerHTML = ''; for (let i = 0; i < headings.length; i++) { let heading = headings[i]; let id = 'heading-' + i; heading.id = id; let paragraph = heading.nextElementSibling; if (paragraph && (paragraph.tagName.toLowerCase() === 'pre' || paragraph.tagName.toLowerCase() === 'ul' || paragraph.tagName.toLowerCase() === 'p')) { if (keyword === '' || heading.textContent.includes(keyword)) { let listItem = document.createElement('li'); let link = document.createElement('a'); link.href = '#' + id; let text = heading.textContent; let match = text.match(/(分类.+)/); if (match) { let highlightedText = match[1]; link.innerHTML = text.replace(highlightedText, `<span class="highlight">${highlightedText}</span>`); } else { link.textContent = text; } listItem.appendChild(link); tocList.appendChild(listItem); heading.innerHTML = text; if (keyword) { keyword = keyword.slice(3); heading.innerHTML = heading.innerHTML.replace(new RegExp(keyword, 'g'), `<mark>${keyword}</mark>`); } } else { heading.innerHTML = heading.textContent; } } } } generateToc(); filterInput.addEventListener('input', function () { let keyword = '分类：' + filterInput.value.trim(); generateToc(keyword); }); document.addEventListener('click', function (event) { if (!toc.contains(event.target) && event.target !== filterInput) { toc.style.display = (toc.style.display === 'none') ? 'block' : 'none'; } }); toc.addEventListener('click', function (event) { event.stopPropagation(); }); }); </script>
-
+    // 点击页面外部切换目录显隐
+    document.addEventListener('click', function (event) {
+        if (!toc.contains(event.target)) {
+            tocVisible = !tocVisible;
+            toc.style.display = tocVisible ? 'block' : 'none';
+        }
+    });
+    toc.addEventListener('click', e => e.stopPropagation());
+});
+</script>
 </body>
-
 </html>
