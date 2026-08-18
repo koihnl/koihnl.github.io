@@ -1,30 +1,154 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>锦鲤未离的小站研发日志 | 锦鲤未离</title>
   <script src="/js/logo.js"></script>
-</head>
-
-<body>  
- 
   <style>
-    
-    ul { list-style-type: none;} a { text-decoration: none; color: chocolate;} a:hover { color: #b44b22; text-decoration: underline; }
-    pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; font-size: 16px; font-family: auto; } #toc { max-width: 60%; position: fixed; top: 0; left: 0; background-color: #faebd7f5; padding: 10px; max-height: 90vh; overflow-y: auto; display: block;border-right: 1px dotted #7b7b7b;border-bottom: 1px dotted #7b7b7b; } 
-    mark { background-color: yellow; } .highlight { color: red; } body { max-width: 60%; width: 100%; margin: 0 auto; background-color: #faebd7; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); } @media (max-width: 768px) { body { max-width: 90%; } }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg-page: #f7f9fc;
+      --bg-card: #ffffff;
+      --text-main: #2c3340;
+      --text-secondary: #5a6373;
+      --accent: #3b7ddd;
+      --accent-light: #6399e8;
+      --border: #e2e8f0;
+      --toc-bg: rgba(255,255,255,0.94);
+    }
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      max-width: 64%;
+      margin: 0 auto;
+      padding: 32px 24px;
+      line-height: 1.75;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+    h4 {
+      font-size: 17px;
+      margin: 26px 0 10px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    p {
+      margin: 10px 0;
+      color: var(--text-secondary);
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 15px;
+      font-family: "Consolas", "Microsoft YaHei", monospace;
+      background-color: var(--bg-card);
+      padding: 16px 20px;
+      border-radius: 10px;
+      border:1px solid var(--border);
+      margin: 8px 0 18px 0;
+      color: var(--text-main);
+    }
+    ul {
+      list-style-type: none;
+      margin:10px 0 16px 0;
+    }
+    ul li {
+      margin:7px 0;
+      padding-left:14px;
+      position:relative;
+      color: var(--text-secondary);
+    }
+    ul li::before {
+      content:"•";
+      position:absolute;
+      left:0;
+      color:var(--accent-light);
+    }
+    blockquote {
+      margin:10px 0 10px 16px;
+      padding:10px 14px;
+      border-left:3px solid var(--accent-light);
+      background:#f0f5fc;
+      border-radius:0 8px 8px 0;
+      color:var(--text-secondary);
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      color: var(--accent-light);
+      text-decoration: underline;
+    }
+    mark {
+      background-color: #fff2b3;
+      padding:0 3px;
+    }
+    .highlight {
+      color:#e53e3e;
+    }
+    /* 悬浮目录 TOC */
+    #toc {
+      width: 290px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: fixed;
+      top:0;
+      left:0;
+      background: var(--toc-bg);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      padding:14px 12px;
+      border-radius:0 0 12px 0;
+      z-index:100;
+      border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+    }
+    #toc > p {
+      font-size:13px;
+      color:#777;
+      margin-bottom:10px;
+    }
+    #toc-list li {
+      font-size:14px;
+      line-height:1.55;
+      margin:5px 0;
+    }
+    /* 移动端适配 */
+    @media(max-width: 900px){
+      body {
+        max-width:94%;
+        padding:20px 14px;
+      }
+      #toc {
+        width:240px;
+      }
+      h1 {
+        font-size:22px;
+      }
+    }
   </style>
+</head>
+<body>
   <h1>锦鲤未离的小站研发日志(无特殊说明均指新小站)</h1>
-  <p>创建日期：2022-09-23 22:03:45</p> 
+  <p>创建日期：2022‑09‑23 22:03:45</p>
 
-  <div id="toc"><p>-点击目录以外的部分以隐藏/显示-</p><ul id="toc-list"></ul></div>
+  <div id="toc">
+    <p>-点击目录以外的部分以隐藏/显示-</p>
+    <ul id="toc-list"></ul>
+  </div>
 
-  <div class="" style="color: #757575;">
-    
-<h4 style="color: #000;">2026年8月4日记录『4.5修改每日记录系统』</h4>
-<pre style="color: #000;">
+  <div>
+<h4>2026年8月4日记录『4.5修改每日记录系统』</h4>
+<pre>
       为了更好地服务于工作，本次主要修改了“每日记录系统”。
       一、弹窗操作与界面
       1. 关闭规则区分：点取消/点击弹窗外侧关闭，文字草稿保留；点击提交成功后，输入框自动清空
@@ -53,38 +177,38 @@
       1. 页面增加完善手机适配配置，软键盘弹出不会遮挡弹窗输入区域
 </pre>
 
-<h4 style="color: #000;">2025年6月22日记录『4.4修改主页为新版』</h4>
-<pre style="color: #000;">
+<h4>2025年6月22日记录『4.4修改主页为新版』</h4>
+<pre>
       - 增加：增设新主页，替代原主页，为3D动态。
       - 修改：对原主页进行修改，将“24年1月1日前的博客”提前并着重显示。
 </pre>
 
-<h4 style="color: #000;">2025年4月28日记录『4.3.2优化主页文本』</h4>
-<pre style="color: #000;">
+<h4>2025年4月28日记录『4.3.2优化主页文本』</h4>
+<pre>
       - 修改：优化了部分文本。
 </pre>
-    
-<h4 style="color: #000;">2025年4月1日记录『4.3.1优化主页头部』</h4>
-<pre style="color: #000;">
+
+<h4>2025年4月1日记录『4.3.1优化主页头部』</h4>
+<pre>
       - 新增：聊天式主页增加头部。为方便工作使用，将部分标点位于头部中央。
 </pre>
 
-<h4 style="color: #000;">2025年1月14日记录『4.3优化主页』</h4>
-<pre style="color: #000;">
+<h4>2025年1月14日记录『4.3优化主页』</h4>
+<pre>
   『全新主页，趣味内容』
       - 修改：优化主页布局显示，由原来的直接列表式变为聊天式。原主页相关内容保持不变。
 </pre>
 
-<h4 style="color: #000;">2024年12月13日记录『4.2.1优化底层逻辑』</h4>
-<pre style="color: #000;">
+<h4>2024年12月13日记录『4.2.1优化底层逻辑』</h4>
+<pre>
       - 增加：新增点击右上角logo可回到主页功能。
         　　　新增友联模块。现在点触即可展出友联列表，可以增加更多链接了。
       - 修改：优化主页、404页、阅读页、进度条页等页布局显示。
         　　　现在小图标标识全页面显示了。
 </pre>
 
-      <h4 style="color: #000;">2024年8月9日记录『4.2移除旧站 优化新站』</h4>
-      <pre style="color: #000;">
+<h4>2024年8月9日记录『4.2移除旧站 优化新站』</h4>
+<pre>
       - 增加：新增“旧博文”夹层；
         　　　新增“联系我”部分；
         　　　新增各页面的“锦鲤未离”Logo；
@@ -98,20 +222,20 @@
       - 删除：移除旧小站，将旧博文移入夹层中。
         　　　移除“隐藏新主页”按钮。
         　　　移除“下拉即可滑进旧主页”提示。
-      </pre>
+</pre>
 
-      <h4 style="color: #000;">2024年8月6日记录『4.1.2优化旧站阅读逻辑』</h4>
-      <pre style="color: #000;">
+<h4>2024年8月6日记录『4.1.2优化旧站阅读逻辑』</h4>
+<pre>
       -修改：优化在阅读旧博文时进行页面刷新会致使新主页无法查看的问题。
-      </pre>
+</pre>
 
-  <h4 style="color: #000;">2024年7月28日记录『4.1.1优化旧站显隐逻辑』</h4>
-  <pre style="color: #000;">
+<h4>2024年7月28日记录『4.1.1优化旧站显隐逻辑』</h4>
+<pre>
   -增加：新增左上角“按钮”，可以隐藏/显示新主页。
-  </pre>
-    
-  <h4 style="color: #000;">2024年7月20日记录『4.1简化旧站』</h4>
-  <pre style="color: #000;">
+</pre>
+
+<h4>2024年7月20日记录『4.1简化旧站』</h4>
+<pre>
   -增加：新增“小站研发日志”链接，可以点击进入。
   -修改：在旧小站中，精简博文列表，仅保留标题。
 　 　　　在旧小站中，将所有文章位于一页，去除掉其他页。
@@ -119,10 +243,10 @@
 　 　　　在旧小站中，在优化基础上，适配移动端。
 　 　　　更改小站研发日志位置。
   -删除：在旧小站中，移除掉已无效的链接跳转，如分类、归档；以及站点信息、轮播图、音乐播放器等内容。
-  </pre>
+</pre>
 
-    <h4 style="color: #000;">2024年6月21日记录『4.0版本』</h4>
-    <pre style="color: #000;">
+<h4>2024年6月21日记录『4.0版本』</h4>
+<pre>
   ！锦鲤未离小站4.0版本发布！
   ————为了更好地使用，本站进行了全新的功能与界面升级！计划逐步取消掉旧博文的布局。当前仅在不改变原有结构的基础上，在主页添加新主页。下滑即可进入旧主页。
   『全面变革，新版发布』
@@ -130,160 +254,191 @@
   -增加：新增新小站页面。
   -修改：在保留基础文本、结构的基础上，将旧小站移到下方，具体博文仍可点击进入。新小站位于上方。
   -删除：在保留基础文本、结构的基础上，去除掉关于我页、日志页、链接页，多余的归档页、分类页等页。
-  </pre>
+</pre>
 
-        <h4 style="color: #000;">间章 祝3.0版本成功作为毕业设计^-^</h4>
-    <pre style="color: #000;">
+<h4>间章 祝3.0版本成功作为毕业设计^-^</h4>
+<pre>
   -！祝贺锦鲤未离小站3.0版本成功作为毕业设计！-
-  </pre>
-  <!-- 3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·3.0版本之前的开发日志见下·-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-    <h4 id="2023-年-05-月-01-日记录">2023 年
-      05 月 01 日记录『3.0版本』</h4>
-    <p>锦鲤未离小站3.0版本全新发布。</p>
-    <ul>
-      <li>[修改&amp;删除]：<ul>
-          <li>为了更好地服务于毕业设计，本站进行了全新的功能与界面升级，『全面改版，焕然一新！体验升级，沉浸浏览』。</li>
-          <li>修改部分描述性文字，使文字叙述符合小站主题。</li>
-        </ul>
-      </li>
-      <li>[新特性]：<ul>
-          <li>首页选择丰富。个人卡片、站点信息、公告栏、分类等…于小站首页可点击链接进入，功能更全面，使用更便捷！</li>
-          <li>记录形式添加。文章、日志等…方式更多样，抉择更充分！</li>
-          <li>新增多样背景。</li>
-          <li>新增评论系统。</li>
-          <li>更多内容。</li>
-        </ul>
-      </li>
-    </ul>
+</pre>
 
-    <h4 id="2022-年-11-月-11-日记录"><a href="#2022-年-11-月-11-日记录" class="headerlink" title="2022 年 11 月 11 日记录"></a>2022 年
-      11 月 11 日记录</h4>
+<h4>2023 年 05 月 01 日记录『3.0版本』</h4>
+<p>锦鲤未离小站3.0版本全新发布。</p>
+<ul>
+  <li>[修改&amp;删除]：
     <ul>
+      <li>为了更好地服务于毕业设计，本站进行了全新的功能与界面升级，『全面改版，焕然一新！体验升级，沉浸浏览』。</li>
+      <li>修改部分描述性文字，使文字叙述符合小站主题。</li>
+    </ul>
+  </li>
+  <li>[新特性]：
+    <ul>
+      <li>首页选择丰富。个人卡片、站点信息、公告栏、分类等…于小站首页可点击链接进入，功能更全面，使用更便捷！</li>
+      <li>记录形式添加。文章、日志等…方式更多样，抉择更充分！</li>
+      <li>新增多样背景。</li>
+      <li>新增评论系统。</li>
+      <li>更多内容。</li>
+    </ul>
+  </li>
+</ul>
 
-      <li>[修改]：<ul>
-          <li>改正了封面区中轮播图<font color='#ff7200'>无法播放</font>的问题。</li>
-          <li>优化了封面区“联系我”中图片的美观效果。<blockquote>
-              <p>简化了联系流程，更加便捷！</p>
-            </blockquote>
-          </li>
-          <li>优化了关于安卓端APP的封面区“联系我”中图片位置<font color='#ff7200'>错位</font>问题。</li>
-        </ul>
+<h4>2022 年 11 月 11 日记录</h4>
+<ul>
+  <li>[修改]：
+    <ul>
+      <li>改正了封面区中轮播图无法播放的问题。</li>
+      <li>优化了封面区“联系我”中图片的美观效果。
+        <blockquote>
+          <p>简化了联系流程，更加便捷！</p>
+        </blockquote>
       </li>
+      <li>优化了关于安卓端APP的封面区“联系我”中图片位置错位问题。</li>
+    </ul>
+  </li>
+</ul>
 
-    </ul>
-    <h4 id="2022-年-11-月-04-日记录"><a href="#2022-年-11-月-04-日记录" class="headerlink" title="2022 年 11 月 04 日记录"></a>2022 年
-      11 月 04 日记录</h4>
+<h4>2022 年 11 月 04 日记录</h4>
+<ul>
+  <li>[添加]：
     <ul>
-      <li>[添加]：<ul>
-          <li>在文章主页面及文章卡片中增加了一个<font color='#ff7200'>大分类</font>（子分类的总概括），例如在本研发日志中，“以未离之名”即为大分类，旗下的子分类有“捣鼓我的小博客”。
-            <blockquote>
-              <p>
-                一开始，本博客集中于介绍我的日常学习相关内容，而现如今随着博客内容的越来越丰富，分类越来越多，一般的分类已经显得臃肿，故我将会为其设立二级子分类（原众多仅且一级分类）。另外，在随后的时间内我会优化关于“封面区”中分类的显示问题，敬请期待。
-              </p>
-            </blockquote>
-          </li>
-        </ul>
+      <li>在文章主页面及文章卡片中增加了一个大分类（子分类的总概括），例如在本研发日志中，“以未离之名”即为大分类，旗下的子分类有“捣鼓我的小博客”。
+        <blockquote>
+          <p>一开始，本博客集中于介绍我的日常学习相关内容，而现如今随着博客内容的越来越丰富，分类越来越多，一般的分类已经显得臃肿，故我将会为其设立二级子分类（原众多仅且一级分类）。另外，在随后的时间内我会优化关于“封面区”中分类的显示问题，敬请期待。</p>
+        </blockquote>
       </li>
     </ul>
-    <h4 id="2022-年-10-月-28-日记录"><a href="#2022-年-10-月-28-日记录" class="headerlink" title="2022 年 10 月 28 日记录"></a>2022 年
-      10 月 28 日记录</h4>
-    <ul>
-      <li>[添加]：<ul>
-          <li>在主页中增加了“可刷新切换背景”的一个<font color='#ff7200'>背景</font>。</li>
-        </ul>
-      </li>
-      <li>[修改]：<ul>
-          <li>改正了部分文案<font color='#ff7200'>错别</font>描述。</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="2022-年-10-月-26-日记录"><a href="#2022-年-10-月-26-日记录" class="headerlink" title="2022 年 10 月 26 日记录"></a>2022 年
-      10 月 26 日记录</h4>
-    <ul>
-      <li>[添加]：<ul>
-          <li>在封面区增加了一些常用的<font color='#ff7200'>超链接</font>，例如天气、日历等等…位置位于封面区最下。<blockquote>
-              <p>于我而言，查询一些东西的时候，往往需要在例如百度等搜索框中输入我想要查询的东西。现有一部分经常需要查询的链接，故增加该项内容。</p>
-            </blockquote>
-          </li>
-        </ul>
-      </li>
-    </ul>
+  </li>
+</ul>
 
-    <h4 id="2022-年-10-月-07-日记录"><a href="#2022-年-10-月-07-日记录" class="headerlink" title="2022 年 10 月 07 日记录"></a>2022 年
-      10 月 07 日记录</h4>
+<h4>2022 年 10 月 28 日记录</h4>
+<ul>
+  <li>[添加]：
     <ul>
-      <li>[修改]：<ul>
-          <li>关于网页头部搜索框，改变了其搜索点击框相关<font color='#ff7200'>透明度</font>及鼠标悬浮于其上的颜色<font color='#ff7200'>透明度</font>。</li>
-          <li>关于网页底部，改变了其相关两个图标的<font color='#ff7200'>透明度</font>，另外将底部说明文字的<font color='#ff7200'>字体</font>等进行修改。</li>
-          <li>关于文章内文章头的目录，以<font color='#ff7200'>可展拉式</font>（默认开启）替换掉过往的自展现式。<blockquote>
-              <p>当目录过少时，对于文章的阅读性差别不是很大。而当目录层过多时，会影响到阅读效果。故新增<strong>展拉式</strong>阅读效果，使可观赏性得到提高。</p>
-            </blockquote>
-          </li>
-          <li>关于文章内文章里的表格，改变了其文本<font color='#ff7200'>展现方式</font>，使可阅读性提高。</li>
-          <li>关于文章内区块引用，修改了其相关<font color='#ff7200'>外观展示</font>，包括大小、字体等。<blockquote>
-              <p>原先的区块引用只改变了其颜色及在头处添加一条横线，现改变横线版型及其字体等的改变。修改后的效果更加清晰，与主题亦更为契合。</p>
-            </blockquote>
-          </li>
-          <li>关于封面区，修复了在某些特定条件下“[贴图]联系我”<font color='#ff7200'>显示不全</font>面或只显示半个的错误效果。</li>
-        </ul>
-      </li>
+      <li>在主页中增加了“可刷新切换背景”的一个背景。</li>
     </ul>
-    <h4 id="2022-年-10-月-01-日记录"><a href="#2022-年-10-月-01-日记录" class="headerlink" title="2022 年 10 月 01 日记录"></a>2022 年
-      10 月 01 日记录</h4>
+  </li>
+  <li>[修改]：
     <ul>
-      <li>[添加]：<ul>
-          <li>新增了页面&#x2F;文章的<font color='#ff7200'>加密</font>机制。<blockquote>
-              <p>随着本站内容的不断增加，一些重要内容寄存于此，不足与外人道也。故增添加密机制，以使一部分值得加密的页面或文章加密成功。<br>沿用了本站 Cards
-                式主题。在外观上，采用药丸、扁平等未有锋锐的设计，以及以灰色平和为主的色调。</p>
-            </blockquote>
-          </li>
-        </ul>
-      </li>
+      <li>改正了部分文案错别描述。</li>
     </ul>
-    <h4 id="2022-年-09-月-24-日记录"><a href="#2022-年-09-月-24-日记录" class="headerlink" title="2022 年 09 月 24 日记录"></a>2022 年
-      09 月 24 日记录</h4>
-    <ul>
-      <li>[添加]：<ul>
-          <li>在主页中增加了“可刷新切换背景”的一个<font color='#ff7200'>背景</font>。</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="2022-年-09-月-23-日记录"><a href="#2022-年-09-月-23-日记录" class="headerlink" title="2022 年 09 月 23 日记录"></a>2022 年
-      09 月 23 日记录</h4>
-    <ul>
-      <li>[添加]：<ul>
-          <li>在封面区中增加了“研发日志”<font color='#ff7200'>页</font>。</li>
-          <li>在封面区轮播图中添加了“研发日志”<font color='#ff7200'>图片</font>，为轮播图中第一张。</li>
-          <li>在封面区分页流中添加了“研发日志”<font color='#ff7200'>超链接</font>，其缀在最后。</li>
-        </ul>
-      </li>
-      <li>[修改]：<ul>
-          <li>延申了头部区域搜索框的<font color='#ff7200'>长度</font>，在手机版上体验更佳！</li>
-          <li>纠正了封面区点击“分类流”中某分类<font color='#ff7200'>无法跳转</font>至该分类的问题。</li>
-          <li>纠正了封面区打开“联系我”后第四个图标<font color='#ff7200'>最先出现</font>的问题。</li>
-        </ul>
-      </li>
-      <li>[删除]：<ul>
-          <li>去除了作为“测试样例”的图片 4。</li>
-        </ul>
-      </li>
-    </ul>
-    <h4>2022 年 09 月 22 日（含）前已不可考证</h4>
-    <p></p>
-    <h4>2022 年 01 月 16 日创建 Blog</h4>
-    <p></p>
+  </li>
+</ul>
 
-    <script> document.addEventListener('DOMContentLoaded', function () { let toc = document.getElementById('toc'); let tocList = document.getElementById('toc-list'); let headings = document.getElementsByTagName('h4'); let filterInput = document.getElementById('filter'); function generateToc(keyword = '') { tocList.innerHTML = ''; for (let i = 0; i < headings.length; i++) { let heading = headings[i]; let id = 'heading-' + i; heading.id = id; let paragraph = heading.nextElementSibling; if (paragraph && (paragraph.tagName.toLowerCase() === 'pre' || paragraph.tagName.toLowerCase() === 'ul' || paragraph.tagName.toLowerCase() === 'p')) { if (keyword === '' || heading.textContent.includes(keyword)) { let listItem = document.createElement('li'); let link = document.createElement('a'); link.href = '#' + id; let text = heading.textContent; let match = text.match(/(分类.+)/); if (match) { let highlightedText = match[1]; link.innerHTML = text.replace(highlightedText, `<span class="highlight">${highlightedText}</span>`); } else { link.textContent = text; } listItem.appendChild(link); tocList.appendChild(listItem); heading.innerHTML = text; if (keyword) { keyword = keyword.slice(3); heading.innerHTML = heading.innerHTML.replace(new RegExp(keyword, 'g'), `<mark>${keyword}</mark>`); } } else { heading.innerHTML = heading.textContent; } } } } generateToc(); filterInput.addEventListener('input', function () { let keyword = '分类：' + filterInput.value.trim(); generateToc(keyword); }); document.addEventListener('click', function (event) { if (!toc.contains(event.target) && event.target !== filterInput) { toc.style.display = (toc.style.display === 'none') ? 'block' : 'none'; } }); toc.addEventListener('click', function (event) { event.stopPropagation(); }); }); </script>
-        <script>
-        var tocVisible = true;
-        document.addEventListener('click', function(event) {
-            var tocElement = document.getElementById('toc');
-            if (!tocElement.contains(event.target)) {
-                tocVisible = !tocVisible;
-                tocElement.style.display = tocVisible ? 'block' : 'none';
-            }
-        });
-    </script>
+<h4>2022 年 10 月 26 日记录</h4>
+<ul>
+  <li>[添加]：
+    <ul>
+      <li>在封面区增加了一些常用的超链接，例如天气、日历等等…位置位于封面区最下。
+        <blockquote>
+          <p>于我而言，查询一些东西的时候，往往需要在例如百度等搜索框中输入我想要查询的东西。现有一部分经常需要查询的链接，故增加该项内容。</p>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4>2022 年 10 月 07 日记录</h4>
+<ul>
+  <li>[修改]：
+    <ul>
+      <li>关于网页头部搜索框，改变了其搜索点击框相关透明度及鼠标悬浮于其上的颜色透明度。</li>
+      <li>关于网页底部，改变了其相关两个图标的透明度，另外将底部说明文字的字体等进行修改。</li>
+      <li>关于文章内文章头的目录，以可展拉式（默认开启）替换掉过往的自展现式。
+        <blockquote>
+          <p>当目录过少时，对于文章的阅读性差别不是很大。而当目录层过多时，会影响到阅读效果。故新增<strong>展拉式</strong>阅读效果，使可观赏性得到提高。</p>
+        </blockquote>
+      </li>
+      <li>关于文章内文章里的表格，改变了其文本展现方式，使可阅读性提高。</li>
+      <li>关于文章内区块引用，修改了其相关外观展示，包括大小、字体等。
+        <blockquote>
+          <p>原先的区块引用只改变了其颜色及在头处添加一条横线，现改变横线版型及其字体等的改变。修改后的效果更加清晰，与主题亦更为契合。</p>
+        </blockquote>
+      </li>
+      <li>关于封面区，修复了在某些特定条件下“[贴图]联系我”显示不全面或只显示半个的错误效果。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>2022 年 10 月 01 日记录</h4>
+<ul>
+  <li>[添加]：
+    <ul>
+      <li>新增了页面/文章的加密机制。
+        <blockquote>
+          <p>随着本站内容的不断增加，一些重要内容寄存于此，不足与外人道也。故增添加密机制，以使一部分值得加密的页面或文章加密成功。<br>沿用了本站 Cards 式主题。在外观上，采用药丸、扁平等未有锋锐的设计，以及以灰色平和为主的色调。</p>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4>2022 年 09 月 24 日记录</h4>
+<ul>
+  <li>[添加]：
+    <ul>
+      <li>在主页中增加了“可刷新切换背景”的一个背景。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>2022 年 09 月 23 日记录</h4>
+<ul>
+  <li>[添加]：
+    <ul>
+      <li>在封面区中增加了“研发日志”页。</li>
+      <li>在封面区轮播图中添加了“研发日志”图片，为轮播图中第一张。</li>
+      <li>在封面区分页流中添加了“研发日志”超链接，其缀在最后。</li>
+    </ul>
+  </li>
+  <li>[修改]：
+    <ul>
+      <li>延申了头部区域搜索框的长度，在手机版上体验更佳！</li>
+      <li>纠正了封面区点击“分类流”中某分类无法跳转至该分类的问题。</li>
+      <li>纠正了封面区打开“联系我”后第四个图标最先出现的问题。</li>
+    </ul>
+  </li>
+  <li>[删除]：
+    <ul>
+      <li>去除了作为“测试样例”的图片 4。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>2022 年 09 月 22 日（含）前已不可考证</h4>
+<h4>2022 年 01 月 16 日创建 Blog</h4>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const toc = document.getElementById('toc');
+  const tocList = document.getElementById('toc-list');
+  const headings = document.getElementsByTagName('h4');
+  let tocVisible = true;
+
+  function generateToc() {
+    tocList.innerHTML = '';
+    for (let i = 0; i < headings.length; i++) {
+      const heading = headings[i];
+      const id = 'heading-' + i;
+      heading.id = id;
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = heading.textContent.trim();
+      li.appendChild(a);
+      tocList.appendChild(li);
+    }
+  }
+  generateToc();
+
+  // 点击页面空白切换目录显示，阻止目录内部冒泡
+  document.addEventListener('click', function (event) {
+    if (!toc.contains(event.target)) {
+      tocVisible = !tocVisible;
+      toc.style.display = tocVisible ? 'block' : 'none';
+    }
+  });
+  toc.addEventListener('click', e => e.stopPropagation());
+});
+</script>
 </body>
-
 </html>
