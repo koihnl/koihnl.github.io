@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>工作记录系统 使用说明书</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            line-height: 1.75;
+            color: #222;
+            background-color: #f7f8fa;
+        }
+        h2 {
+            border-left: 5px solid #3478d9;
+            padding-left: 12px;
+            margin-top: 36px;
+        }
+        pre {
+            background: #272e3b;
+            color: #e9ecef;
+            padding: 14px 18px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+        .tip {
+            background: #e8f4ff;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin:10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>工作记录系统 使用说明 & 扩展指南</h1>
+
+    <h2>1、如何新增单选分类类型</h2>
+    <p>① 在弹窗HTML radio区域新增一行选项：</p>
+<pre><code>&lt;label&gt;&lt;input type="radio" name="recordType" value="receive"&gt; 接待&lt;/label&gt;</code></pre>
+
+    <p>② JS顶部 <code>TYPE_PREFIX</code> 对象增加配置：</p>
+<pre><code>receive:"接待："</code></pre>
+
+    <p>③ CSS增加左侧标识色（自动识别 type-receive）：</p>
+<pre><code>.time-block.type-receive{
+    border-left-color:#9932cc;
+}</code></pre>
+
+    <h2>2、自定义常用快捷短语</h2>
+    <p>找到弹窗HTML内 <code>.phrase-group</code> 区域，复制模板新增按钮：</p>
+<pre><code>&lt;button onclick="insertPhraseToPopup('【自定义文字】')"&gt;按钮显示名称&lt;/button&gt;</code></pre>
+
+    <h2>3、快捷键说明</h2>
+    <div class="tip">
+        <ul style="margin:0;padding-left:20px;">
+            <li><strong>ESC</strong>：弹窗打开状态，一键关闭弹窗（保留当前草稿内容）</li>
+            <li><strong>Ctrl + Enter</strong>：直接提交记录，无需鼠标点击确认按钮</li>
+        </ul>
+    </div>
+
+    <h2>4、其他注意事项</h2>
+    <ul>
+        <li>所有数据存储在浏览器本地缓存，清理浏览器数据会丢失记录；</li>
+        <li>重要记录定期导出 MD / TXT 文件备份；</li>
+        <li>旧版本历史数据会自动兼容，统一归类为「其他」事项。</li>
+    </ul>
+</body>
+</html>
