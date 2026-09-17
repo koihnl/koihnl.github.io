@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPPO 小布助手说明书 · 给爸妈的对话手册</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#F6F5EF;
+    --card:#FFFFFF;
+    --ink:#233029;
+    --ink-2:#5E6B64;
+    --brand:#0E9E6B;
+    --brand-deep:#0A7D54;
+    --brand-soft:#E6F4ED;
+    --brand-soft-2:#F0F8F3;
+    --line:#E6E2D6;
+    --warn:#E8A33D;
+    --warn-bg:#FBF1E0;
+    --warn-ink:#8A5A13;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    font-weight:400;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px;}
+  h1,h2,h3{font-family:"Noto Serif SC","Songti SC","SimSun",serif;line-height:1.3;margin:0;}
+  p{margin:0;}
+  a{color:var(--brand-deep);}
+
+  /* ===== 顶条 ===== */
+  .topbar{height:6px;background:linear-gradient(90deg,var(--brand) 0%,#2FC08A 60%,#B5E8CF 100%);}
+
+  /* ===== Hero ===== */
+  .hero{padding:64px 0 40px;text-align:center;}
+  .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;letter-spacing:.28em;font-weight:600;color:var(--brand-deep);
+    text-transform:uppercase;margin-bottom:20px;
+  }
+  .kicker::before,.kicker::after{content:"";width:26px;height:1px;background:var(--brand);opacity:.5;}
+  .hero h1{font-size:clamp(34px,6vw,60px);font-weight:900;letter-spacing:.02em;}
+  .hero .sub{
+    max-width:680px;margin:18px auto 0;color:var(--ink-2);
+    font-size:17px;font-weight:300;
+  }
+  .hero-badge{
+    width:112px;height:112px;margin:0 auto 26px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,#2FC08A,var(--brand) 58%,#0A7D54);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;box-shadow:0 0 0 10px rgba(14,158,107,.10),0 0 0 22px rgba(14,158,107,.05);
+  }
+  .hero-badge svg{width:54px;height:54px;}
+  .wake{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:34px;
+  }
+  .wake-chip{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:11px 18px;font-size:14.5px;font-weight:500;color:var(--ink);
+  }
+  .wake-chip svg{width:18px;height:18px;color:var(--brand);flex:none;}
+  .wake-chip b{font-weight:700;}
+
+  /* ===== 章节通用 ===== */
+  section.block{padding:44px 0 8px;}
+  .sec-head{margin-bottom:26px;}
+  .sec-tag{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:13px;letter-spacing:.2em;font-weight:700;color:var(--brand-deep);
+  }
+  .sec-tag .no{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;
+    font-family:"Noto Serif SC",serif;font-size:14px;letter-spacing:0;
+  }
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px);font-weight:900;margin-top:10px;}
+  .sec-head p{color:var(--ink-2);margin-top:8px;font-size:15.5px;max-width:760px;}
+
+  /* ===== 使用前准备 ===== */
+  .prep{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px 28px 22px;}
+  .prep-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;}
+  .prep-title svg{width:22px;height:22px;color:var(--brand);}
+  .prep-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px;}
+  .step{background:var(--brand-soft-2);border-radius:12px;padding:16px;}
+  .step .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;
+    font-size:13px;font-weight:700;margin-bottom:10px;
+  }
+  .step h4{margin:0 0 6px;font-size:15px;font-weight:700;}
+  .step p{font-size:13.5px;color:var(--ink-2);}
+  .prep-note{margin-top:16px;font-size:13px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:14px;}
+
+  /* ===== Part1 功能概览 ===== */
+  .func-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .func-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;transition:transform .25s ease,border-color .25s ease;
+  }
+  .func-card:hover{transform:translateY(-3px);border-color:var(--brand);}
+  .func-card .fi{
+    width:42px;height:42px;border-radius:12px;background:var(--brand-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--brand-deep);margin-bottom:14px;
+  }
+  .func-card .fi svg{width:22px;height:22px;}
+  .func-card h3{font-size:17px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+  .func-card p{font-size:14px;color:var(--ink-2);margin-top:6px;}
+  .func-card .eg{
+    display:inline-block;margin-top:12px;font-size:13px;color:var(--brand-deep);
+    background:var(--brand-soft);border-radius:8px;padding:4px 10px;
+  }
+
+  /* ===== Part2 AI 玩法 ===== */
+  .ai-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .ai-card{
+    display:flex;gap:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px;
+  }
+  .ai-card .ni{
+    flex:none;width:46px;height:46px;border-radius:50%;background:var(--brand);
+    display:flex;align-items:center;justify-content:center;color:#fff;margin-top:2px;
+  }
+  .ai-card .ni svg{width:22px;height:22px;}
+  .ai-card h3{font-size:16.5px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+  .ai-card p{font-size:14px;color:var(--ink-2);margin-top:6px;}
+
+  /* ===== Part3 话术大全 ===== */
+  .talk-intro{
+    background:var(--brand-deep);color:#fff;border-radius:var(--radius);
+    padding:24px 28px;display:flex;align-items:center;gap:18px;
+  }
+  .talk-intro .tmic{
+    flex:none;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.16);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .talk-intro .tmic svg{width:26px;height:26px;}
+  .talk-intro b{font-size:16px;display:block;margin-bottom:2px;}
+  .talk-intro span{font-size:14px;opacity:.92;}
+
+  .scene{margin-top:34px;}
+  .scene-head{
+    display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:2px solid var(--brand);
+    margin-bottom:18px;
+  }
+  .scene-no{
+    flex:none;width:44px;height:44px;border-radius:12px;background:var(--brand);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Serif SC",serif;font-size:18px;font-weight:700;
+  }
+  .scene-head h3{font-size:20px;font-weight:900;font-family:"Noto Serif SC",serif;}
+  .scene-tip{
+    display:flex;gap:8px;align-items:flex-start;margin-left:auto;
+    background:var(--brand-soft-2);border:1px solid var(--line);border-radius:10px;
+    padding:8px 12px;font-size:13px;color:var(--ink-2);max-width:340px;
+  }
+  .scene-tip svg{width:16px;height:16px;color:var(--brand);flex:none;margin-top:3px;}
+  .lines{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px;}
+  .line{
+    display:flex;align-items:center;gap:12px;
+    background:var(--card);border:1px solid var(--line);border-left:3px solid var(--brand);
+    border-radius:12px;padding:11px 16px;
+  }
+  .line .say{
+    flex:none;width:26px;height:26px;border-radius:50%;background:var(--brand-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--brand-deep);
+  }
+  .line .say svg{width:14px;height:14px;}
+  .line .txt{font-size:15px;font-weight:500;color:var(--ink);}
+  .line .mark{margin-left:auto;flex:none;font-size:12px;color:var(--brand-deep);white-space:nowrap;}
+
+  /* ===== 安全提醒 ===== */
+  .safe{
+    background:var(--warn-bg);border:1px solid #F0D9AE;border-radius:var(--radius);
+    padding:26px 28px;margin-top:40px;
+  }
+  .safe-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--warn-ink);}
+  .safe-title svg{width:22px;height:22px;color:var(--warn);}
+  .safe-list{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:10px;}
+  .safe-list li{display:flex;gap:10px;font-size:14.5px;color:var(--warn-ink);}
+  .safe-list li svg{width:16px;height:16px;flex:none;margin-top:5px;color:var(--warn);}
+
+  /* ===== 常见问题 ===== */
+  .faq{margin-top:44px;}
+  .faq-item{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;
+  }
+  .faq-item .q{
+    flex:none;font-size:13px;font-weight:700;color:var(--brand-deep);
+    background:var(--brand-soft);border-radius:8px;padding:2px 10px;margin-top:3px;
+  }
+  .faq-item p{font-size:14.5px;color:var(--ink-2);}
+
+  /* ===== Footer ===== */
+  footer{margin-top:60px;padding:36px 0 56px;border-top:1px solid var(--line);text-align:center;}
+  footer .f-logo{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);}
+  footer .f-logo svg{width:20px;height:20px;color:var(--brand);}
+  footer p{font-size:13px;color:var(--ink-2);margin-top:10px;}
+
+  /* ===== 动效 ===== */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    .func-card:hover{transform:none;}
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width:820px){
+    .func-grid{grid-template-columns:repeat(2,1fr);}
+    .prep-steps{grid-template-columns:repeat(2,1fr);}
+    .scene-head{flex-wrap:wrap;}
+    .scene-tip{margin-left:0;max-width:100%;}
+  }
+  @media (max-width:560px){
+    .func-grid,.ai-grid,.prep-steps,.lines{grid-template-columns:1fr;}
+    .hero{padding:44px 0 30px;}
+    .talk-intro{flex-direction:column;text-align:center;}
+    section.block{padding:34px 0 4px;}
+  }
+
+  /* ===== 打印 ===== */
+  @media print{
+    body{background:#fff;color:#000;}
+    .hero-badge{box-shadow:none;}
+    .reveal{opacity:1;transform:none;}
+    .func-card,.ai-card,.line,.step,.faq-item{break-inside:avoid;box-shadow:none;}
+    .line{background:#fff;border-color:#ccc;border-left-color:#0E9E6B;}
+    .talk-intro{background:#0A7D54;}
+    .safe{background:#fff;border-color:#ccc;}
+    .topbar{height:4px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/>
+        <path d="M6 11a6 6 0 0 0 12 0"/>
+        <path d="M12 17v3"/>
+        <path d="M9 21h6"/>
+      </svg>
+    </div>
+    <p class="kicker">给爸妈的 OPPO 手机使用手册</p>
+    <h1>OPPO 小布助手说明书</h1>
+    <p class="sub">小布是手机里"听得懂话"的 AI 助理。唤醒它，把想做的事说出来就行。本手册把常见功能和小布能听懂的话全部列了出来，照着念就能用。</p>
+    <div class="wake">
+      <span class="wake-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>喊<b>"小布小布"</b></span>
+      <span class="wake-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8"/><path d="M7 5a7 7 0 1 0 10 0"/></svg>长按<b>电源键</b></span>
+      <span class="wake-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="3"/></svg>长按<b>底部导航条</b></span>
+      <span class="wake-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg>线控<b>耳机</b></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== 使用前准备 ===== -->
+  <section class="block" id="prep">
+    <div class="prep reveal">
+      <div class="prep-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+        用之前，先花两分钟设置好
+      </div>
+      <div class="prep-steps">
+        <div class="step"><span class="num">1</span><h4>打开小布</h4><p>去 <b>设置 → AI → 小布助手</b>，开启服务。</p></div>
+        <div class="step"><span class="num">2</span><h4>录声纹</h4><p>开启"语音唤醒"，在安静环境里跟着念几遍"小布小布"。</p></div>
+        <div class="step"><span class="num">3</span><h4>开权限</h4><p>把<b>麦克风、联系人、定位、存储</b>权限打开，设为"始终允许"。</p></div>
+        <div class="step"><span class="num">4</span><h4>开方言＋关怀</h4><p>普通话不标准没关系，支持四川话、河南话、粤语等十几种方言；关怀模式字更大、语速更慢。</p></div>
+      </div>
+      <p class="prep-note">温馨提示：老机型或旧系统功能会少一些，建议把系统更新到最新版再体验。</p>
+    </div>
+  </section>
+
+  <!-- ===== Part 01 日常基础功能 ===== -->
+  <section class="block" id="basic">
+    <div class="sec-head reveal">
+      <span class="sec-tag"><span class="no">01</span>日常基础功能</span>
+      <h2>一句话就能办的事</h2>
+      <p>这些是每天最常用的小事，唤醒小布后，把想做的事说出口就行。</p>
+    </div>
+    <div class="func-grid">
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-.6.4-1 1-1h3.5l1.2 3.6-2 1.4a11 11 0 0 0 5.3 5.3l1.4-2L18 13v3.5c0 .6-.4 1-1 1A13 13 0 0 1 4 5Z"/></svg></div>
+        <h3>通讯</h3><p>打电话、发短信、微信 / QQ 发消息，说名字就能办。</p>
+        <span class="eg">打电话给儿子</span>
+      </div>
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h9M17 17h3"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></svg></div>
+        <h3>系统操作</h3><p>开关蓝牙 / WiFi / 手电筒、调亮度、打开任意应用、截屏。</p>
+        <span class="eg">打开手电筒</span>
+      </div>
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 1"/><path d="M9 3 6 6"/><path d="M15 3l3 3"/></svg></div>
+        <h3>时间管理</h3><p>定闹钟、倒计时、日程提醒，到点自动提醒你。</p>
+        <span class="eg">明早8点提醒我开会</span>
+      </div>
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></div>
+        <h3>信息查询</h3><p>天气、百科、汇率、菜谱、星座、新闻，问就有答案。</p>
+        <span class="eg">今天天气怎么样？</span>
+      </div>
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <h3>生活服务</h3><p>导航、点外卖、打开支付宝付款码、订机票酒店。</p>
+        <span class="eg">导航去市医院</span>
+      </div>
+      <div class="func-card reveal">
+        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="16" r="2"/></svg></div>
+        <h3>娱乐休闲</h3><p>放音乐、看影视、讲笑话、玩游戏、闲聊解闷。</p>
+        <span class="eg">放首歌听</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Part 02 进阶 AI 玩法 ===== -->
+  <section class="block" id="ai">
+    <div class="sec-head reveal">
+      <span class="sec-tag"><span class="no">02</span>进阶 AI 玩法</span>
+      <h2>小布还能看得懂、读得懂</h2>
+      <p>不只是听话办事，它还能看懂屏幕、读懂文档、记得住你的习惯。这 8 招最值得一用。</p>
+    </div>
+    <div class="ai-grid">
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+        <div><h3>一键问屏（识屏问答）</h3><p>屏幕上有啥问啥。刷文章 / 看网页时直接问"屏幕上这个人是谁""总结一下这篇文章"，小布对着当前屏幕内容回答。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg></div>
+        <div><h3>一圈即问</h3><p>圈住哪问哪。看到不认识的花、宠物、景点，唤出小布点"圈选"图标，手指圈一下，它告诉你这是什么，还能继续追问。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l8-3 8 3v10l-8 3-8-3V7Z"/><path d="M4 7l8 3 8-3M12 10v10"/></svg></div>
+        <div><h3>小布胶囊（一拖即问）</h3><p>拖进去就懂。长按网页里的文字或图片，拖到屏幕下方的小布胶囊里，松手就能提问。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v4h4"/><path d="M9 11h6M9 14h6M9 17h4"/></svg></div>
+        <div><h3>文档问答</h3><p>最实用。上传 Word / PDF / PPT / TXT 文档，一键生成摘要、提炼观点，还能针对内容提问、多个文档对比。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+        <div><h3>拍照问答</h3><p>家长 / 学生救星。拍题搜题、口算批改（四则运算、方程都能批），还能让 AI 出相似题练习。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M18 15l3 3-3 3"/></svg></div>
+        <div><h3>AI 摘要</h3><p>会议 / 通话 / 视频全能总结。通话自动录音转文字、提炼重点和待办；录音、会议、视频、文章都能生成结构化摘要。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5a2 2 0 0 1 3 3L8 19l-4 1Z"/><path d="M14 7l3 3"/></svg></div>
+        <div><h3>AI 写作 &amp; AI 翻译</h3><p>写工作总结、演讲稿、文案一键代写；拍国外菜单自动翻译成中文。</p></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h12l2 2v16H5V3Z"/><path d="M8 3v6h8V3M8 21v-6h8v6"/></svg></div>
+        <div><h3>小布记忆 &amp; 一键闪记</h3><p>按一下就能记住取餐码、账单、视频、多张图片，自动分类存档到"小布记忆"，要的时候直接问小布。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Part 03 爸妈对话话术大全 ===== -->
+  <section class="block" id="talk">
+    <div class="sec-head reveal">
+      <span class="sec-tag"><span class="no">03</span>爸妈对话话术大全</span>
+      <h2>照着这些话，跟小布说就行</h2>
+      <p>唤醒小布后，直接照着下面说。说得越清楚，小布越听得懂。</p>
+    </div>
+
+    <div class="talk-intro reveal">
+      <div class="tmic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg></div>
+      <div>
+        <b>先喊一句"小布小布"，再开始说</b>
+        <span>下面是每一类场景可以直接照着念的话，家里人都能用。</span>
+      </div>
+    </div>
+
+    <!-- 场景：手机找不到 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">0</div>
+        <h3>手机找不到</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">小布小布，你在哪里</span><span class="mark">手机会出声回应</span></div>
+      </div>
+    </div>
+
+    <!-- 场景一：打电话 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">1</div>
+        <h3>打电话</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>提示：通讯录里存好名字，说名字就能打。</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打电话给儿子</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打电话给张三</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打电话给李阿姨</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给王小明打电话</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我拨 1385678</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给儿子发短信，说我晚上到家吃饭</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给女儿发短信，问她什么时候回来</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">查一下通话记录</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">刚才谁打电话来了？</span><span class="mark">小布会念给你听</span></div>
+      </div>
+    </div>
+
+    <!-- 场景二：微信聊天 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">2</div>
+        <h3>用微信聊天</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>提示：发红包、付款要自己点确认。</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给儿子发微信，说我今天包了饺子</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给女儿发微信，问她下班了没有</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给孙子发微信，祝他生日快乐</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开微信</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我读一下微信消息</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">发微信朋友圈，说我今天去公园了</span></div>
+      </div>
+    </div>
+
+    <!-- 场景三：闹钟提醒日程 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">3</div>
+        <h3>闹钟、提醒、日程</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>提示：说得越具体越好，"几点、做什么"。</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">定个早上6点半的闹钟</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">明天早上7点叫我起床</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">每天下午3点提醒我吃药</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">明天下午4点提醒我去接孙子放学</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">后天上午9点提醒我去医院复查</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">每天晚上8点提醒我量血压</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">每周二上午提醒我去菜市场</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">取消今天晚上的闹钟</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">把明天早上7点的闹钟改成6点半</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我记一下，明天买菜要买鸡蛋和牛奶</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">这个月18号提醒我交水电费</span></div>
+      </div>
+    </div>
+
+    <!-- 场景四：天气 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">4</div>
+        <h3>天气</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">今天天气怎么样？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">明天冷不冷？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">明天会不会下雨？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">后天出门要不要带伞？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">这两天温度多少？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">下周天气怎么样？</span></div>
+      </div>
+    </div>
+
+    <!-- 场景五：听新闻听戏听歌 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">5</div>
+        <h3>听新闻、听戏、听歌、看电视</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我放一段秦腔</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">唱一段黄梅戏</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">放首歌听</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">放邓丽君的歌</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开收音机</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">播报今天的新闻</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我念一下今天的头条新闻</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开电视</span><span class="mark">家里是 OPPO 电视可对电视喊"你好小布"</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">声音调大一点</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">声音调小一点</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">暂停播放</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">下一首</span></div>
+      </div>
+    </div>
+
+    <!-- 场景六：问生活知识 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">6</div>
+        <h3>问生活知识</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>提示：仅供参考，身体不适、用药拿不准还是要问医生。</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">血压高的人平时吃什么好？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">糖尿病人能吃什么水果？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">这个季节吃什么菜好？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">芹菜怎么炒好吃？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">红烧肉怎么做？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">鸡蛋和什么不能一起吃？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">感冒了能不能吃鸡蛋？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">香蕉皮是什么垃圾？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">高血压的药饭前吃还是饭后吃？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">这个成语是什么意思？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">苹果多少钱一斤？</span><span class="mark">查行情</span></div>
+      </div>
+    </div>
+
+    <!-- 场景七：算账 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">7</div>
+        <h3>算账、问钱、汇率</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">100加200等于多少？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">买菜花了35块，我给了100块，该找我多少？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">1万块钱存一年利息是多少？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">今天美元换人民币多少？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我算算，一个月花1500，一年花多少？</span></div>
+      </div>
+    </div>
+
+    <!-- 场景八：出门导航坐车 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">8</div>
+        <h3>出门导航、坐车</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">导航去市医院</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">导航回我们家</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">怎么坐公交去火车站？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">到县政府有多远？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我看一下现在堵不堵车</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我在美团点个外卖</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我叫个出租车</span></div>
+      </div>
+    </div>
+
+    <!-- 场景九：拍照存照片 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">9</div>
+        <h3>拍照、存照片</h3>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开相机</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我看一下相册</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">把这张照片存到相册</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">拍一张照片</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我找找上次拍的照片</span></div>
+      </div>
+    </div>
+
+    <!-- 场景十：字太小看不清 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">10</div>
+        <h3>字太小、看不清</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>小布帮你读</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我读一下这个</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">这个屏幕上的字是什么意思？</span><span class="mark">会识别屏幕念给你听</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">把这个字放大</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开关怀模式</span><span class="mark">字体更大、声音更慢</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">帮我把这篇长文章念给我听</span><span class="mark">AI 摘要 / 朗读</span></div>
+      </div>
+    </div>
+
+    <!-- 场景十一：手机操作小帮手 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">11</div>
+        <h3>手机操作小帮手</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>手不方便时，动嘴就行</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开手电筒</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开健康码</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">打开付款码</span><span class="mark">付款要自己确认</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">开蓝牙</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">关掉WiFi</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">把屏幕调亮一点</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">开启省电模式</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">清理一下手机垃圾</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">我的手机在哪？</span><span class="mark">会响铃</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">关机 / 重启手机</span></div>
+      </div>
+    </div>
+
+    <!-- 场景十二：逗它玩解闷 -->
+    <div class="scene reveal">
+      <div class="scene-head">
+        <div class="scene-no">12</div>
+        <h3>逗它玩、解闷</h3>
+        <span class="scene-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>还有隐藏彩蛋</span>
+      </div>
+      <div class="lines">
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">讲个笑话</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">唱首歌</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给我背首诗</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">今天是几月几号？星期几？</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">夸夸我</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">陪我聊聊天</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">下雪了</span><span class="mark">屏幕真的会下雪</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">今天是我生日</span><span class="mark">有生日歌和蜡烛</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">给我讲个故事</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">抛个硬币</span><span class="mark">帮爸妈做决定</span></div>
+        <div class="line"><span class="say"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/></svg></span><span class="txt">看流星雨 / 吹个泡泡</span><span class="mark">它还会唱歌跳舞</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 安全提醒 ===== -->
+  <section class="block">
+    <div class="safe reveal">
+      <div class="safe-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+        给爸妈的三个安全提醒
+      </div>
+      <ul class="safe-list">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>付款、转账、红包：小布会让你确认，<b>一定要自己看清楚金额再点</b>，陌生人的话别信。</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>验证码、密码：小布问你要验证码时别念给别人听，任何"客服"打电话要验证码都是骗子。</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>陌生来电：可以让小布念出来电号码，<b>不认识的号码别接</b>。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 常见问题 ===== -->
+  <section class="block" id="faq">
+    <div class="sec-head reveal">
+      <span class="sec-tag"><span class="no">04</span>小麻烦怎么解决</span>
+      <h2>小布"不听话"了，这样处理</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item reveal"><span class="q">听不懂</span><p>说得慢一点、断句清楚，像"打电话——给——儿子"；用最简单的词，比"帮我设置一个提醒事项"更容易懂。</p></div>
+      <div class="faq-item reveal"><span class="q">方言不准</span><p>在小布助手 → 语音设置 → 方言支持 里，换一种更接近爸妈口音的方言。</p></div>
+      <div class="faq-item reveal"><span class="q">不理人</span><p>可能被省电模式休眠了。去 设置 → 电池 → 应用智能省电，把小布助手设为"不受限制"。</p></div>
+      <div class="faq-item reveal"><span class="q">老机型</span><p>部分功能依赖网络和机型，把系统升级到最新版，体验最好。</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="f-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
+    OPPO 小布助手说明书
+  </div>
+  <p>把这页发给爸妈，或打印出来放在家里。功能以手机实际界面为准。</p>
+</footer>
+
+<script>
+  // 滚动进入渐显（尊重系统减弱动效设置）
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(el){el.classList.add('in');});
+      return;
+    }
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){
+      els.forEach(function(el){el.classList.add('in');});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+    els.forEach(function(el){io.observe(el);});
+  })();
+</script>
+
+</body>
+</html>
