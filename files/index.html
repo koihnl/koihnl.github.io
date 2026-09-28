@@ -1,1 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>锦鲤未离的下载库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+        }
+        
+        body {
+            background: #ffffff;
+            padding: 20px 14px;
+        }
+        
+        .mind {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        
+        .row {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            margin: 4px 0;
+        }
+        
+        .vert {
+            width: 2px;
+            background: #888;
+            height: 26px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .vert-2 {
+            width: 2px;
+            background: #aaa;
+            height: 22px;
+            margin-left: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .vert-3 {
+            width: 2px;
+            background: #ccc;
+            height: 20px;
+            margin-left: 32px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        /* 一级标题 蓝色文件夹 */
+        
+        .level-1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f3a8f;
+        }
+        
+        .folder-icon-l1 {
+            width: 26px;
+            height: 26px;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        /* 二级标题 灰色文件夹 */
+        
+        .level-2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .folder-icon-l2 {
+            width: 22px;
+            height: 22px;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        /* 三级条目 小文件图标 */
+        
+        .level-3 {
+            font-size: 13px;
+            font-weight: 400;
+            color: #444;
+        }
+        
+        .file-icon-l3 {
+            width: 18px;
+            height: 18px;
+            margin-right: 4px;
+            flex-shrink: 0;
+        }
+        
+        a {
+            text-decoration: none;
+            font-size: 13px;
+            margin: 0 4px;
+        }
+        
+        a.black {
+            color: #000;
+        }
+        
+        a.red {
+            color: #dd2222;
+        }
+        
+        a.blue {
+            color: #0044dd;
+        }
+        
+        a.green {
+            color: #008833;
+        }
+        
+        a.zip {
+            color: #6f42c1;
+        }
+        
+        a.rar {
+            color: #cd6600;
+        }
+        
+        a.ttf {
+            color: #0077aa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mind">
+        <!-- ========== 一级标题：稿纸 ========== -->
+        <div class="row">
+            <div class="vert"></div>
+            <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#1f3a8f">
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
+            <span class="level-1">稿纸</span>
+        </div>
+
+        <!-- =====二级标题：信纸-单线===== -->
+        <div class="row">
+            <div class="vert-2"></div>
+            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
+            <span class="level-2">信纸-单线</span>
+        </div>
+        <!-- 三级条目 -->
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">20行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-黑-12mm-A4.pdf">黑色</a>
+            <a class="red" style="font-weight: bold;" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-红-12mm-A4.pdf">红色（最常用）</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-蓝-12mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-绿-12mm-A4.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">21行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-黑-12mm-A4.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-红-12mm-A4.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-蓝-12mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-绿-12mm-A4.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">装订线21行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-黑-12mm-A4.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-红-12mm-A4.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-蓝-12mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-绿-12mm-A4.pdf">绿色</a>
+        </div>
+
+        <!-- =====二级标题：信纸-双线===== -->
+        <div class="row">
+            <div class="vert-2"></div>
+            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
+            <span class="level-2">信纸-双线</span>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">18行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-黑-10mm-A4.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-红-10mm-A4.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-蓝-10mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-绿-10mm-A4.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">19行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-黑-10mm-A4.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-红-10mm-A4.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-蓝-10mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-绿-10mm-A4.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">装订线19行</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-黑-10mm-A4.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-红-10mm-A4.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-蓝-10mm-A4.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-绿-10mm-A4.pdf">绿色</a>
+        </div>
+
+        <!-- =====二级标题：方格稿纸===== -->
+        <div class="row">
+            <div class="vert-2"></div>
+            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
+            <span class="level-2">方格稿纸</span>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">300格</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-黑.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-红.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-蓝.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-绿.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">400格</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-黑.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-红.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-蓝.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-绿.pdf">绿色</a>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <span class="level-3">600格</span>
+            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-黑.pdf">黑色</a>
+            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-红.pdf">红色</a>
+            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-蓝.pdf">蓝色</a>
+            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-绿.pdf">绿色</a>
+        </div>
+
+        <!-- ========== 一级标题：公文字体 ========== -->
+        <div class="row">
+            <div class="vert"></div>
+            <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#1f3a8f">
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
+            <span class="level-1">公文字体</span>
+        </div>
+        <div class="row">
+            <div class="vert-3"></div>
+            <a class="ttf" href="https://koihnl.github.io/files/公文字体/仿宋_GB2312.ttf">仿宋_GB2312.ttf</a>
+            <a class="zip" href="https://koihnl.github.io/files/公文字体/方正X体_GBK（不常用）.zip">方正X体_GBK（不常用）.zip</a>
+            <a class="ttf" href="https://koihnl.github.io/files/公文字体/方正小标宋简体.ttf">方正小标宋简体.ttf</a>
+            <a class="rar" href="https://koihnl.github.io/files/公文字体/无需安装（系统自带）/SIMHEI.rar">SIMHEI.rar</a>
+            <a class="ttf" href="https://koihnl.github.io/files/公文字体/楷体_GB2312.ttf">楷体_GB2312.ttf</a>
+        </div>
+    </div>
+</body>
+
+</html>
