@@ -1,60 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-	<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>4.0 锦鲤未离小站</title>	<base href="/"><script src="js/logo.js"></script>
-<style>::-webkit-scrollbar {width: 0.625rem;height: 0.625rem;}::-webkit-scrollbar-thumb {background: #111;border-radius: 0.3125rem;box-shadow: inset 0.125rem 0.125rem 0.125rem rgba(255, 255, 255, 0.25), inset -0.125rem -0.125rem 0.125rem rgba(0, 0, 0, 0.25);cursor: default;}::-webkit-scrollbar-track {background: #333;}::selection {background: #fff;color: #333;}html,body {height: 100vh;height: 100dvh;margin: 0;}body {display: grid;grid-template-rows: calc(100dvh - 4rem) 4rem;font-family: system-ui, sans-serif;}canvas,.editor,#controls {grid-row: 1;grid-column: 1;}canvas {--canvas-z-index: -1;width: 100%;height: auto;object-fit: contain;background: black;touch-action: none;z-index: var(--canvas-z-index);}.editor,.overlay,#error {font-family: 'Courier New', Courier, monospace;background: repeating-linear-gradient(0deg, #000a, #1119, #000a .25rem);padding: 1em;}.editor {color: #fefefe;tab-size: 2;border: none;resize: none;}.editor:focus {outline: none;}#error {grid-row: 2;grid-column: 1;margin: 0;padding-block: 0;padding-top: .5em;color: firebrick;overflow: auto;text-wrap: pretty;}#indicator {visibility: hidden;position: absolute;top: calc(var(--top, 0px) - var(--scroll-top, 0px));width: 0;height: 0;border-top: 10px solid transparent;border-bottom: 10px solid transparent;border-left: 10px solid firebrick;transform: translateY(-25%);}.overlay {position: absolute;top: 0;left: 0;right: 0;margin: 0;}.editor,.overlay {font-size: 1rem;line-height: 1.2;white-space: pre;z-index: 9999;}#controls {position: fixed;top: 1em;right: 2em;z-index: 99999;}.controls {position: relative;display: flex;gap: 1.5em;padding: .5em 1.25em;background: #1111;border-radius: 4px;}.controls::before,.controls::after {content: '';position: absolute;z-index: -1;inset: 0;transform: scale(.95);border-radius: inherit;opacity: 0;}.controls::before {background: #aef;animation: pulse 2s infinite;}.controls::after {background: #fefefe66;transition: transform 200ms ease-in-out;}.controls:hover::before,.controls:hover::after {opacity: 1;}.controls:hover::before {transform: scale(.98);filter: blur(2px);}.controls:hover::after {transform: scale(1.025, 1.1);}.controls:hover {background: #111f;}@keyframes pulse {0% {transform: scale(1);}50% {transform: scale(1.0125);}100% {transform: scale(1);}}.hidden {display: none !important;}.opaque {opacity: 1 !important;background: #111 !important;}input {all: unset;opacity: .2;filter: saturate(0) invert(1);cursor: pointer;transition: opacity 200ms ease-in-out;padding: .25em .5em;}input:hover {opacity: 1;}.icon {text-align: center;line-height: 1;}#btnToggleView {width: 1.25em;}#btnToggleView::after {content: '👁';}#btnToggleView:checked::after {content: '✏️';}#btnToggleResolution::after {content: '1️⃣';}#btnToggleResolution:checked::after {content: '2️⃣';}#btnReset::after {content: '⏮️';}</style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>4.0 锦鲤未离小站</title><base href="/"><script src="js/logo.js"></script><style>::-webkit-scrollbar {width: 0.625rem;height: 0.625rem;}::-webkit-scrollbar-thumb {background: #111;border-radius: 0.3125rem;box-shadow: inset 0.125rem 0.125rem 0.125rem rgba(255, 255, 255, 0.25), inset -0.125rem -0.125rem 0.125rem rgba(0, 0, 0, 0.25);cursor: default;}::-webkit-scrollbar-track {background: #333;}::selection {background: #fff;color: #333;}html,body {height: 100vh;height: 100dvh;margin: 0;}body {display: grid;grid-template-rows: calc(100dvh - 4rem) 4rem;font-family: system-ui, sans-serif;}canvas,.editor,#controls {grid-row: 1;grid-column: 1;}canvas {--canvas-z-index: -1;width: 100%;height: auto;object-fit: contain;background: black;touch-action: none;z-index: var(--canvas-z-index);}.editor,.overlay,#error {font-family: 'Courier New', Courier, monospace;background: repeating-linear-gradient(0deg, #000a, #1119, #000a .25rem);padding: 1em;}.editor {color: #fefefe;tab-size: 2;border: none;resize: none;}.editor:focus {outline: none;}#error {grid-row: 2;grid-column: 1;margin: 0;padding-block: 0;padding-top: .5em;color: firebrick;overflow: auto;text-wrap: pretty;}#indicator {visibility: hidden;position: absolute;top: calc(var(--top, 0px) - var(--scroll-top, 0px));width: 0;height: 0;border-top: 10px solid transparent;border-bottom: 10px solid transparent;border-left: 10px solid firebrick;transform: translateY(-25%);}.overlay {position: absolute;top: 0;left: 0;right: 0;margin: 0;}.editor,.overlay {font-size: 1rem;line-height: 1.2;white-space: pre;z-index: 9999;}#controls {position: fixed;top: 1em;right: 2em;z-index: 99999;}.controls {position: relative;display: flex;gap: 1.5em;padding: .5em 1.25em;background: #1111;border-radius: 4px;}.controls::before,.controls::after {content: '';position: absolute;z-index: -1;inset: 0;transform: scale(.95);border-radius: inherit;opacity: 0;}.controls::before {background: #aef;animation: pulse 2s infinite;}.controls::after {background: #fefefe66;transition: transform 200ms ease-in-out;}.controls:hover::before,.controls:hover::after {opacity: 1;}.controls:hover::before {transform: scale(.98);filter: blur(2px);}.controls:hover::after {transform: scale(1.025, 1.1);}.controls:hover {background: #111f;}@keyframes pulse {0% {transform: scale(1);}50% {transform: scale(1.0125);}100% {transform: scale(1);}}.hidden {display: none !important;}.opaque {opacity: 1 !important;background: #111 !important;}input {all: unset;opacity: .2;filter: saturate(0) invert(1);cursor: pointer;transition: opacity 200ms ease-in-out;padding: .25em .5em;}input:hover {opacity: 1;}.icon {text-align: center;line-height: 1;}#btnToggleView {width: 1.25em;}#btnToggleView::after {content: '👁';}#btnToggleView:checked::after {content: '✏️';}#btnToggleResolution::after {content: '1️⃣';}#btnToggleResolution:checked::after {content: '2️⃣';}#btnReset::after {content: '⏮️';}</style>
 </head>
-<body style="background:#000">
-<style>.copyButton {margin-top: 10px;padding: 5px 10px;background-color: #007bff;color: white;border: none;border-radius: 5px;cursor: pointer;transition: background-color 0.3s;}.copyButton:hover {background-color: #0056b3;}.copyButton.copied {background-color: #28a745;}</style><style>.inlineBlock_KoiHNL,p {color: white;font-size: 26px;}</style><style>.mainKoiHNL {width: 100% !important;margin: 0 auto;font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;line-height: 1.6;padding: 12px;box-sizing: border-box;}@media (min-width: 768px) {.mainKoiHNL {width: 70%;}}@media (min-width: 1024px) {.mainKoiHNL {width: 60%;}}</style><div class="right_textbox" style="z-index: 999;position: absolute;">
-<style>* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif; } body { min-height: 100vh; display: flex; justify-content:center; padding: 2rem 1.5rem; background: linear-gradient(145deg, #f7f3fc 0%, #ede6f5 100%); } .blog-card { max-width: 1000px; width: 100%; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(14px) saturate(180%); -webkit-backdrop-filter: blur(14px)saturate(180%); border-radius: 3rem; padding: 2.8rem 3rem; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08), 0 8px 24px -6px rgba(90, 60, 120, 0.06); border: 1px solid rgba(255, 255, 255, 0.6); transition: all 0.2s ease; } .section-title { font-size:1.5rem; font-weight: 550; letter-spacing: 0.5px; color: #2a1b38; background: linear-gradient(135deg, #3d2b52, #5b3f78); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; margin: 0 0 0.8rem0; padding-bottom: 0.2rem; border-bottom: 2px solid rgba(160, 130, 190, 0.2); } .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem 1.8rem; margin-bottom: 2.2rem; } .grid-item { background: rgba(255, 255, 255, 0.4); backdrop-filter:blur(2px); padding: 0.6rem 1.2rem; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.5); font-size: 1.02rem; color: #1b1425; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; transition:all 0.15s; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 450; letter-spacing: 0.2px; min-height: 48px; text-align: center; } .grid-item:hover { background: rgba(255, 255, 255, 0.75);border-color: #bba5d4; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(100, 70, 140, 0.06); } .grid-item.special { background: rgba(190, 160, 220, 0.2); border-color: #c9b0e0; font-weight: 500; } .grid-item.special:hover { background: rgba(200,175, 230, 0.3); } .grid-item.post { font-size: 0.95rem; padding: 0.4rem 1.2rem; background: rgba(255, 255, 255, 0.3); white-space: normal; word-break: break-word; text-align: center; min-height: 44px; } .grid-item.post:hover { background: rgba(255, 255,255, 0.7); } .footer-note { margin-top: 2rem; border-top: 1px solid rgba(160, 130, 190, 0.12); padding-top: 1.2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.8rem; color: #6a5580; opacity: 0.7; letter-spacing:0.2px; } .footer-note span { background: rgba(255, 255, 255, 0.2); padding: 0.1rem 1rem; border-radius: 40px; backdrop-filter: blur(2px); border: 1px solid rgba(255, 255, 255, 0.2); } .grid-item a, .grid-item { color: inherit; text-decoration: none; }.title-block { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.2rem; } @media (max-width: 700px) { .blog-card { padding: 1.8rem 1.2rem; border-radius: 2.4rem; } .grid-container { grid-template-columns: 1fr 1fr; gap:0.4rem 0.6rem; } .grid-item { font-size: 0.85rem; padding: 0.3rem 0.8rem; min-height: 40px; white-space: normal; } .section-title { font-size: 1.2rem; } } @media (max-width: 460px) { .grid-container { grid-template-columns: 1fr; gap: 0.3rem; } .blog-card{ padding: 1.2rem 0.8rem; } } .grid-item[data-tool="record"] { font-size: 1.1rem; background: rgba(200, 175, 230, 0.15); }</style>
-<!-- ------------------------------------------------------------------------------------------------ -->
-<div class="mainKoiHNL">
-	<style>.mainKoiHNL ol {    padding-left: 2em;    margin: 0.5rem 0 1rem 0;list-style: none;padding-left: 0;}.mainKoiHNL li {    margin: 4px 0;    list-style: decimal;}.mainKoiHNL a {    text-decoration: none;    color:#fff;}.mainKoiHNL p {    margin:12px 0 4px 0;    font-size:16px;}</style>
-<div class="mainKoiHNL">
-	<div class="centererlast" style="text-align: center;color: #fff;">
-        <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet1">　</code></pre><button class="copyButton" data-target="codeSnippet1">复制</button></div>
-        <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet2">〔2026〕</code></pre><button class="copyButton" data-target="codeSnippet2">复制</button></div>
-        <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet3">•</code></pre><button class="copyButton" data-target="codeSnippet3">复制</button></div>
-        <script>document.querySelectorAll('.copyButton').forEach(button => {button.addEventListener('click', function() {const targetId = this.getAttribute('data-target');const codeSnippet = document.getElementById(targetId).innerText;const button = this;navigator.clipboard.writeText(codeSnippet).then(function() {button.textContent = "已复制";button.classList.add("copied");setTimeout(function() {button.textContent = "复制";button.classList.remove("copied");}, 2000);}).catch(function(err) {console.error('复制失败: ', err);button.textContent = "复制失败";setTimeout(() => button.textContent = "复制", 2000);});});});</script>
-    </div>
-    <p>Ⅰ：小工具（暂将3D动态改为黑色背景）</p>
-    <ol id="toolsContainer">
-        <li><a href="/ProgressBar.html">『进度条生成器』</a></li>
-        <li><a href="/ChiZi.html">『尺　　子』</a></li>
-        <li><a href="/jilu.html" style="color: white;">『记　　录』</a></li>
-		<li><a href="/files" font-family: fangsong;>『下载の库』</a></li>
-        <li><a href="/DingCan.html">『订　　餐』</a></li>
-        <li><a href="/Devlog.html">『研发日志』</a></li>
-        <li><a href="/Disclaimer.html">『免责声明』</a></li>
-        <li><a href="/signature.html">『电子签』</a></li>
-    </ol>
-    <p>Ⅱ：博文</p>
-    <ol id="postsContainer">
-		<li><a href="/posts/EDc-sound/">『电脑⌊星13 Air⌉声音无法出现』</a></li>
-		<li><a href="/posts/EXT2PCandPC2EXT/">『电脑⌊一键互切仅电脑与第二屏幕⌉』</a></li>
-	    <li><a href="/posts/A_UPBKY/">『U盘位置不可用』</a></li>
-        <li><a href="/posts/A_FileNameAndroid_is/">『安卓U盘自动生成文件夹详解』</a></li>
-        <li><a href="/posts/FormatDiskBeforeUse/">『使用驱动器中的光盘之前需要将其格式化』</a></li>
-        <li><a href="/posts/notFoundDLLRegisterServer">『模块已加载,但找不到入口点DLLRegisterServer』</a></li>
-        <li><a href="/posts/A_OPPO_ADB_/">『OPPO ADB卸载预装软件』</a></li>
-        <li><a href="/posts/A_XCF_GDCF260712/">『陕淳·肠粉』</a></li>
-        <li><a href="/posts/subtitleFormatGeneratedByAegisubInASS/">『由Aegisub生成的Ass字幕格式注解』</a></li>
-        <li><a href="/index_OLD.html">『前往“2024年1月1日”之前的博文处』</a></li>
-    </ol>
-	<p>③：其他</p>
-    <ol id="postsContainer">
-        <li><a href="/posts/A_opposhuomingshu260916/">『OPPO 小布助手说明书』</a></li>
-        <li><a href="/posts/A_AIbeiwanglu260916">『AI工具全套工作流备忘录』</a></li>
 
-    </ol>
-</div>
-	
+<body>
+
+
+<style>.copyButton{margin-top:10px;padding:5px 10px;background-color:#007bff;color:white;border:none;border-radius:5px;cursor:pointer;transition:background-color 0.3s;}.copyButton:hover{background-color:#0056b3;}.copyButton.copied{background-color:#28a745;}.inlineBlock_KoiHNL,p{color:white;font-size:26px;}.mainKoiHNL{width:100%!important;margin:0 auto;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;padding:12px;box-sizing:border-box;}@media (min-width:768px){.mainKoiHNL{width:70%;}}@media (min-width:1024px){.mainKoiHNL{width:60%;}}*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue','Noto Sans',sans-serif;}body{min-height:100vh;display:flex;justify-content:center;padding:2rem 1.5rem;background:linear-gradient(145deg,#f7f3fc 0%,#ede6f5 100%);}.blog-card{max-width:1000px;width:100%;background:rgba(255,255,255,0.55);backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px)saturate(180%);border-radius:3rem;padding:2.8rem 3rem;box-shadow:0 20px 40px -12px rgba(0,0,0,0.08),0 8px 24px -6px rgba(90,60,120,0.06);border:1px solid rgba(255,255,255,0.6);transition:all 0.2s ease;}.section-title{font-size:1.5rem;font-weight:550;letter-spacing:0.5px;color:#2a1b38;background:linear-gradient(135deg,#3d2b52,#5b3f78);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;margin:0 0 0.8rem0;padding-bottom:0.2rem;border-bottom:2px solid rgba(160,130,190,0.2);}.grid-container{display:grid;grid-template-columns:repeat(2,1fr);gap:0.8rem 1.8rem;margin-bottom:2.2rem;}.grid-item{background:rgba(255,255,255,0.4);backdrop-filter:blur(2px);padding:0.6rem 1.2rem;border-radius:60px;border:1px solid rgba(255,255,255,0.5);font-size:1.02rem;color:#1b1425;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:0.3rem;transition:all 0.15s;box-shadow:0 2px 6px rgba(0,0,0,0.01);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:450;letter-spacing:0.2px;min-height:48px;text-align:center;}.grid-item:hover{background:rgba(255,255,255,0.75);border-color:#bba5d4;transform:translateY(-2px);box-shadow:0 8px 18px rgba(100,70,140,0.06);}.grid-item.special{background:rgba(190,160,220,0.2);border-color:#c9b0e0;font-weight:500;}.grid-item.special:hover{background:rgba(200,175,230,0.3);}.grid-item.post{font-size:0.95rem;padding:0.4rem 1.2rem;background:rgba(255,255,255,0.3);white-space:normal;word-break:break-word;text-align:center;min-height:44px;}.grid-item.post:hover{background:rgba(255,255,255,0.7);}.footer-note{margin-top:2rem;border-top:1px solid rgba(160,130,190,0.12);padding-top:1.2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;font-size:0.8rem;color:#6a5580;opacity:0.7;letter-spacing:0.2px;}.footer-note span{background:rgba(255,255,255,0.2);padding:0.1rem 1rem;border-radius:40px;backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,0.2);}.grid-item a,.grid-item{color:inherit;text-decoration:none;}.title-block{display:flex;align-items:baseline;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.2rem;}@media (max-width:700px){.blog-card{padding:1.8rem 1.2rem;border-radius:2.4rem;}.grid-container{grid-template-columns:1fr 1fr;gap:0.4rem 0.6rem;}.grid-item{font-size:0.85rem;padding:0.3rem 0.8rem;min-height:40px;white-space:normal;}.section-title{font-size:1.2rem;}}@media (max-width:460px){.grid-container{grid-template-columns:1fr;gap:0.3rem;}.blog-card{padding:1.2rem 0.8rem;}}.grid-item[data-tool="record"]{font-size:1.1rem;background:rgba(200,175,230,0.15);}*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei","PingFang SC",sans-serif;}body{min-height:100vh;background:linear-gradient(-45deg,#29120b,#411c10,#202028,#2c140f);background-size:400% 400%;animation:bgFlow 14s ease infinite,pageIn 1.2s ease forwards;overflow-x:hidden;color:#f3e6d0;opacity:0;padding:20px 14px;}@keyframes bgFlow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}@keyframes pageIn{to{opacity:1;}}.light-follow{position:fixed;width:340px;height:340px;background:radial-gradient(circle,rgba(230,145,69,.18),transparent 70%);pointer-events:none;border-radius:50%;z-index:1;transform:translate(-50%,-50%);}.dot{position:fixed;width:4px;height:4px;background:#ffc896;border-radius:50%;opacity:.5;z-index:1;animation:dotTwinkle 3s infinite;pointer-events:none;}@keyframes dotTwinkle{0%,100%{opacity:.15;}50%{opacity:.85;}}.koi{position:fixed;z-index:2;pointer-events:none;opacity:.85;filter:drop-shadow(0 6px 14px rgba(180,75,34,.35));}.koi svg{display:block;width:100%;height:auto;}@keyframes swim{0%{left:-15%;}100%{left:110%;}}@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-24px) rotate(2deg);}}.ripple{position:fixed;width:22px;height:22px;border-radius:50%;border:2px solid rgba(240,200,112,.8);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);animation:ripple .7s ease-out forwards;}@keyframes ripple{0%{transform:translate(-50%,-50%) scale(0);opacity:.7;}100%{transform:translate(-50%,-50%) scale(1);opacity:0;}}.music-btn{position:fixed;right:18px;bottom:18px;z-index:999;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#b44b22,#e69145);color:#fff;border:none;cursor:pointer;font-size:20px;box-shadow:0 6px 18px rgba(180,75,34,.5);animation:pulse 2.4s ease-in-out infinite;}@keyframes pulse{0%,100%{box-shadow:0 6px 18px rgba(180,75,34,.4);}50%{box-shadow:0 6px 26px rgba(230,145,69,.8);}}.chartkoinl{width:80px;height:48px;position:fixed;top:5px;right:6px;z-index:999;}</style>
+
+            <div class="right_textbox" style="z-index: 999;position: absolute;"></div>
+        <!-- ------------------------------------------------------------------------------------------------ -->
+        <div class="mainKoiHNL"><style>.mainKoiHNL ol {padding-left: 2em;margin: 0.5rem 0 1rem 0;list-style: none;padding-left: 0;}.mainKoiHNL li {margin: 4px 0;list-style: decimal;}.mainKoiHNL a {text-decoration: none;color: #fff;}.mainKoiHNL p {margin: 12px 0 4px 0;font-size: 16px;}</style>
+            <div class="light-follow 新背景-锦鲤未离背景"></div>
+
+            <div class="mainKoiHNL">
+                <div class="centererlast" style="text-align: center;color: #fff;">
+                    <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet1">　</code></pre><button class="copyButton" data-target="codeSnippet1">复制</button></div>
+                    <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet2">〔2026〕</code></pre><button class="copyButton" data-target="codeSnippet2">复制</button></div>
+                    <div class="code-container" style="display: inline-block;"><pre style="display: inline-block;"><code id="codeSnippet3">•</code></pre><button class="copyButton" data-target="codeSnippet3">复制</button></div>
+                    <script>
+                        document.querySelectorAll('.copyButton').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const targetId = this.getAttribute('data-target');
+                                const codeSnippet = document.getElementById(targetId).innerText;
+                                const button = this;
+                                navigator.clipboard.writeText(codeSnippet).then(function() {
+                                    button.textContent = "已复制";
+                                    button.classList.add("copied");
+                                    setTimeout(function() {
+                                        button.textContent = "复制";
+                                        button.classList.remove("copied");
+                                    }, 2000);
+                                }).catch(function(err) {
+                                    console.error('复制失败: ', err);
+                                    button.textContent = "复制失败";
+                                    setTimeout(() => button.textContent = "复制", 2000);
+                                });
+                            });
+                        });
+                    </script>
+                </div>
+                <p>Ⅰ：小工具（暂将3D动态改为黑色背景）</p>
+                <ol id="toolsContainer">
+                    <li><a href="/ProgressBar.html">『进度条生成器』</a></li>
+                    <li><a href="/ChiZi.html">『尺　　子』</a></li>
+                    <li><a href="/jilu.html" style="color: white;">『记　　录』</a></li>
+                    <li><a href="/files" font-family: fangsong;>『下载の库』</a></li>
+                    <li><a href="/DingCan.html">『订　　餐』</a></li>
+                    <li><a href="/Devlog.html">『研发日志』</a></li>
+                    <li><a href="/Disclaimer.html">『免责声明』</a></li>
+                    <li><a href="/signature.html">『电子签』</a></li>
+                </ol>
+                <p>Ⅱ：博文</p>
+                <ol id="postsContainer">
+                    <li><a href="/posts/EDc-sound/">『电脑⌊星13 Air⌉声音无法出现』</a></li>
+                    <li><a href="/posts/EXT2PCandPC2EXT/">『电脑⌊一键互切仅电脑与第二屏幕⌉』</a></li>
+                    <li><a href="/posts/A_UPBKY/">『U盘位置不可用』</a></li>
+                    <li><a href="/posts/A_FileNameAndroid_is/">『安卓U盘自动生成文件夹详解』</a></li>
+                    <li><a href="/posts/FormatDiskBeforeUse/">『使用驱动器中的光盘之前需要将其格式化』</a></li>
+                    <li><a href="/posts/notFoundDLLRegisterServer">『模块已加载,但找不到入口点DLLRegisterServer』</a></li>
+                    <li><a href="/posts/A_OPPO_ADB_/">『OPPO ADB卸载预装软件』</a></li>
+                    <li><a href="/posts/A_XCF_GDCF260712/">『陕淳·肠粉』</a></li>
+                    <li><a href="/posts/subtitleFormatGeneratedByAegisubInASS/">『由Aegisub生成的Ass字幕格式注解』</a></li>
+                    <li><a href="/index_OLD.html">『前往“2024年1月1日”之前的博文处』</a></li>
+                </ol>
+                <p>③：其他</p>
+                <ol id="postsContainer">
+                    <li><a href="/posts/A_opposhuomingshu260916/">『OPPO 小布助手说明书』</a></li>
+                    <li><a href="/posts/A_AIbeiwanglu260916">『AI工具全套工作流备忘录』</a></li>
+
+                </ol>
+            </div>
+
         </div>
-        
-      </div>
 
-	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------
+    </div>
+    <script>
+        /* 鼠标跟随光晕 */
+        const light = document.querySelector('.light-follow');
+        addEventListener('mousemove', e => {
+            light.style.left = e.clientX + 'px';
+            light.style.top = e.clientY + 'px';
+        });
+
+        /* 生成40个星光小点 */
+        for (let i = 0; i < 40; i++) {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.style.left = Math.random() * 100 + 'vw';
+            d.style.top = Math.random() * 100 + 'vh';
+            d.style.animationDelay = (Math.random() * 3) + 's';
+            document.body.appendChild(d);
+        }
+
+        /* 锦鲤SVG模板与生成函数 */
+        const koiSVG = (main, accent) => `
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8 30 Q0 10 14 6 Q8 22 20 30 Q8 38 14 54 Q0 50 8 30Z" fill="${accent}"/>
+  <ellipse cx="62" cy="30" rx="42" ry="17" fill="${main}"/>
+  <path d="M40 16 Q52 6 70 12 Q58 18 40 16Z" fill="${accent}" opacity=".7"/>
+  <path d="M70 44 Q84 52 96 44 Q84 40 70 44Z" fill="${accent}" opacity=".7"/>
+  <circle cx="95" cy="26" r="3.2" fill="#2a1408"/>
+  <circle cx="96" cy="25" r="1" fill="#fff"/>
+</svg>`;
+
+        function makeKoi(bottom, size, duration, delay, op, svg) {
+            const k = document.createElement('div');
+            k.className = 'koi';
+            k.style.bottom = bottom;
+            k.style.width = size + 'px';
+            k.style.opacity = op;
+            k.innerHTML = svg;
+            k.style.animation = `swim ${duration}s linear ${delay}s infinite, bob 4s ease-in-out ${delay}s infinite`;
+            document.body.appendChild(k);
+            return k;
+        }
+        makeKoi('16%', 110, 26, 0, .9, koiSVG('#e69145', '#fff2e0'));
+        makeKoi('7%', 70, 38, -14, .55, koiSVG('#b44b22', '#f6d9a8'));
+
+        /* 滚动视差：光晕、星星随滚动偏移 */
+        addEventListener('scroll', () => {
+            const y = scrollY;
+            light.style.transform = `translate(-50%,-50%) translateY(${y * 0.15}px)`;
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.style.marginTop = (y * (i % 3 + 1) * 0.05) + 'px';
+            });
+        }, {
+            passive: true
+        });
+
+        /* 点击波纹效果 */
+        addEventListener('mousedown', e => {
+            const r = document.createElement('div');
+            r.className = 'ripple';
+            r.style.left = e.clientX + 'px';
+            r.style.top = e.clientY + 'px';
+            document.body.appendChild(r);
+            setTimeout(() => r.remove(), 700);
+        });
+    </script>
+    <button class="music-btn" id="musicBtn" title="点击播放/暂停音乐">♪</button>
+    <audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">
+<script>
+const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', () => {
+  if (bgm.paused) { bgm.play(); musicBtn.textContent = '❚❚'; }
+  else { bgm.pause(); musicBtn.textContent = '♪'; }
+});
+</script>
+
+
+    <!-- ------------------------------------------------------------------------------------------------------------------------------------------------
 	<script>/*********
 	  * made by Matthias Hurrle (@atzedent)
 	  */
@@ -709,7 +807,7 @@ void main() {
 	col=fract(CT)>.1 ? col : tanh(S(1.5,.0,vec3(dot(col,vec3(.21,.71,.07)))));
 	O=vec4(col,1);
 }</script>
+		<-- END -->
 </body>
 
 </html>
-
