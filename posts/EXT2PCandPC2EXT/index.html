@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习心得：一键互切「仅电脑屏幕 / 仅第二屏幕」BAT脚本</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{
+            font-family: "Microsoft Yahei",system-ui,sans-serif;
+            max-width:900px;
+            margin: 3rem auto;
+            padding:0 20px;
+            line-height:1.7;
+            color:#222;
+            background:#f8f9fa;
+        }
+        article{
+            background:#fff;
+            padding:32px;
+            border-radius:12px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.08);
+        }
+        h1{
+            font-size:24px;
+            margin-bottom:12px;
+            color:#1f2937;
+        }
+        .meta{
+            color:#666;
+            font-size:14px;
+            margin-bottom:24px;
+            border-bottom:1px solid #eee;
+            padding-bottom:16px;
+        }
+        h2{
+            font-size:20px;
+            margin:28px 0 12px;
+            color:#2563eb;
+        }
+        p{
+            margin-bottom:16px;
+        }
+        pre{
+            background:#1e293b;
+            color:#e2e8f0;
+            padding:18px;
+            border-radius:8px;
+            overflow-x:auto;
+            font-family:Consolas,monospace;
+            font-size:14px;
+            line-height:1.5;
+            margin:12px 0 20px;
+        }
+        .tip{
+            background:#fffbeb;
+            border-left:4px solid #f59e0b;
+            padding:14px 16px;
+            margin:16px 0;
+            border-radius:0 6px 6px 0;
+        }
+        .warn{
+            background:#fef2f2;
+            border-left:4px solid #ef4444;
+            padding:14px 16px;
+            margin:16px 0;
+            border-radius:0 6px 6px 0;
+        }
+        ul{
+            padding-left:24px;
+            margin-bottom:16px;
+        }
+        li{
+            margin-bottom:8px;
+        }
+    </style>
+</head>
+<body>
+<article>
+    <h1>学习心得：一键互切「仅电脑屏幕 / 仅第二屏幕」BAT脚本</h1>
+    <div class="meta">日期：2026-09-30 | 分类：Windows批处理脚本</div>
+
+    <h2>需求背景</h2>
+    <p>日常外接显示器，需要一键在【仅电脑屏幕】和【仅第二屏幕】之间来回切换。不想每次按 Win+P 调出投影面板手动选择，希望双击程序直接完成切换。</p>
+    <p>尝试过读取WMI获取系统当前投影状态，但部分Windows版本WMI类不存在，会报错「无效类」。因此改用<strong>本地临时文件记录上一次操作状态</strong>的思路实现切换。</p>
+
+    <h2>完整BAT脚本源码</h2>
+<pre>@echo off
+setlocal
+set "STATE_FILE=%temp%\display_state.txt"
+set "state=PC"
+if exist "%STATE_FILE%" set /p state=&lt;"%STATE_FILE%"
+if /i "%state%"=="PC" (
+    &gt;"%STATE_FILE%" echo EXT
+    DisplaySwitch.exe 4
+) else (
+    &gt;"%STATE_FILE%" echo PC
+    DisplaySwitch.exe 1
+)
+endlocal
+</pre>
+
+    <h2>脚本原理拆解</h2>
+    <ul>
+        <li>使用系统临时目录 <code>%temp%</code> 下的文本文件 <code>display_state.txt</code> 保存标记；</li>
+        <li>标记为 <code>PC</code>：代表上一次状态是【仅电脑屏幕】，本次执行切换到【仅第二屏幕】，写入标记 <code>EXT</code>；</li>
+        <li>标记为 <code>EXT</code>：代表上一次状态是【仅第二屏幕】，本次执行切换到【仅电脑屏幕】，写入标记 <code>PC</code>；</li>
+        <li><code>DisplaySwitch.exe</code> 是Windows原生投影切换程序：
+            <ul>
+                <li><code>DisplaySwitch.exe 1</code> → 仅电脑屏幕</li>
+                <li><code>DisplaySwitch.exe 4</code> → 仅第二屏幕</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>✅ 优点</h2>
+    <ul>
+        <li>不需要WMI、不需要PowerShell复杂API，兼容性极强，不会报WMI无效类错误；</li>
+        <li>无需管理员权限，双击直接运行；</li>
+        <li>不修改注册表、不改动硬件参数，安全，不会损坏显示器和电脑；</li>
+        <li>临时文件放在系统temp目录，系统会自动清理，无长期垃圾残留。</li>
+    </ul>
+
+    <h2>⚠️ 核心缺陷（重点记录）</h2>
+    <div class="warn">
+        <strong>脚本不会读取Windows真实屏幕状态，只记忆上一次点击脚本时的标记！</strong>
+    </div>
+    <p>如果中途手动按 Win+P 去切换投影模式，脚本里保存的标记和系统真实状态就会错位，再次点击脚本时会出现“点击无效”的现象。</p>
+    <p>适用前提：<strong>屏幕切换只使用这个bat脚本，不手动Win+P干预</strong>。</p>
+
+    <h2>使用步骤</h2>
+    <ol>
+        <li>新建文本文档，粘贴代码；</li>
+        <li>另存为：屏幕切换.bat，保存类型选【所有文件】，编码ANSI；</li>
+        <li>双击运行，即可一键互切；</li>
+        <li>进阶：右键bat创建快捷方式，在快捷方式属性设置快捷键，实现全局一键切换。我使用的是Ctrl+Alt+P快捷键。</li>
+    </ol>
+
+    <h2>总结</h2>
+    <p>这个方案属于<strong>状态记忆型切换</strong>，牺牲了“读取系统真实状态”能力，换取极高兼容性，解决WMI查询失败的坑。适合固定只用脚本切换显示器的场景；如果会手动Win+P调整投影，这个方案就容易状态错乱，需要改用两个独立bat分开绑定快捷键。</p>
+
+</article>
+</body>
+</html>
