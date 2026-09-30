@@ -1,288 +1,329 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="../js/logo.js"></script>
-    <title>锦鲤未离的下载库</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
-        }
-        
-        body {
-            background: #ffffff;
-            padding: 20px 14px;
-        }
-        
-        .mind {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-        
-        .row {
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            white-space: nowrap;
-            margin: 4px 0;
-        }
-        
-        .vert {
-            width: 2px;
-            background: #888;
-            height: 26px;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-        
-        .vert-2 {
-            width: 2px;
-            background: #aaa;
-            height: 22px;
-            margin-left: 16px;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-        
-        .vert-3 {
-            width: 2px;
-            background: #ccc;
-            height: 20px;
-            margin-left: 32px;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-        /* 一级标题 蓝色文件夹 */
-        
-        .level-1 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f3a8f;
-        }
-        
-        .folder-icon-l1 {
-            width: 26px;
-            height: 26px;
-            margin-right: 5px;
-            flex-shrink: 0;
-        }
-        /* 二级标题 灰色文件夹 */
-        
-        .level-2 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .folder-icon-l2 {
-            width: 22px;
-            height: 22px;
-            margin-right: 5px;
-            flex-shrink: 0;
-        }
-        /* 三级条目 小文件图标 */
-        
-        .level-3 {
-            font-size: 13px;
-            font-weight: 400;
-            color: #444;
-        }
-        
-        .file-icon-l3 {
-            width: 18px;
-            height: 18px;
-            margin-right: 4px;
-            flex-shrink: 0;
-        }
-        
-        a {
-            text-decoration: none;
-            font-size: 13px;
-            margin: 0 4px;
-        }
-        
-        a.black {
-            color: #000;
-        }
-        
-        a.red {
-            color: #dd2222;
-        }
-        
-        a.blue {
-            color: #0044dd;
-        }
-        
-        a.green {
-            color: #008833;
-        }
-        
-        a.zip {
-            color: #6f42c1;
-        }
-        
-        a.rar {
-            color: #cd6600;
-        }
-        
-        a.ttf {
-            color: #0077aa;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>锦鲤未离的下载库</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", "PingFang SC", sans-serif; }
+
+/* ---------- 页面背景与载入 ---------- */
+body {
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #29120b, #411c10, #202028, #2c140f);
+  background-size: 400% 400%;
+  animation: bgFlow 14s ease infinite, pageIn 1.2s ease forwards;
+  overflow-x: hidden;
+  color: #f3e6d0;
+  opacity: 0;
+  padding: 20px 14px;
+}
+@keyframes bgFlow { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+@keyframes pageIn { to { opacity: 1; } }
+
+/* ---------- 主标题（渐变 + 悬浮放大抖动） ---------- */
+h1.title {
+  position: relative; z-index: 5;
+  font-size: 52px; font-weight: bold; letter-spacing: 6px;
+  font-family: 'STSong', 'Microsoft Yahei', serif;
+  background: linear-gradient(90deg, #b44b22, #e69145, #f0c870, #ffb068, #b44b22);
+  background-size: 300% 300%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: flowGradient 5s linear infinite, textFloat 3.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px rgba(230,145,69,.45));
+  margin: 60px 0 30px; text-align: center; cursor: pointer;
+  transition: filter .3s ease;
+}
+@keyframes flowGradient { 0%{background-position:0% 50%;} 100%{background-position:300% 50%;} }
+@keyframes textFloat { 0%,100%{transform:translateY(0) skewX(-3deg);} 50%{transform:translateY(-10px) skewX(-3deg);} }
+@keyframes titleShake {
+  0%,100%{transform:scale(1.1) rotate(0deg);}
+  20%{transform:scale(1.1) rotate(-2.5deg);}
+  40%{transform:scale(1.1) rotate(2.5deg);}
+  60%{transform:scale(1.1) rotate(-1.5deg);}
+  80%{transform:scale(1.1) rotate(1.5deg);}
+}
+h1.title:hover {
+  animation: flowGradient 1.5s linear infinite, titleShake .55s ease-in-out;
+  filter: drop-shadow(0 0 30px rgba(255,180,104,.85));
+}
+
+/* ---------- 下载列表区（保留原始结构，深色适配配色） ---------- */
+.mind {
+  max-width: 720px; margin: 0 auto; position: relative; z-index: 5;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(240,200,112,.18);
+  border-radius: 18px; padding: 28px 22px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+.row { display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; margin: 4px 0; opacity: 0; }
+.row.visible { animation: fadeUp .6s ease forwards; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
+
+.vert  { width:2px; background:rgba(255,255,255,.35); height:26px; margin-right:8px; flex-shrink:0; }
+.vert-2{ width:2px; background:rgba(255,255,255,.25); height:22px; margin-left:16px; margin-right:8px; flex-shrink:0; }
+.vert-3{ width:2px; background:rgba(255,255,255,.15); height:20px; margin-left:32px; margin-right:8px; flex-shrink:0; }
+
+.level-1 { font-size:16px; font-weight:700; color:#8fb7ff; }
+.folder-icon-l1 { width:26px; height:26px; margin-right:5px; flex-shrink:0; }
+.level-2 { font-size:14px; font-weight:600; color:#eee; }
+.folder-icon-l2 { width:22px; height:22px; margin-right:5px; flex-shrink:0; }
+.level-3 { font-size:13px; font-weight:400; color:#ccc; }
+.file-icon-l3 { width:18px; height:18px; margin-right:4px; flex-shrink:0; }
+
+a { text-decoration:none; font-size:13px; margin:0 4px; }
+a:hover { text-decoration: underline; }
+a.black { color:#fff; }
+a.red   { color:#ff6b6b; }
+a.blue  { color:#66aaff; }
+a.green { color:#57d98a; }
+a.zip   { color:#b78ef0; }
+a.rar   { color:#ff9d47; }
+a.ttf   { color:#49c8ff; }
+
+/* ---------- 鼠标跟随光晕 / 星光 / 锦鲤 ---------- */
+.light-follow { position:fixed; width:340px; height:340px; background:radial-gradient(circle,rgba(230,145,69,.18),transparent 70%); pointer-events:none; border-radius:50%; z-index:1; transform:translate(-50%,-50%); }
+.dot { position:fixed; width:4px; height:4px; background:#ffc896; border-radius:50%; opacity:.5; z-index:1; animation:dotTwinkle 3s infinite; pointer-events:none; }
+@keyframes dotTwinkle { 0%,100%{opacity:.15;} 50%{opacity:.85;} }
+.koi { position:fixed; z-index:2; pointer-events:none; opacity:.85; filter:drop-shadow(0 6px 14px rgba(180,75,34,.35)); }
+.koi svg { display:block; width:100%; height:auto; }
+@keyframes swim { 0%{left:-15%;} 100%{left:110%;} }
+@keyframes bob { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-24px) rotate(2deg);} }
+
+/* ---------- 背景音乐 / 点击波纹 ---------- */
+.music-btn { position:fixed; right:18px; bottom:18px; z-index:999; width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#b44b22,#e69145); color:#fff; border:none; cursor:pointer; font-size:20px; box-shadow:0 6px 18px rgba(180,75,34,.5); animation:pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 6px 18px rgba(180,75,34,.4);} 50%{box-shadow:0 6px 26px rgba(230,145,69,.8);} }
+.ripple { position:fixed; width:22px; height:22px; border-radius:50%; border:2px solid rgba(240,200,112,.8); pointer-events:none; z-index:9999; transform:translate(-50%,-50%); animation:ripple .7s ease-out forwards; }
+@keyframes ripple { 0%{transform:translate(-50%,-50%) scale(0); opacity:.7;} 100%{transform:translate(-50%,-50%) scale(1); opacity:0;} }
+</style>
 </head>
-
 <body>
-    <div class="mind">
-        <div class="row 一级标题">
-            <div class="vert"></div>
-            <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#1f3a8f">
-                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-            </svg>
-            <span class="level-1">一、稿纸</span>
-        </div>
-        <div class="row 二级标题">
-            <div class="vert-2"></div>
-            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
-                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-            </svg>
-            <span class="level-2">（一）信纸-单线</span>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">20行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-黑-12mm-A4.pdf">黑色</a>
-            <a class="red" style="font-weight: bold;" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-红-12mm-A4.pdf">红色（最常用）</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-蓝-12mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-绿-12mm-A4.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">21行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-黑-12mm-A4.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-红-12mm-A4.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-蓝-12mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-绿-12mm-A4.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">装订线21行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-黑-12mm-A4.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-红-12mm-A4.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-蓝-12mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-绿-12mm-A4.pdf">绿色</a>
-        </div>
 
-        <div class="row 二级标题">
-            <div class="vert-2"></div>
-            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
-                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-            </svg>
-            <span class="level-2">（二）信纸-双线</span>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">18行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-黑-10mm-A4.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-红-10mm-A4.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-蓝-10mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-绿-10mm-A4.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">19行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-黑-10mm-A4.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-红-10mm-A4.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-蓝-10mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-绿-10mm-A4.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">装订线19行</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-黑-10mm-A4.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-红-10mm-A4.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-蓝-10mm-A4.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-绿-10mm-A4.pdf">绿色</a>
-        </div>
-        <div class="row 二级标题">
-            <div class="vert-2"></div>
-            <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#666">
-                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-            </svg>
-            <span class="level-2">（三）方格稿纸</span>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">300格</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-黑.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-红.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-蓝.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-绿.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">400格</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-黑.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-红.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-蓝.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-绿.pdf">绿色</a>
-        </div>
-        <div class="row 三级标题">
-            <div class="vert-3"></div>
-            <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#777">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-            </svg>
-            <span class="level-3">600格</span>
-            <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-黑.pdf">黑色</a>
-            <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-红.pdf">红色</a>
-            <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-蓝.pdf">蓝色</a>
-            <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-绿.pdf">绿色</a>
-        </div>
+<div class="light-follow"></div>
 
-        <div class="row 一级标题">
-            <div class="vert"></div>
-            <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#1f3a8f">
-                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-            </svg>
-            <span class="level-1">二、公文字体</span>
-        </div>
-        <div class="row">
-            <div class="vert-3 三级标题"></div>
-            <a class="ttf" href="https://koihnl.github.io/files/公文字体/方正小标宋简体.ttf">方正小标宋简体.ttf</a>
-            <a class="ttf" href="https://koihnl.github.io/files/公文字体/楷体_GB2312.ttf">楷体_GB2312.ttf</a>
-            <a class="ttf" href="https://koihnl.github.io/files/公文字体/仿宋_GB2312.ttf">仿宋_GB2312.ttf</a><br>
-            <a class="zip" href="https://koihnl.github.io/files/公文字体/方正X体_GBK（不常用）.zip">方正X体_GBK（不常用）.zip</a>
-            <a class="rar" href="https://koihnl.github.io/files/公文字体/无需安装（系统自带）/SIMHEI.rar">SIMHEI（系统自带）.rar</a>
-        </div>
+<!-- 渐变主标题 -->
+<h1 class="title">锦鲤未离的下载库</h1>
+
+<!-- 原始下载列表区 -->
+<div class="mind">
+    <div class="row">
+        <div class="vert"></div>
+        <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#5b8def"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="level-1">一、稿纸</span>
     </div>
-</body>
+    <div class="row">
+        <div class="vert-2"></div>
+        <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#bbb"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="level-2">（一）信纸-单线</span>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">20行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-黑-12mm-A4.pdf">黑色</a>
+        <a class="red" style="font-weight: bold;" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-红-12mm-A4.pdf">红色（最常用）</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-蓝-12mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-20行-绿-12mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">21行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-黑-12mm-A4.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-红-12mm-A4.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-蓝-12mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-单线-21行-绿-12mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">装订线21行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-黑-12mm-A4.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-红-12mm-A4.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-蓝-12mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-单线-装订线-21行-绿-12mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-2"></div>
+        <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#bbb"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="level-2">（二）信纸-双线</span>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">18行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-黑-10mm-A4.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-红-10mm-A4.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-蓝-10mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-18行-绿-10mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">19行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-黑-10mm-A4.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-红-10mm-A4.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-蓝-10mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/单双线（双线18和19行单线20-最常用和21行）/信纸-双线-19行-绿-10mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">装订线19行</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-黑-10mm-A4.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-红-10mm-A4.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-蓝-10mm-A4.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/装订线（19和21行）/信纸-双线-装订线-19行-绿-10mm-A4.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-2"></div>
+        <svg class="folder-icon-l2" viewBox="0 0 24 24" fill="#bbb"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="level-2">（三）方格稿纸</span>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">300格</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-黑.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-红.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-蓝.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/300格-方格稿纸-绿.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">400格</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-黑.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-红.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-蓝.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/400格-方格稿纸-绿.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <svg class="file-icon-l3" viewBox="0 0 24 24" fill="#999"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span class="level-3">600格</span>
+        <a class="black" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-黑.pdf">黑色</a>
+        <a class="red" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-红.pdf">红色</a>
+        <a class="blue" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-蓝.pdf">蓝色</a>
+        <a class="green" href="https://koihnl.github.io/files/信纸模板/方格（3、4、6百字）/600字-方格稿纸-绿.pdf">绿色</a>
+    </div>
+    <div class="row">
+        <div class="vert"></div>
+        <svg class="folder-icon-l1" viewBox="0 0 24 24" fill="#5b8def"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <span class="level-1">二、公文字体</span>
+    </div>
+    <div class="row">
+        <div class="vert-3"></div>
+        <a class="ttf" href="https://koihnl.github.io/files/公文字体/方正小标宋简体.ttf">方正小标宋简体.ttf</a>
+        <a class="ttf" href="https://koihnl.github.io/files/公文字体/楷体_GB2312.ttf">楷体_GB2312.ttf</a>
+        <a class="ttf" href="https://koihnl.github.io/files/公文字体/仿宋_GB2312.ttf">仿宋_GB2312.ttf</a>
+        <a class="zip" href="https://koihnl.github.io/files/公文字体/方正X体_GBK（不常用）.zip">方正X体_GBK（不常用）.zip</a>
+        <a class="rar" href="https://koihnl.github.io/files/公文字体/无需安装（系统自带）/SIMHEI.rar">SIMHEI（系统自带）.rar</a>
+    </div>
+</div>
 
+<!-- 音乐开关 -->
+<button class="music-btn" id="musicBtn" title="点击播放/暂停音乐">♪</button>
+<audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+
+<script>
+/* 鼠标跟随光晕 */
+const light = document.querySelector('.light-follow');
+addEventListener('mousemove', e => { light.style.left = e.clientX + 'px'; light.style.top = e.clientY + 'px'; });
+
+/* 星光小点 */
+for (let i = 0; i < 40; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.style.left = Math.random() * 100 + 'vw';
+  d.style.top = Math.random() * 100 + 'vh';
+  d.style.animationDelay = (Math.random() * 3) + 's';
+  document.body.appendChild(d);
+}
+
+/* 锦鲤 SVG 漂浮 */
+const koiSVG = (main, accent) => `
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8 30 Q0 10 14 6 Q8 22 20 30 Q8 38 14 54 Q0 50 8 30Z" fill="${accent}"/>
+  <ellipse cx="62" cy="30" rx="42" ry="17" fill="${main}"/>
+  <path d="M40 16 Q52 6 70 12 Q58 18 40 16Z" fill="${accent}" opacity=".7"/>
+  <path d="M70 44 Q84 52 96 44 Q84 40 70 44Z" fill="${accent}" opacity=".7"/>
+  <circle cx="95" cy="26" r="3.2" fill="#2a1408"/>
+  <circle cx="96" cy="25" r="1" fill="#fff"/>
+</svg>`;
+function makeKoi(bottom, size, duration, delay, op, svg) {
+  const k = document.createElement('div');
+  k.className = 'koi';
+  k.style.bottom = bottom;
+  k.style.width = size + 'px';
+  k.style.opacity = op;
+  k.innerHTML = svg;
+  k.style.animation = `swim ${duration}s linear ${delay}s infinite, bob 4s ease-in-out ${delay}s infinite`;
+  document.body.appendChild(k);
+  return k;
+}
+makeKoi('16%', 110, 26, 0, .9, koiSVG('#e69145', '#fff2e0'));
+makeKoi('7%', 70, 38, -14, .55, koiSVG('#b44b22', '#f6d9a8'));
+
+/* 滚动视差 */
+addEventListener('scroll', () => {
+  const y = scrollY;
+  light.style.transform = `translate(-50%,-50%) translateY(${y * 0.15}px)`;
+  document.querySelectorAll('.dot').forEach((d, i) => { d.style.marginTop = (y * (i % 3 + 1) * 0.05) + 'px'; });
+}, { passive: true });
+
+/* 下载列表逐行浮现 */
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: .15 });
+document.querySelectorAll('.row').forEach(r => io.observe(r));
+
+/* 背景音乐开关 */
+const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', () => {
+  if (bgm.paused) { bgm.play(); musicBtn.textContent = '❚❚'; }
+  else { bgm.pause(); musicBtn.textContent = '♪'; }
+});
+
+/* 鼠标点击波纹 */
+addEventListener('mousedown', e => {
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.left = e.clientX + 'px';
+  r.style.top = e.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+});
+
+/* 右上角【锦鲤未离】ECharts 描边动画 */
+(function () {
+  const s = document.createElement('script');
+  s.src = "https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js";
+  s.onload = () => {
+    const t = decodeURIComponent(escape(atob('6ZSm6bKk5pyq56a7')));
+    const d = document.createElement('div');
+    d.className = 'chartkoinl';
+    document.body.appendChild(d);
+    echarts.init(d).setOption({ graphic: { elements: [{
+      type: 'text', left: 'center', top: 'center',
+      style: { text: t, fontFamily: 'STSong', fontSize: 20, fontWeight: 'lighter',
+        lineDash: [0, 200], lineDashOffset: 0, fill: 'transparent',
+        stroke: '#b44b22', lineWidth: 1, cursor: 'pointer' },
+      keyframeAnimation: { duration: 5000, loop: false, keyframes: [
+        { percent: 0.7, style: { fill: 'transparent', lineDashOffset: 200, lineDash: [200, 0] } },
+        { percent: 0.8, style: { fill: 'transparent' } },
+        { percent: 1, style: { fill: '#b44b22' } }
+      ] },
+      onclick: () => { window.location.href = 'https://koihnl.github.io'; }
+    }] } });
+  };
+  document.head.appendChild(s);
+  const st = document.createElement('style');
+  st.textContent = '.chartkoinl{width:80px;height:48px;position:fixed;top:5px;right:6px;z-index:999;}';
+  document.head.appendChild(st);
+})();
+</script>
+</body>
 </html>
