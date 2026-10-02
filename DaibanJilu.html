@@ -152,8 +152,8 @@ input,textarea{font-family:inherit;font-size:14px}
 .cal-dnum{font-size:15px;font-weight:600;color:var(--ink);line-height:1.2}
 .cal-counts{display:flex;gap:8px;margin-top:6px}
 .cal-cnt{font-size:12px;font-weight:700;line-height:1.2}
-.cal-cnt.rec{color:var(--work)}
-.cal-cnt.todo{color:var(--accent-deep)}
+.cal-cnt.todo{color:var(--work)}
+.cal-cnt.rec{color:var(--accent-deep)}
 .cal-hint{font-size:12px;color:var(--ink-3);margin-top:10px;text-align:center}
 /* 数据管理列表 */
 .dm-item{display:flex;align-items:flex-start;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line)}
@@ -264,6 +264,34 @@ input,textarea{font-family:inherit;font-size:14px}
  .fab-row{left:auto;right:26px;bottom:26px;transform:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* 回到顶部按钮 */
+.back-top{
+  position:fixed;
+  right:26px;
+  bottom:84px;
+  z-index:1999;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--ink);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 12px rgba(44,62,80,.25);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .22s;
+}
+.back-top.show{
+  opacity:1;
+  pointer-events:auto;
+}
+.back-top svg{width:18px;height:18px;stroke-width:2.5;}
+@media(max-width:640px){
+  .back-top{right:16px;bottom:110px;}
+}
+
 </style>
 </head>
 <body>
@@ -458,6 +486,11 @@ input,textarea{font-family:inherit;font-size:14px}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> 新增待办
   </button>
 </div>
+<button class="back-top" id="backTopBtn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M18 15l-6-6-6 6"/>
+</svg>
+</button>
 
 <div class="mask-layer" id="popupMask">
   <div class="popup-box">
@@ -1050,6 +1083,15 @@ function submitPopup(){
     saveData();
   }
   renderAll();
+if(popupMode === 'todo'){
+  const el = $('todoModule');
+  const offset = 110; // 【重点】这个值越大，位置越靠下
+  window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset, behavior:'smooth'});
+}else if(popupMode === 'record'){
+  const el = $('recModule');
+  const offset = 110; // 调整这里修改垂直位置
+  window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset, behavior:'smooth'});
+}
   popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo' };
   closePopup();
 }
@@ -1570,6 +1612,20 @@ function init(){
   });
   window.addEventListener('beforeunload', () => { if (todos.length || records.length) saveData(); });
 }
+// 回到顶部按钮事件
+$('backTopBtn').addEventListener('click',()=>{
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+// 滚动监听，页面向下滚动才显示回到顶部
+window.addEventListener('scroll',()=>{
+  const btn = $('backTopBtn');
+  if(window.scrollY > 180){
+    btn.classList.add('show');
+  }else{
+    btn.classList.remove('show');
+  }
+});
+
 init();
 </script>
 </body>
