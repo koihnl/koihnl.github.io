@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>待办记录工作台 | 锦鲤未离</title>
+<script src="js/logo.js"></script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232c3e50'/%3E%3Cpath d='M30 52l15 16 28-34' stroke='%23ffa500' stroke-width='11' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f5f9;--card:#fff;--ink:#2c3e50;--ink-2:#5f7184;--ink-3:#9aa8b8;
+  --line:#e6ebf1;--accent:#ffa500;--accent-deep:#ee8d00;--accent-soft:#fff3da;
+  --work:#3478d9;--work-soft:#e9f1fd;--personal:#22a447;--personal-soft:#e6f6ea;
+  --meeting:#3478d9;--meeting-soft:#e9f1fd;--dacument:#d95134;--dacument-soft:#fdeeea;
+  --document:#28a745;--document-soft:#e6f6ea;--other:#868e96;--other-soft:#f0f2f5;
+  --danger:#ff4757;--danger-soft:#ffe9ec;--high:#ff4757;--medium:#f08c00;--low:#8b98a8;
+  --radius:14px;--shadow:0 1px 2px rgba(44,62,80,.05),0 6px 20px rgba(44,62,80,.06);
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'PingFang SC','Microsoft YaHei','Hiragino Sans GB',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:90px 16px 180px}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer}
+input,textarea{font-family:inherit;font-size:15px}
+/* ===== 顶部栏 ===== */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:998;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(44,62,80,.07);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.date-area{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#datePicker{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:14px;font-weight:700;color:var(--ink);background:#fff;cursor:pointer}
+.today-pill{display:none;align-items:center;background:var(--accent-soft);color:var(--accent-deep);font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:9px;padding:8px 14px;font-size:14px;font-weight:600;transition:transform .15s,opacity .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);opacity:.92}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2)}
+.btn-ghost:hover{color:var(--ink);border-color:#d3dbe4}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(255,165,0,.35)}
+.btn-danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(255,71,87,.3)}
+/* ===== 内容区 ===== */
+.container{max-width:860px;margin:0 auto}
+/* 统计面板 */
+.stats-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px}
+.stats-nums{display:flex;align-items:center}
+.stat{flex:1;text-align:center;position:relative}
+.stat+.stat::before{content:'';position:absolute;left:0;top:22%;height:56%;width:1px;background:var(--line)}
+.stat b{display:block;font-size:26px;line-height:1.1;letter-spacing:.5px}
+.stat span{font-size:12.5px;color:var(--ink-3);margin-top:4px;display:block}
+.stat.total b{color:var(--ink)}
+.stat.pending b{color:var(--accent-deep)}
+.stat.done b{color:var(--personal)}
+.stat.records b{color:var(--meeting)}
+.progress-row{display:flex;align-items:center;gap:12px;margin-top:16px}
+.progress{flex:1;height:8px;border-radius:99px;background:#edf1f6;overflow:hidden}
+.progress-bar{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ffb52e,var(--accent-deep));transition:width .45s ease}
+.progress-text{font-size:12.5px;font-weight:700;color:var(--ink-2);min-width:38px;text-align:right}
+.overdue-pill{display:none;background:var(--danger-soft);color:var(--danger);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.search-box{display:flex;align-items:center;gap:8px;background:#f4f7fb;border:1px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--ink-3);margin-top:14px}
+.search-box:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.search-box input{flex:1;border:none;outline:none;background:transparent;font-size:14px;color:var(--ink)}
+.search-box input::placeholder{color:var(--ink-3)}
+/* ===== 模块卡片 ===== */
+.module{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:18px}
+.module-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.module-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:9px}
+.module-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.module-icon.todo{background:var(--accent)}
+.module-icon.record{background:var(--meeting)}
+.module-title .count-pill{margin-left:2px}
+.head-filters{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+/* 筛选药丸 */
+.pills{display:inline-flex;background:#eef2f7;border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.pills button{padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--ink-2);border-radius:7px;transition:all .18s}
+.pills button.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(44,62,80,.14)}
+/* 子分区（公事/私事） */
+.sub-block{padding:8px 0 2px}
+.sub-block + .sub-block{border-top:1px dashed var(--line);margin-top:10px;padding-top:14px}
+.sub-head{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sub-head h3{font-size:15px;font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.dot.work{background:var(--work)}
+.dot.personal{background:var(--personal)}
+.count-pill{background:#f0f3f8;color:var(--ink-2);font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px}
+/* ===== 待办条目 ===== */
+.item{display:flex;align-items:flex-start;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);animation:itemIn .28s ease}
+.item:last-child{border-bottom:none}
+@keyframes itemIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.check{flex:none;width:24px;height:24px;margin-top:1px;border-radius:50%;border:2px solid #c6d0db;display:flex;align-items:center;justify-content:center;color:transparent;transition:all .2s}
+.check svg{opacity:0;transform:scale(.5);transition:all .2s}
+.item.done .check{background:var(--personal);border-color:var(--personal);color:#fff}
+.item.done .check svg{opacity:1;transform:scale(1)}
+.check:hover{border-color:var(--personal)}
+.item-main{flex:1;min-width:0}
+.item-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px}
+.meta-time{font-size:12.5px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.badge{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;line-height:1.5}
+.badge.prio.high{background:var(--danger-soft);color:var(--high)}
+.badge.prio.medium{background:var(--accent-soft);color:var(--accent-deep)}
+.badge.prio.low{background:#eef1f5;color:var(--low)}
+.badge.due{background:#eef1f5;color:var(--ink-2)}
+.badge.due.overdue{background:var(--danger-soft);color:var(--high);font-weight:700}
+.item-content{font-size:15px;line-height:1.65;white-space:pre-wrap;word-break:break-word;transition:color .2s}
+.item.done .item-content{color:var(--ink-3);text-decoration:line-through;text-decoration-color:rgba(95,113,132,.5)}
+/* ===== 记录条目 ===== */
+.rec-item{display:flex;align-items:flex-start;gap:12px;padding:12px 4px 12px 12px;border-bottom:1px solid var(--line);border-left:4px solid var(--other);margin-left:0;animation:itemIn .28s ease}
+.rec-item.type-meeting{border-left-color:var(--meeting)}
+.rec-item.type-dacument{border-left-color:var(--dacument)}
+.rec-item.type-document{border-left-color:var(--document)}
+.rec-item.type-other{border-left-color:var(--other)}
+.rec-item:last-child{border-bottom:none}
+.rec-main{flex:1;min-width:0}
+.rec-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.rec-type-badge{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;line-height:1.5}
+.rec-type-badge.meeting{background:var(--meeting-soft);color:var(--meeting)}
+.rec-type-badge.dacument{background:var(--dacument-soft);color:var(--dacument)}
+.rec-type-badge.document{background:var(--document-soft);color:var(--document)}
+.rec-type-badge.other{background:var(--other-soft);color:var(--other)}
+.rec-content{font-size:15px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+/* 条目操作 */
+.item-actions{flex:none;display:flex;gap:2px;opacity:.35;transition:opacity .2s}
+.item:hover .item-actions,.rec-item:hover .item-actions{opacity:1}
+.icon-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--ink-2);transition:all .15s}
+.icon-btn:hover{background:#eef2f7;color:var(--ink)}
+.icon-btn.danger:hover{background:var(--danger-soft);color:var(--danger)}
+.list-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:26px 10px;color:var(--ink-3);font-size:13.5px}
+/* 模块底部操作 */
+.section-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:1px dashed var(--line);margin-top:4px}
+.ghost{font-size:13px;font-weight:600;color:var(--ink-2);background:#f4f7fb;border:1px solid var(--line);border-radius:8px;padding:6px 13px;transition:all .15s}
+.ghost:hover{color:var(--ink);border-color:#c9d4e0}
+.ghost.danger-text:hover{color:var(--danger);border-color:#ffc4ca;background:var(--danger-soft)}
+/* ===== 数据管理 ===== */
+.data-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.data-actions span{font-size:12.5px;color:var(--ink-3);margin-right:auto}
+/* 全空状态 */
+.empty-all{display:none;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:44px 20px;text-align:center;margin-bottom:18px}
+.empty-icon{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;background:var(--accent-soft);color:var(--accent-deep);display:flex;align-items:center;justify-content:center}
+.empty-title{font-size:17px;font-weight:700;margin-bottom:6px}
+.empty-sub{font-size:13.5px;color:var(--ink-3);line-height:1.6}
+/* 页脚 */
+.foot{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;margin:8px 0 20px;color:var(--ink-3);font-size:12.5px}
+/* ===== 悬浮新增按钮 ===== */
+.fab-row{position:fixed;bottom:34px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;gap:12px}
+.fab{display:inline-flex;align-items:center;gap:7px;color:#fff;font-size:15px;font-weight:700;padding:12px 26px;border-radius:999px;transition:transform .18s,box-shadow .18s}
+.fab:hover{transform:translateY(-2px)}
+.fab:active{transform:scale(.97)}
+.fab svg{width:16px;height:16px}
+.fab-record{background:var(--meeting);box-shadow:0 8px 22px rgba(52,120,217,.4)}
+.fab-record:hover{box-shadow:0 12px 26px rgba(52,120,217,.46)}
+.fab-todo{background:var(--accent);box-shadow:0 8px 22px rgba(255,165,0,.4)}
+.fab-todo:hover{box-shadow:0 12px 26px rgba(255,165,0,.46)}
+/* ===== 弹窗 ===== */
+.mask-layer{position:fixed;inset:0;background:rgba(30,42,56,.45);z-index:3000;display:none;align-items:flex-end;opacity:0;transition:opacity .25s ease}
+.mask-layer.show{display:flex;opacity:1}
+.popup-box{width:100%;max-width:680px;margin:0 auto;background:#fff;border-radius:20px 20px 0 0;padding:22px 22px 26px;box-sizing:border-box;max-height:82vh;overflow-y:auto;transform:translateY(100%);transition:transform .28s cubic-bezier(.22,.9,.3,1)}
+.mask-layer.show .popup-box{transform:translateY(0)}
+.pop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.pop-head h3{font-size:18px;font-weight:700}
+.pop-close{width:32px;height:32px;border-radius:50%;background:#f0f3f8;color:var(--ink-2);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pop-close:hover{background:#e4eaf1;color:var(--ink)}
+.pop-field{margin-bottom:14px}
+.pop-field label{display:block;font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:7px}
+.seg.big{width:100%;display:flex}
+.seg.big button{flex:1;padding:10px 0;font-size:14.5px;text-align:center}
+.seg{display:inline-flex;background:#eef2f7;border-radius:10px;padding:3px;gap:2px}
+.seg button{padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--ink-2);border-radius:8px;transition:all .18s}
+.seg button.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(44,62,80,.14)}
+#typeSeg button.active[data-v="work"]{background:var(--work);color:#fff;box-shadow:0 3px 8px rgba(52,120,217,.35)}
+#typeSeg button.active[data-v="personal"]{background:var(--personal);color:#fff;box-shadow:0 3px 8px rgba(34,164,71,.35)}
+#prioSeg button.active[data-v="high"]{background:var(--high);color:#fff;box-shadow:0 3px 8px rgba(255,71,87,.3)}
+#prioSeg button.active[data-v="medium"]{background:var(--accent-deep);color:#fff;box-shadow:0 3px 8px rgba(240,140,0,.3)}
+#prioSeg button.active[data-v="low"]{background:var(--low);color:#fff}
+#recTypeSeg button.active[data-v="meeting"]{background:var(--meeting);color:#fff;box-shadow:0 3px 8px rgba(52,120,217,.35)}
+#recTypeSeg button.active[data-v="dacument"]{background:var(--dacument);color:#fff;box-shadow:0 3px 8px rgba(217,81,52,.3)}
+#recTypeSeg button.active[data-v="document"]{background:var(--document);color:#fff;box-shadow:0 3px 8px rgba(40,167,69,.3)}
+#recTypeSeg button.active[data-v="other"]{background:var(--other);color:#fff}
+.pop-row{display:flex;gap:12px}
+.pop-row .pop-field{flex:1}
+.pop-field input[type="time"],.pop-field input[type="date"]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.pop-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.pop-field textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:15px;line-height:1.65;resize:vertical;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+.pop-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.phrase-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.phrase{font-size:13px;color:#51627a;background:#f0f3f8;border:1px solid var(--line);border-radius:99px;padding:6px 12px;transition:all .15s}
+.phrase:hover{background:var(--accent-soft);border-color:#ffd591;color:var(--accent-deep)}
+.pop-bottom{display:flex;justify-content:flex-end;gap:10px}
+.btn-cancel{background:#eef1f5;color:var(--ink-2);border-radius:10px;padding:11px 26px;font-size:15px;font-weight:600;transition:all .15s}
+.btn-cancel:hover{background:#e2e8f0}
+.btn-submit{background:var(--accent);color:#fff;border-radius:10px;padding:11px 26px;font-size:15px;font-weight:700;box-shadow:0 4px 12px rgba(255,165,0,.35);transition:all .15s}
+.btn-submit:hover{transform:translateY(-1px)}
+/* ===== 提示 ===== */
+.toast-wrap{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:4000;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{background:rgba(44,62,80,.94);color:#fff;font-size:13.5px;padding:9px 18px;border-radius:99px;opacity:0;transform:translateY(8px);transition:all .28s}
+.toast.show{opacity:1;transform:none}
+.toast.warn{background:rgba(255,71,87,.94)}
+/* ===== 响应式 ===== */
+@media(max-width:640px){
+  body{padding:128px 12px 172px}
+  .topbar{padding:10px 12px}
+  .stats-card{padding:15px 14px}
+  .module{padding:14px 14px}
+  .item-actions,.rec-item .item-actions{opacity:1}
+  .fab-row{bottom:24px;gap:10px}
+  .fab{padding:11px 20px;font-size:14px}
+  .popup-box{padding:18px 16px 22px}
+  .stat b{font-size:23px}
+  .stat span{font-size:12px}
+  .foot{justify-content:center;font-size:13px}
+  .empty-sub{font-size:14px}
+  .search-box input{font-size:16px}
+  input[type="time"],input[type="date"],textarea{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<!-- ===== 顶部栏 ===== -->
+<header class="topbar">
+  <div class="date-area">
+    <input type="date" id="datePicker">
+    <button class="btn btn-ghost" id="btnPrev">前一天</button>
+    <button class="btn btn-ghost" id="btnNext">后一天</button>
+    <span class="today-pill" id="todayPill">今天</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-primary" id="btnCopyDay">复制内容</button>
+    <button class="btn btn-primary" id="btnExportMD">导出MD</button>
+    <button class="btn btn-danger" id="btnDeleteDay">删除当日</button>
+    <button class="btn btn-danger" id="btnDeleteAll">删除全部</button>
+  </div>
+</header>
+
+<main class="container">
+  <!-- ===== 统计面板 ===== -->
+  <section class="stats-card">
+    <div class="stats-nums">
+      <div class="stat total"><b id="statTotal">0</b><span>全部待办</span></div>
+      <div class="stat pending"><b id="statPending">0</b><span>进行中</span></div>
+      <div class="stat done"><b id="statDone">0</b><span>已完成</span></div>
+      <div class="stat records"><b id="statRecords">0</b><span>今日记录</span></div>
+    </div>
+    <div class="progress-row">
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+      <span class="overdue-pill" id="overduePill">逾期 0 条</span>
+      <span class="progress-text" id="progressText">0%</span>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="搜索待办与记录…">
+    </div>
+    <div class="data-actions">
+      <span>数据管理</span>
+      <button id="btnExportJSON" class="ghost">导出备份</button>
+      <button id="btnImportJSON" class="ghost">导入备份</button>
+      <input type="file" id="importFile" accept=".json,.JSON" hidden>
+    </div>
+  </section>
+
+  <!-- ===== 待办事项模块 ===== -->
+  <section class="module" id="todoModule">
+    <div class="module-head">
+      <span class="module-icon todo">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h8"/><path d="m12.5 12.5 1.5 1.5 3-3"/></svg>
+      </span>
+      <h2 class="module-title">待办事项</h2>
+      <div class="head-filters">
+        <div class="pills" id="todoFilter">
+          <button data-f="all" class="active">全部</button>
+          <button data-f="pending">待办</button>
+          <button data-f="done">已完成</button>
+          <button data-f="overdue">已逾期</button>
+        </div>
+      </div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-head">
+        <span class="dot work"></span>
+        <h3>公事</h3>
+        <span class="count-pill" id="workCount">0</span>
+      </div>
+      <div class="item-list" id="workList"></div>
+      <div class="section-actions">
+        <button class="ghost" data-action="copy-section" data-type="work">复制内容</button>
+        <button class="ghost danger-text" data-action="clear-section" data-type="work">删除全部</button>
+      </div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-head">
+        <span class="dot personal"></span>
+        <h3>私事</h3>
+        <span class="count-pill" id="personalCount">0</span>
+      </div>
+      <div class="item-list" id="personalList"></div>
+      <div class="section-actions">
+        <button class="ghost" data-action="copy-section" data-type="personal">复制内容</button>
+        <button class="ghost danger-text" data-action="clear-section" data-type="personal">删除全部</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 每日记录模块 ===== -->
+  <section class="module" id="recModule">
+    <div class="module-head">
+      <span class="module-icon record">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      </span>
+      <h2 class="module-title">每日记录</h2>
+      <span class="count-pill" id="recCount">0</span>
+      <div class="head-filters">
+        <div class="pills" id="recFilter">
+          <button data-f="all" class="active">全部</button>
+          <button data-f="meeting">会议</button>
+          <button data-f="dacument">报件</button>
+          <button data-f="document">取件</button>
+          <button data-f="other">其他</button>
+        </div>
+      </div>
+    </div>
+    <div class="rec-list" id="recList"></div>
+    <div class="section-actions">
+      <button class="ghost" data-action="copy-records">复制内容</button>
+      <button class="ghost danger-text" data-action="clear-records">删除全部</button>
+    </div>
+  </section>
+
+  <!-- ===== 全空状态 ===== -->
+  <div class="empty-all" id="emptyAll">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="m9 15 2 2 4-4"/></svg>
+    </div>
+    <p class="empty-title">今天还没有待办与记录</p>
+    <p class="empty-sub">待办规划明天，记录留存当天，点击下方「新增待办」或「新增记录」开始吧</p>
+  </div>
+
+  <!-- ===== 页脚 ===== -->
+  <footer class="foot">
+    <span>锦鲤未离 · 待办记录工作台 v3.0</span>
+    <span>数据仅保存在本地浏览器</span>
+  </footer>
+</main>
+
+<!-- ===== 悬浮新增按钮 ===== -->
+<div class="fab-row">
+  <button class="fab fab-record" id="btnAddRecord">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    新增记录
+  </button>
+  <button class="fab fab-todo" id="btnAddTodo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    新增待办
+  </button>
+</div>
+
+<!-- ===== 新增/编辑弹窗 ===== -->
+<div class="mask-layer" id="popupMask">
+  <div class="popup-box">
+    <div class="pop-head">
+      <h3 id="popTitle">新增待办</h3>
+      <button class="pop-close" id="popClose" aria-label="关闭">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="pop-field" id="todoTypeField">
+      <label>类型（默认公事）</label>
+      <div class="seg big" id="typeSeg">
+        <button data-v="work" class="active">公事</button>
+        <button data-v="personal">私事</button>
+      </div>
+    </div>
+    <div class="pop-field" id="todoPrioField">
+      <label>优先级</label>
+      <div class="seg big" id="prioSeg">
+        <button data-v="high">高</button>
+        <button data-v="medium" class="active">中</button>
+        <button data-v="low">低</button>
+      </div>
+    </div>
+    <div class="pop-field" id="recTypeField" style="display:none">
+      <label>记录类型（默认会议）</label>
+      <div class="seg big" id="recTypeSeg">
+        <button data-v="meeting" class="active">会议</button>
+        <button data-v="dacument">报件</button>
+        <button data-v="document">取件</button>
+        <button data-v="other">其他</button>
+      </div>
+    </div>
+    <div class="pop-row">
+      <div class="pop-field">
+        <label>记录时间</label>
+        <input type="time" id="popTime">
+      </div>
+      <div class="pop-field" id="popDueField">
+        <label>截止日期（可选）</label>
+        <input type="date" id="popDue">
+      </div>
+    </div>
+    <div class="pop-field">
+      <label id="contentLabel">待办内容</label>
+      <textarea id="popContent" placeholder="请输入公事待办内容，例如：整理迎检材料…"></textarea>
+    </div>
+    <div class="phrase-group" id="phraseGroup"></div>
+    <div class="pop-bottom">
+      <button class="btn-cancel" id="btnCancel">取消</button>
+      <button class="btn-submit" id="btnSubmit">确认提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 提示容器 ===== -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ====================== 全局配置 ======================
+const TODO_TYPE_KEY = { work:'公事', personal:'私事' };
+const PRIO_KEY = { high:'高', medium:'中', low:'低' };
+const PRIO_ORDER = { high:0, medium:1, low:2 };
+const REC_TYPE_KEY = { meeting:'会议', dacument:'报件', document:'取件', other:'其他' };
+const TODO_PHRASES = {
+  work:['参会交流，研究相关工作事项。','对接业务，协调推进相关工作落实。','整理材料，完善台账资料。','走访沟通，了解相关情况。','起草文稿，按时报送材料。'],
+  personal:['买菜做饭，打理日常饮食。','锻炼身体，保持健康作息。','整理家务，打扫房间卫生。','阅读学习，提升自我能力。','联系家人，问候近况。']
+};
+const REC_PHRASES = {
+  meeting:['参会交流，研究相关工作事项。','对接业务，协调推进相关工作落实。','会议记录，汇总会议纪要。'],
+  dacument:['整理报件材料，完善台账资料。','报送材料，跟进审批进度。','收集核对，补齐报件要件。'],
+  document:['领取文件，签收登记。','取件送达，转交相关科室。','核对清单，确认取件内容。'],
+  other:['走访沟通，了解相关情况。','电话联系，协调工作事宜。','处理杂务，推进日常工作。']
+};
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const nowTime = () => { const d = new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const todayStr = () => getDateKey(new Date());
+function getDateKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function formatDateCN(d){ return d.getFullYear()+'年'+pad(d.getMonth()+1)+'月'+pad(d.getDate())+'日'; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(){ return (crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(36).slice(2)); }
+
+// ====================== 状态 ======================
+let currentDate = new Date();
+let todos = [];
+let records = [];
+let todoFilter = 'all';
+let recFilterType = 'all';
+let searchText = '';
+let popupMode = 'todo';
+let editingId = null;
+let editingKind = null;
+let popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'' };
+
+// ====================== 存储 ======================
+function storageKey(){ return 'day-'+getDateKey(currentDate); }
+function getDayData(dayKey){
+  const raw = localStorage.getItem(dayKey);
+  const d = raw ? JSON.parse(raw) : null;
+  return d && Array.isArray(d.todos) && Array.isArray(d.records) ? d : { todos:[], records:[] };
+}
+function saveData(){ localStorage.setItem(storageKey(), JSON.stringify({ todos, records, updatedAt:new Date().toISOString() })); }
+function normalizeTodo(e){
+  e.id = e.id || uid(); e.time = e.time || ''; e.type = e.type === 'personal' ? 'personal' : 'work';
+  e.priority = e.priority || 'medium'; e.due = e.due || ''; e.done = !!e.done; e.content = e.content || '';
+  return e;
+}
+function normalizeRecord(r){
+  r.id = r.id || uid(); r.time = r.time || '';
+  r.type = REC_TYPE_KEY[r.type] ? r.type : 'other'; r.content = r.content || '';
+  return r;
+}
+function loadData(){
+  const d = getDayData(storageKey());
+  todos = d.todos.map(normalizeTodo);
+  records = d.records.map(normalizeRecord);
+}
+// 迁移旧系统数据（原记录系统键=纯日期，原待办系统键=todo-日期）
+function migrateLegacy(){
+  if (localStorage.getItem('day-migrated-v1')) return 0;
+  let migrated = 0;
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+  keys.forEach(k => {
+    if (!k) return;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(k)){
+      try {
+        const d = JSON.parse(localStorage.getItem(k));
+        const list = d.entries || [];
+        if (list.length){
+          const dayKey = 'day-'+k;
+          const cur = getDayData(dayKey);
+          list.forEach(e => { cur.records.push({ id:uid(), time:e.time||'', type:REC_TYPE_KEY[e.type]?e.type:'other', content:e.content||'' }); });
+          localStorage.setItem(dayKey, JSON.stringify(cur));
+          migrated += list.length;
+        }
+      } catch(err){}
+    } else if (k.indexOf('todo-') === 0){
+      try {
+        const d = JSON.parse(localStorage.getItem(k));
+        const list = d.entries || [];
+        if (list.length){
+          const dayKey = 'day-'+k.slice(5);
+          const cur = getDayData(dayKey);
+          list.forEach(e => { cur.todos.push(normalizeTodo({ id:uid(), time:e.time||'', type:e.type==='personal'?'personal':'work', priority:e.priority||'medium', due:e.due||'', done:!!e.done, content:e.content||'' })); });
+          localStorage.setItem(dayKey, JSON.stringify(cur));
+          migrated += list.length;
+        }
+      } catch(err){}
+    }
+  });
+  localStorage.setItem('day-migrated-v1', '1');
+  return migrated;
+}
+
+// ====================== 过滤与排序 ======================
+function visibleTodos(type){
+  return todos.filter(e => {
+    if (e.type !== type) return false;
+    if (searchText && e.content.indexOf(searchText) === -1) return false;
+    if (todoFilter === 'pending' && e.done) return false;
+    if (todoFilter === 'done' && !e.done) return false;
+    if (todoFilter === 'overdue' && !isOverdue(e)) return false;
+    return true;
+  });
+}
+function sortedTodos(list){
+  return list.slice().sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (!a.done && PRIO_ORDER[a.priority] !== PRIO_ORDER[b.priority]) return PRIO_ORDER[a.priority] - PRIO_ORDER[b.priority];
+    return (b.time || '').localeCompare(a.time || '');
+  });
+}
+function visibleRecords(){
+  return records.filter(r =>
+    (!searchText || r.content.indexOf(searchText) > -1) &&
+    (recFilterType === 'all' || r.type === recFilterType)
+  );
+}
+function sortedRecords(list){
+  return list.slice().sort((a,b) => (b.time || '').localeCompare(a.time || ''));
+}
+function isOverdue(e){ return !e.done && e.due && e.due < todayStr(); }
+function dueBadge(e){
+  if (!e.due) return '';
+  const ov = isOverdue(e);
+  return '<span class="badge due'+(ov?' overdue':'')+'">'+(ov?'已逾期 ':'截止 ')+esc(e.due.slice(5))+'</span>';
+}
+
+// ====================== 渲染 ======================
+function todoItemHTML(e){
+  return '<div class="item'+(e.done?' done':'')+'" data-id="'+esc(e.id)+'">'
+    + '<button class="check" data-action="toggle" title="完成 / 取消" aria-label="切换完成状态">'
+    + '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>'
+    + '<div class="item-main">'
+    + '<div class="item-meta"><span class="meta-time">'+esc(e.time)+'</span>'
+    + '<span class="badge prio '+esc(e.priority)+'">'+(PRIO_KEY[e.priority]||'')+'</span>'
+    + dueBadge(e)+'</div>'
+    + '<div class="item-content">'+esc(e.content)+'</div>'
+    + '</div>'
+    + '<div class="item-actions">'
+    + '<button class="icon-btn" data-action="edit" title="编辑待办">'
+    + '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>'
+    + '<button class="icon-btn danger" data-action="del" title="删除待办">'
+    + '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg></button>'
+    + '</div></div>';
+}
+function recItemHTML(r){
+  return '<div class="rec-item type-'+esc(r.type)+'" data-id="'+esc(r.id)+'">'
+    + '<div class="rec-main">'
+    + '<div class="rec-meta"><span class="meta-time">'+esc(r.time)+'</span>'
+    + '<span class="rec-type-badge '+esc(r.type)+'">'+(REC_TYPE_KEY[r.type]||'其他')+'</span></div>'
+    + '<div class="rec-content">'+esc(r.content)+'</div>'
+    + '</div>'
+    + '<div class="item-actions">'
+    + '<button class="icon-btn" data-action="edit-rec" title="编辑记录">'
+    + '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>'
+    + '<button class="icon-btn danger" data-action="del-rec" title="删除记录">'
+    + '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg></button>'
+    + '</div></div>';
+}
+function emptyHTML(text){
+  return '<div class="list-empty"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><p>'+text+'</p></div>';
+}
+function todoEmptyText(type){
+  if (!todos.length && !searchText && todoFilter === 'all') return '暂无'+TODO_TYPE_KEY[type]+'待办，点击下方「新增待办」按钮添加一条吧';
+  return '没有匹配的'+TODO_TYPE_KEY[type]+'待办';
+}
+function renderTodoList(container, list, type){
+  const emptyText = todoEmptyText(type);
+  container.innerHTML = list.length ? list.map(todoItemHTML).join('') : emptyHTML(emptyText);
+}
+function renderRecList(){
+  const list = sortedRecords(visibleRecords());
+  let emptyText;
+  if (!records.length && !searchText && recFilterType === 'all') emptyText = '暂无每日记录，点击下方「新增记录」按钮记一条吧';
+  else if (!records.length) emptyText = '没有匹配的记录';
+  else emptyText = '没有匹配的记录';
+  $('recList').innerHTML = list.length ? list.map(recItemHTML).join('') : emptyHTML(emptyText);
+}
+function renderStats(){
+  const total = todos.length;
+  const done = todos.filter(e => e.done).length;
+  const pending = total - done;
+  const overdue = todos.filter(isOverdue).length;
+  $('statTotal').textContent = total;
+  $('statPending').textContent = pending;
+  $('statDone').textContent = done;
+  $('statRecords').textContent = records.length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  $('progressBar').style.width = pct + '%';
+  $('progressText').textContent = pct + '%';
+  $('overduePill').style.display = overdue ? 'inline-block' : 'none';
+  if (overdue) $('overduePill').textContent = '逾期 '+overdue+' 条';
+  $('workCount').textContent = todos.filter(e => e.type === 'work').length;
+  $('personalCount').textContent = todos.filter(e => e.type === 'personal').length;
+  $('recCount').textContent = records.length;
+}
+function renderAll(){
+  const clean = todos.length === 0 && records.length === 0 && !searchText && todoFilter === 'all' && recFilterType === 'all';
+  $('emptyAll').style.display = clean ? 'block' : 'none';
+  $('todoModule').style.display = clean ? 'none' : '';
+  $('recModule').style.display = clean ? 'none' : '';
+  renderTodoList($('workList'), sortedTodos(visibleTodos('work')), 'work');
+  renderTodoList($('personalList'), sortedTodos(visibleTodos('personal')), 'personal');
+  renderRecList();
+  renderStats();
+}
+
+// ====================== 弹窗 ======================
+function setSeg(id, v){ document.querySelectorAll('#'+id+' button').forEach(b => b.classList.toggle('active', b.dataset.v === v)); }
+function applyModeUI(){
+  const isTodo = popupMode === 'todo';
+  $('todoTypeField').style.display = isTodo ? '' : 'none';
+  $('todoPrioField').style.display = isTodo ? '' : 'none';
+  $('recTypeField').style.display = isTodo ? 'none' : '';
+  $('popDueField').style.display = isTodo ? '' : 'none';
+  $('contentLabel').textContent = isTodo ? '待办内容' : '记录内容';
+  renderPhrases();
+}
+function renderPhrases(){
+  const list = popupMode === 'todo' ? TODO_PHRASES[popupCache.todoType] : REC_PHRASES[popupCache.recType];
+  $('phraseGroup').innerHTML = list.map(p =>
+    '<button type="button" class="phrase" data-phrase="'+esc(p)+'">'+esc(p)+'</button>').join('');
+  if (popupMode === 'todo'){
+    $('popContent').placeholder = popupCache.todoType === 'work' ? '请输入公事待办内容，例如：整理迎检材料…' : '请输入私事待办内容，例如：取快递、锻炼身体…';
+  } else {
+    $('popContent').placeholder = '请输入'+REC_TYPE_KEY[popupCache.recType]+'记录内容…';
+  }
+}
+function openPopup(mode, kind, id){
+  popupMode = mode;
+  editingId = id || null;
+  editingKind = kind || mode;
+  $('popTitle').textContent = editingId
+    ? (popupMode === 'todo' ? '编辑待办' : '编辑记录')
+    : (popupMode === 'todo' ? '新增待办' : '新增记录');
+  if (editingId){
+    if (editingKind === 'todo'){
+      const e = todos.find(x => x.id === id);
+      if (e) popupCache = { todoType:e.type, priority:e.priority, recType:'meeting', time:e.time, due:e.due || '', content:e.content };
+    } else {
+      const r = records.find(x => x.id === id);
+      if (r) popupCache = { todoType:'work', priority:'medium', recType:r.type, time:r.time, due:'', content:r.content };
+    }
+  }
+  applyModeUI();
+  setSeg('typeSeg', popupCache.todoType);
+  setSeg('prioSeg', popupCache.priority);
+  setSeg('recTypeSeg', popupCache.recType);
+  $('popTime').value = popupCache.time || nowTime();
+  $('popDue').value = popupCache.due || '';
+  $('popContent').value = popupCache.content;
+  const mask = $('popupMask');
+  mask.style.display = 'flex';
+  requestAnimationFrame(() => { mask.classList.add('show'); $('popContent').focus(); });
+}
+function closePopup(){
+  const mask = $('popupMask');
+  mask.classList.remove('show');
+  setTimeout(() => { mask.style.display = 'none'; }, 260);
+}
+function submitPopup(){
+  const content = $('popContent').value.trim();
+  if (!content){ toast('内容不能为空', 'warn'); $('popContent').focus(); return; }
+  const time = $('popTime').value || nowTime();
+  if (popupMode === 'todo'){
+    const type = $('typeSeg').querySelector('.active').dataset.v;
+    const priority = $('prioSeg').querySelector('.active').dataset.v;
+    const due = $('popDue').value;
+    if (editingId){
+      const e = todos.find(x => x.id === editingId);
+      if (e){ e.time = time; e.type = type; e.priority = priority; e.content = content; e.due = due; }
+      toast('待办已更新');
+    } else {
+      todos.push(normalizeTodo({ id:uid(), time, type, priority, content, due, done:false }));
+      toast('已添加待办');
+    }
+  } else {
+    const rtype = $('recTypeSeg').querySelector('.active').dataset.v;
+    if (editingId){
+      const r = records.find(x => x.id === editingId);
+      if (r){ r.time = time; r.type = rtype; r.content = content; }
+      toast('记录已更新');
+    } else {
+      records.push(normalizeRecord({ id:uid(), time, type:rtype, content }));
+      toast('已添加记录');
+    }
+  }
+  saveData(); renderAll();
+  popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'' };
+  closePopup();
+}
+
+// ====================== 待办操作 ======================
+function toggleTodo(id){
+  const e = todos.find(x => x.id === id);
+  if (!e) return;
+  e.done = !e.done;
+  saveData(); renderAll();
+}
+function deleteTodo(id){
+  if (!todos.find(x => x.id === id)) return;
+  if (!confirm('确定要删除这条待办吗？')) return;
+  todos = todos.filter(x => x.id !== id);
+  saveData(); renderAll(); toast('待办已删除');
+}
+function deleteRecord(id){
+  if (!records.find(x => x.id === id)) return;
+  if (!confirm('确定要删除这条记录吗？')) return;
+  records = records.filter(x => x.id !== id);
+  saveData(); renderAll(); toast('记录已删除');
+}
+function clearTodoSection(type){
+  const list = todos.filter(e => e.type === type);
+  if (!list.length){ toast(TODO_TYPE_KEY[type]+'暂无内容'); return; }
+  if (!confirm('确定要删除全部'+TODO_TYPE_KEY[type]+'待办吗？此操作不可撤销！')) return;
+  todos = todos.filter(e => e.type !== type);
+  saveData(); renderAll(); toast(TODO_TYPE_KEY[type]+'已清空');
+}
+function clearRecords(){
+  if (!records.length){ toast('今日暂无记录'); return; }
+  if (!confirm('确定要删除今日全部记录吗？此操作不可撤销！')) return;
+  records = [];
+  saveData(); renderAll(); toast('记录已清空');
+}
+
+// ====================== 复制 / 导出 ======================
+function mdItem(e){
+  const prio = (e.priority && e.priority !== 'medium') ? '【'+PRIO_KEY[e.priority]+'】' : '';
+  return '- ['+(e.done?'x':' ')+'] '+e.time+' '+prio+' '+e.content.replace(/\n/g,' ')+'\n';
+}
+function mdTodoSection(type){
+  const list = sortedTodos(todos.filter(e => e.type === type));
+  if (!list.length) return '';
+  let md = '### '+TODO_TYPE_KEY[type]+'（'+list.length+'）\n';
+  list.forEach(e => { md += mdItem(e); });
+  return md;
+}
+function mdItem(e){
+  const prio = (e.priority && e.priority !== 'medium') ? '【'+PRIO_KEY[e.priority]+'】' : '';
+  return '- ['+(e.done?'x':' ')+'] '+e.time+' '+prio+' '+e.content.replace(/\n/g,' ')+'\n';
+}
+function mdRecords(){
+  const list = sortedRecords(records);
+  if (!list.length) return '';
+  let md = '## 每日记录（'+records.length+'）\n';
+  list.forEach(r => { md += '- '+r.time+'｜'+(REC_TYPE_KEY[r.type]||'其他')+'｜'+r.content.replace(/\n/g,' ')+'\n'; });
+  return md;
+}
+function mdDay(){
+  let md = '# 待办与每日记录 '+formatDateCN(currentDate)+'\n\n';
+  const todoWork = mdTodoSection('work');
+  const todoPersonal = mdTodoSection('personal');
+  if (todoWork || todoPersonal){
+    md += '## 待办事项\n';
+    if (todoWork) md += todoWork;
+    if (todoPersonal) md += todoPersonal;
+    md += '\n';
+  }
+  const recs = mdRecords();
+  if (recs) md += recs;
+  if (!todos.length && !records.length) md += '（今日暂无内容）\n';
+  return md;
+}
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(okMsg);
+  } catch(err){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast(okMsg); }
+    catch(e2){ toast('复制失败，请手动复制', 'warn'); }
+    document.body.removeChild(ta);
+  }
+}
+function copyTodoSection(type){
+  const md = mdTodoSection(type);
+  if (!md){ toast(TODO_TYPE_KEY[type]+'暂无内容'); return; }
+  copyText(md, TODO_TYPE_KEY[type]+'内容已复制');
+}
+function copyRecords(){
+  const md = mdRecords();
+  if (!md){ toast('今日暂无记录'); return; }
+  copyText(md, '记录内容已复制');
+}
+function exportMD(){
+  const blob = new Blob([mdDay()], { type:'text/markdown;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = formatDateCN(currentDate)+'待办与记录_'+nowTime().replace(':','')+'.md';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 300);
+  toast('已导出 Markdown 文件');
+}
+function exportJSON(){
+  const days = {};
+  for (let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if (k && k.indexOf('day-') === 0) days[k] = JSON.parse(localStorage.getItem(k));
+  }
+  const blob = new Blob([JSON.stringify({ app:'待办记录工作台', exportedAt:new Date().toISOString(), days }, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '待办记录备份_'+todayStr()+'.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 300);
+  toast('已导出备份文件');
+}
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const days = data.days || {};
+      let n = 0;
+      Object.keys(days).forEach(k => {
+        if (/^day-\d{4}-\d{2}-\d{2}$/.test(k)){ localStorage.setItem(k, JSON.stringify(days[k])); n++; }
+      });
+      loadData(); renderAll();
+      toast('成功导入 '+n+' 天数据');
+    } catch(err){ toast('备份文件解析失败', 'warn'); }
+  };
+  reader.readAsText(file);
+}
+
+// ====================== 删除 ======================
+function deleteDay(){
+  if (!todos.length && !records.length){ toast('今日暂无数据'); return; }
+  if (!confirm('确定要删除今日全部待办与记录吗？此操作不可撤销！')) return;
+  localStorage.removeItem(storageKey());
+  todos = []; records = [];
+  renderAll(); toast('已删除当日数据');
+}
+function deleteAll(){
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if (k && k.indexOf('day-') === 0) keys.push(k);
+  }
+  if (!keys.length){ toast('暂无任何数据'); return; }
+  if (!confirm('即将永久删除所有日期的全部待办与记录！\n此操作不可恢复，确认继续吗？')) return;
+  keys.forEach(k => localStorage.removeItem(k));
+  todos = []; records = [];
+  renderAll(); toast('已清空全部数据');
+}
+
+// ====================== 日期 ======================
+function updateDatePicker(){
+  $('datePicker').value = getDateKey(currentDate);
+  $('todayPill').style.display = todayStr() === getDateKey(currentDate) ? 'inline-flex' : 'none';
+}
+function changeDate(offset){
+  currentDate.setDate(currentDate.getDate() + offset);
+  updateDatePicker(); loadData(); renderAll();
+}
+
+// ====================== 提示 ======================
+function toast(msg, type){
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'warn' ? ' warn' : '');
+  t.textContent = msg;
+  $('toastWrap').appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2200);
+}
+
+// ====================== 事件绑定 ======================
+function bindSeg(segId, onChange){
+  $(segId).addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    $(segId).querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    if (onChange) onChange(b.dataset.v);
+  });
+}
+function init(){
+  updateDatePicker();
+  const migrated = migrateLegacy();
+  loadData(); renderAll();
+  if (migrated) toast('已自动迁移 '+migrated+' 条历史数据');
+
+  $('btnPrev').addEventListener('click', () => changeDate(-1));
+  $('btnNext').addEventListener('click', () => changeDate(1));
+  $('datePicker').addEventListener('change', e => {
+    if (!e.target.value) return;
+    const d = new Date(e.target.value + 'T00:00:00');
+    currentDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    updateDatePicker(); loadData(); renderAll();
+  });
+
+  $('btnAddTodo').addEventListener('click', () => openPopup('todo'));
+  $('btnAddRecord').addEventListener('click', () => openPopup('record'));
+  $('popClose').addEventListener('click', closePopup);
+  $('btnCancel').addEventListener('click', closePopup);
+  $('btnSubmit').addEventListener('click', submitPopup);
+  $('popupMask').addEventListener('click', e => { if (e.target === $('popupMask')) closePopup(); });
+  $('popContent').addEventListener('input', () => { popupCache.content = $('popContent').value; });
+  bindSeg('typeSeg', v => { popupCache.todoType = v; renderPhrases(); });
+  bindSeg('prioSeg', v => { popupCache.priority = v; });
+  bindSeg('recTypeSeg', v => { popupCache.recType = v; renderPhrases(); });
+
+  document.querySelectorAll('.item-list').forEach(list => {
+    list.addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = btn.closest('.item') && btn.closest('.item').dataset.id;
+      const act = btn.dataset.action;
+      if (act === 'toggle' && id) toggleTodo(id);
+      else if (act === 'edit' && id) openPopup('todo', 'todo', id);
+      else if (act === 'del' && id) deleteTodo(id);
+    });
+  });
+  $('recList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = btn.closest('.rec-item') && btn.closest('.rec-item').dataset.id;
+    const act = btn.dataset.action;
+    if (act === 'edit-rec' && id) openPopup('record', 'record', id);
+    else if (act === 'del-rec' && id) deleteRecord(id);
+  });
+  document.querySelectorAll('.section-actions').forEach(sec => {
+    sec.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.dataset.action === 'copy-section') copyTodoSection(btn.dataset.type);
+      else if (btn.dataset.action === 'clear-section') clearTodoSection(btn.dataset.type);
+      else if (btn.dataset.action === 'copy-records') copyRecords();
+      else if (btn.dataset.action === 'clear-records') clearRecords();
+    });
+  });
+
+  $('searchInput').addEventListener('input', e => { searchText = e.target.value.trim(); renderAll(); });
+  $('todoFilter').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#todoFilter button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    todoFilter = b.dataset.f;
+    renderAll();
+  });
+  $('recFilter').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#recFilter button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    recFilterType = b.dataset.f;
+    renderAll();
+  });
+
+  $('btnCopyDay').addEventListener('click', () => { (todos.length || records.length) ? copyText(mdDay(), '当日内容已复制') : toast('今日暂无内容'); });
+  $('btnExportMD').addEventListener('click', exportMD);
+  $('btnDeleteDay').addEventListener('click', deleteDay);
+  $('btnDeleteAll').addEventListener('click', deleteAll);
+  $('btnExportJSON').addEventListener('click', exportJSON);
+  $('btnImportJSON').addEventListener('click', () => $('importFile').click());
+  $('importFile').addEventListener('change', e => {
+    if (e.target.files[0]){ importJSON(e.target.files[0]); e.target.value = ''; }
+  });
+
+  $('phraseGroup').addEventListener('click', e => {
+    const b = e.target.closest('.phrase');
+    if (!b) return;
+    const ta = $('popContent');
+    ta.value += (ta.value ? '\n' : '') + b.dataset.phrase;
+    popupCache.content = ta.value;
+    ta.focus();
+  });
+
+  document.addEventListener('keydown', e => {
+    const mask = $('popupMask');
+    if (!mask.classList.contains('show')) return;
+    if (e.key === 'Escape') closePopup();
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); submitPopup(); }
+  });
+  window.addEventListener('beforeunload', saveData);
+}
+init();
+</script>
+</body>
+</html>
