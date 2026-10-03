@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>待办记录工作台 | 锦鲤未离</title>
- <script src="/js/logo.js"></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232c3e50'/%3E%3Cpath d='M30 52l15 16 28-34' stroke='%23ffa500' stroke-width='11' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -106,18 +105,10 @@ input,textarea{font-family:inherit;font-size:14px}
 .item.done .item-content{color:var(--ink-3);text-decoration:line-through;text-decoration-color:rgba(95,113,132,.5)}
 /* ===== 记录条目 ===== */
 .rec-item{display:flex;align-items:flex-start;gap:10px;padding:6px 2px 6px 10px;border-bottom:1px solid var(--line);border-left:4px solid var(--other);animation:itemIn .28s ease}
-.rec-item.type-meeting{border-left-color:var(--meeting)}
-.rec-item.type-dacument{border-left-color:var(--dacument)}
-.rec-item.type-document{border-left-color:var(--document)}
-.rec-item.type-other{border-left-color:var(--other)}
 .rec-item:last-child{border-bottom:none}
 .rec-main{flex:1;min-width:0}
 .rec-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:1px}
 .rec-type-badge{font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;line-height:1.5}
-.rec-type-badge.meeting{background:var(--meeting-soft);color:var(--meeting)}
-.rec-type-badge.dacument{background:var(--dacument-soft);color:var(--dacument)}
-.rec-type-badge.document{background:var(--document-soft);color:var(--document)}
-.rec-type-badge.other{background:var(--other-soft);color:var(--other)}
 .rec-content{font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 /* 条目操作 */
 .item-actions{flex:none;display:flex;gap:1px;flex-wrap:wrap;opacity:.4;transition:opacity .2s}
@@ -141,7 +132,22 @@ input,textarea{font-family:inherit;font-size:14px}
 /* ===== 数据管理 ===== */
 .storage-block{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:12px}
 .storage-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-2);font-weight:700;margin-bottom:6px}
+#storageQuotaInfo{font-size:12.5px;color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
 .storage-sub{font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.backup-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.backup-note{font-size:11.5px;color:var(--ink-3);margin-top:6px;line-height:1.6}
+/* 搜索面板 */
+.search-input{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;background:#fff;box-sizing:border-box}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.search-result-group{margin-top:4px}
+.search-result-group .ghead{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink-2);padding:9px 2px 4px;border-bottom:1px solid var(--line)}
+.search-result{display:flex;align-items:flex-start;gap:8px;padding:7px 2px;border-bottom:1px solid var(--line)}
+.search-result .sr-kind{font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;flex:none;margin-top:1px}
+.sr-kind.k-todo{background:var(--work-soft);color:var(--work)}
+.sr-kind.k-record{background:var(--accent-soft);color:var(--accent-deep)}
+.sr-kind.k-perm{background:var(--perm-soft);color:var(--perm)}
+.search-result .sr-text{flex:1;min-width:0;font-size:13.5px;color:var(--ink);word-break:break-word;line-height:1.5}
+.search-result .sr-jump{flex:none}
 .storage-bar-fill.ok{background:linear-gradient(90deg,#3ddc84,#22a447)}
 .storage-bar-fill.warn{background:linear-gradient(90deg,#ffc24b,#f08c00)}
 .storage-bar-fill.danger{background:linear-gradient(90deg,#ff7a7a,#ff4757)}
@@ -220,10 +226,6 @@ input,textarea{font-family:inherit;font-size:14px}
 #prioSeg button.active[data-v="high"]{background:var(--high);color:#fff;box-shadow:0 3px 8px rgba(255,71,87,.3)}
 #prioSeg button.active[data-v="medium"]{background:var(--accent-deep);color:#fff;box-shadow:0 3px 8px rgba(240,140,0,.3)}
 #prioSeg button.active[data-v="low"]{background:var(--low);color:#fff}
-#recTypeSeg button.active[data-v="meeting"]{background:var(--meeting);color:#fff;box-shadow:0 3px 8px rgba(52,120,217,.35)}
-#recTypeSeg button.active[data-v="dacument"]{background:var(--dacument);color:#fff;box-shadow:0 3px 8px rgba(217,81,52,.3)}
-#recTypeSeg button.active[data-v="document"]{background:var(--document);color:#fff;box-shadow:0 3px 8px rgba(40,167,69,.3)}
-#recTypeSeg button.active[data-v="other"]{background:var(--other);color:#fff}
 .pop-row{display: grid;grid-template-columns: 65% 35%;gap:10px}
 .pop-row .pop-field{flex:1}
 .pop-field input[type="time"],.pop-field input[type="date"]{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:10px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
@@ -250,6 +252,7 @@ input,textarea{font-family:inherit;font-size:14px}
 .tag-add-row{display:flex;gap:8px}
 .tag-add-row input{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;background:#fff}
 .tag-add-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.tag-add-row input[type="color"]{flex:none;width:46px;height:38px;padding:3px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}
 .tag-manage-empty{padding:18px 10px;color:var(--ink-3);text-align:center;font-size:13px;line-height:1.7}
 .tag-row{display:flex;align-items:center;gap:9px;padding:8px 2px;border-bottom:1px solid var(--line)}
 .tag-row:last-child{border-bottom:none}
@@ -267,6 +270,55 @@ input,textarea{font-family:inherit;font-size:14px}
 .tag-del-keep:hover{background:#e9ddf7;color:var(--perm)}
 .tag-del-remove{background:var(--danger-soft);border-color:#ffc4ca;color:var(--danger)}
 .tag-del-remove:hover{background:#ffdde2;color:var(--danger)}
+/* ===== 设置（记录类型 + 便捷短语） ===== */
+.rec-type-row{display:flex;align-items:center;gap:9px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.rec-type-row:last-child{border-bottom:none}
+.rec-type-row .tdot{width:11px;height:11px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.08)}
+.rec-type-row .tname{flex:1;min-width:0;font-weight:600;font-size:14px;word-break:break-all}
+.rec-type-row .tcount{font-size:12px;color:var(--ink-3);white-space:nowrap}
+.rec-type-row .item-actions{opacity:1}
+.phrase-grp{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px}
+.phrase-grp-head{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:6px}
+.phrase-grp-head .gdot{width:9px;height:9px;border-radius:50%;flex:none}
+.phrase-grp-head .cnt{margin-left:auto;font-size:11px;color:var(--ink-3);font-weight:600}
+.phrase-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.phrase-chip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#51627a;background:#f0f3f8;border:1px solid var(--line);border-radius:99px;padding:3px 6px 3px 11px;max-width:100%}
+.phrase-chip .ptext{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px}
+.phrase-chip .ph-actions{display:inline-flex;gap:1px}
+.phrase-chip .ph-actions button{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-3);flex:none}
+.phrase-chip .ph-actions button:hover{background:var(--danger-soft);color:var(--danger)}
+.phrase-chip .ph-actions button svg{width:13px;height:13px}
+.phrase-add-row{display:flex;gap:6px}
+.phrase-add-row input{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;background:#fff}
+.phrase-add-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,165,0,.12)}
+.phrase-edit-input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12.5px;outline:none;background:#fff;box-sizing:border-box}
+/* ===== 统计 ===== */
+.stats-ov{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin-bottom:12px}
+.ov-card{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
+.ov-card b{display:block;font-size:20px;line-height:1.2}
+.ov-card span{font-size:11.5px;color:var(--ink-3)}
+.stat-block{margin-bottom:14px}
+.stat-block h5{font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:8px}
+.stat-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.stat-bar-label{flex:none;width:80px;font-size:12.5px;color:var(--ink-2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-bar-track{flex:1;height:8px;border-radius:99px;background:#edf1f6;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .4s ease}
+.stat-bar-num{flex:none;width:44px;font-size:12px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+/* ===== 设置页签 & 永久待办圆点 & 近7天趋势 ===== */
+.settings-tabs{display:flex;margin-bottom:12px}
+.settings-tabs button{flex:1;justify-content:center;padding:7px 0}
+.perm-toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:#f7f9fc;font-size:13px;font-weight:600;color:var(--ink-2);transition:all .15s;cursor:pointer}
+.perm-toggle .pdot{width:14px;height:14px;border-radius:50%;border:2px solid #c6d0db;background:#fff;flex:none;transition:all .15s}
+.perm-toggle.on{border-color:var(--perm);background:var(--perm-soft);color:var(--perm)}
+.perm-toggle.on .pdot{background:var(--perm);border-color:var(--perm);box-shadow:0 0 0 3px rgba(142,68,173,.16)}
+.trend-day{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px}
+.trend-day.today .trend-label{color:var(--accent-deep);font-weight:700}
+.trend-label{flex:none;width:58px;color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.trend-bars{flex:1;display:flex;gap:4px;height:10px;align-items:center;min-width:50px}
+.trend-bars i{display:block;height:8px;border-radius:4px;min-width:0}
+.tb-todo{background:var(--work)}
+.tb-rec{background:var(--accent-deep)}
+.trend-num{flex:none;width:88px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* ===== 提示 ===== */
 .toast-wrap{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:4000;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
 .toast{background:rgba(44,62,80,.94);color:#fff;font-size:13px;padding:8px 16px;border-radius:99px;opacity:0;transform:translateY(8px);transition:all .28s}
@@ -344,9 +396,9 @@ input,textarea{font-family:inherit;font-size:14px}
     <span class="today-pill" id="todayPill">今天</span>
   </div>
   <div class="top-actions">
-    <button class="btn btn-ghost" id="btnTags">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>
-      标签管理
+    <button class="btn btn-ghost" id="btnSettings">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      设置
     </button>
     <button class="btn btn-primary" id="btnCopyDay">复制内容</button>
     <button class="btn btn-primary" id="btnExportMD">导出 MD</button>
@@ -466,13 +518,7 @@ input,textarea{font-family:inherit;font-size:14px}
       <h2 class="module-title">每日记录</h2>
       <span class="count-pill" id="recCount">0</span>
       <div class="head-filters">
-        <div class="pills" id="recFilter">
-          <button data-f="all" class="active">全部</button>
-          <button data-f="meeting">会议</button>
-          <button data-f="dacument">报件</button>
-          <button data-f="document">取件</button>
-          <button data-f="other">其他</button>
-        </div>
+        <div class="pills" id="recFilter"></div>
       </div>
     </div>
     <div class="module-body" id="recBody">
@@ -493,6 +539,8 @@ input,textarea{font-family:inherit;font-size:14px}
       <div class="head-filters">
         <div class="pills" id="dmTabs">
           <button data-tab="calendar" class="active">日历</button>
+          <button data-tab="search">搜索</button>
+          <button data-tab="stats">统计</button>
           <button data-tab="bin">回收站</button>
           <button data-tab="drafts">草稿箱</button>
           <button data-tab="logs">操作日志</button>
@@ -500,9 +548,18 @@ input,textarea{font-family:inherit;font-size:14px}
       </div>
     </div>
     <div class="storage-block">
-      <div class="storage-top"><span>本地存储占用</span><b id="storageText">0 B</b></div>
-      <div class="progress"><div class="progress-bar storage-bar-fill ok" id="storageBar" style="width:0%"></div></div>
+      <div class="storage-top"  style="display: none;">
+        <span>本地存储占用</span>
+        <div id="storageQuotaInfo"></div>
+      </div>
+      <div class="progress"  style="display: none;"><div class="progress-bar storage-bar-fill ok" id="storageBar" style="width:0%"></div></div>
       <div class="storage-sub" id="storageInfo"></div>
+      <div class="backup-row">
+        <button class="ghost" id="btnExportJson">导出 JSON 备份</button>
+        <button class="ghost" id="btnImportJson">导入 JSON 备份</button>
+        <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none">
+      </div>
+      <p class="backup-note">备份涵盖全部日期、回收站、草稿、日志、标签、永久待办与自定义设置；导入将整体恢复并覆盖当前数据。</p>
     </div>
     <div class="dm-panel active" id="dmCalendar">
       <div class="cal-head">
@@ -515,6 +572,20 @@ input,textarea{font-family:inherit;font-size:14px}
       <div class="cal-grid" id="calWeek"></div>
       <div class="cal-grid" id="calGrid"></div>
       <p class="cal-hint">点击日期跳转到对应台账；蓝字为待办数、橙字为记录数。</p>
+    </div>
+    <div class="dm-panel" id="dmSearch">
+      <div class="dm-head">
+        <h4>全局搜索</h4>
+      </div>
+      <input type="text" class="search-input" id="searchInput" placeholder="输入关键词，搜索所有日期的待办、记录、永久待办的内容或标签…">
+      <div id="searchResults"></div>
+    </div>
+    <div class="dm-panel" id="dmStats">
+      <div class="dm-head">
+        <h4>数据统计</h4>
+      </div>
+      <div id="statsOverview" class="stats-ov"></div>
+      <div id="statsDetail"></div>
     </div>
     <div class="dm-panel" id="dmBin">
       <div class="dm-head">
@@ -546,7 +617,7 @@ input,textarea{font-family:inherit;font-size:14px}
       <div id="logList"></div>
     </div>
   </section>
-  <footer class="foot">锦鲤未离・待办记录工作台 v4.1　数据仅保存在本地浏览器</footer>
+  <footer class="foot">锦鲤未离・待办记录工作台 v6.0　IndexedDB 大容量存储，数据保存在本地浏览器</footer>
 </main>
 <div class="fab-row">
   <button class="fab fab-record" id="btnAddRecord">
@@ -594,15 +665,16 @@ input,textarea{font-family:inherit;font-size:14px}
     </div>
   </div>
 </div>
+<div class="pop-field" id="permField" style="display:none">
+  <label>归属</label>
+  <button type="button" class="perm-toggle" id="permDot">
+    <span class="pdot"></span><span id="permDotText">普通待办（默认）</span>
+  </button>
+</div>
 <div class="pop-row">
   <div class="pop-field" id="recTypeField" style="display:none; flex:1;">
     <label>记录类型（默认会议）</label>
-    <div class="seg big" id="recTypeSeg">
-      <button data-v="meeting" class="active">会议</button>
-      <button data-v="dacument">报件</button>
-      <button data-v="document">取件</button>
-      <button data-v="other">其他</button>
-    </div>
+    <div class="seg big" id="recTypeSeg"></div>
   </div>
 <div class="pop-field" style="flex:1;">
     <label>记录时间</label>
@@ -631,27 +703,54 @@ input,textarea{font-family:inherit;font-size:14px}
     </div>
   </div>
 </div>
-<!-- ===== 标签管理弹窗 ===== -->
-<div class="mask-layer" id="tagManagerMask">
+<!-- ===== 标签管理已并入设置 ===== -->
+<!-- ===== 设置弹窗（新增待办 / 新增记录） ===== -->
+<div class="mask-layer" id="settingsMask">
   <div class="popup-box">
     <div class="pop-head">
       <h3>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>
-        标签管理
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        设置
       </h3>
-      <button class="pop-close" id="tagClose" aria-label="关闭">
+      <button class="pop-close" id="settingsClose" aria-label="关闭">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
-    <div class="pop-field">
-      <label>新建标签</label>
-      <div class="tag-add-row">
-        <input type="text" id="newTagName" placeholder="输入标签名称，如：随份子" maxlength="20">
-        <button class="btn btn-primary" id="btnAddTag">添加</button>
+    <div class="pills settings-tabs" id="settingsTabs">
+      <button data-s="todo" class="active">新增待办</button>
+      <button data-s="record">新增记录</button>
+    </div>
+    <div class="settings-panel" id="settingsTodoPanel">
+      <div class="pop-field">
+        <label>标签管理（用于待办打标与筛选）</label>
+        <div class="tag-add-row">
+          <input type="text" id="newTagName" placeholder="输入标签名称，如：随份子" maxlength="20">
+          <button class="btn btn-primary" id="btnAddTag">添加</button>
+        </div>
+        <div id="settingsTagList"></div>
+        <p style="font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.6">· 一个待办可打多个标签；删除标签时可按需选择「只删标签保留事项」或「同时从所有事项移除该标签」。<br>· 标签改名后，所有使用了该标签的待办会自动同步。</p>
+      </div>
+      <div class="pop-field">
+        <label>待办便捷短语（显示在「新增待办」下方，可一键插入）</label>
+        <div id="phraseTodoSettings"></div>
       </div>
     </div>
-    <div id="tagList"></div>
-    <p style="font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.6">· 一个待办可打多个标签；删除标签时可按需选择「只删标签保留事项」或「同时从所有事项移除该标签」。<br>· 标签改名后，所有使用了该标签的待办会自动同步。</p>
+    <div class="settings-panel" id="settingsRecordPanel" style="display:none">
+      <div class="pop-field">
+        <label>记录类型（增删改，删除后该类记录将转为「其他」）</label>
+        <div class="tag-add-row">
+          <input type="text" id="newRecTypeName" placeholder="类型名称，如：报销" maxlength="12">
+          <input type="color" id="newRecTypeColor" value="#3478d9" title="选择类型颜色">
+          <button class="btn btn-primary" id="btnAddRecType">添加</button>
+        </div>
+        <div id="recTypeList"></div>
+      </div>
+      <div class="pop-field">
+        <label>记录便捷短语（显示在「新增记录」下方，可一键插入）</label>
+        <div id="phraseRecordSettings"></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.6">· 标签、记录类型与便捷短语均随 JSON 备份一同导出 / 导入。<br>· 「其他」类型不可删除，作为兜底类型保留。</p>
   </div>
 </div>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -660,13 +759,16 @@ input,textarea{font-family:inherit;font-size:14px}
 const TODO_TYPE_KEY = {work:'公事', personal:'私事'};
 const PRIO_KEY = {high:'高', medium:'中', low:'低'};
 const PRIO_ORDER = {high:0, medium:1, low:2};
-const REC_TYPE_KEY = {meeting:'会议', dacument:'报件', document:'取件', other:'其他'};
 const TAG_COLORS = ['#3478d9','#22a447','#ee8d00','#d95134','#8e44ad','#0aa2b4','#6c7a89','#b03a2e','#e76f51','#2a9d8f'];
-const TODO_PHRASES = {
+const DEFAULT_REC_TYPES = [
+  { id:'meeting', name:'会议', color:'#3478d9' },
+  { id:'dacument', name:'报件', color:'#d95134' },
+  { id:'document', name:'取件', color:'#28a745' },
+  { id:'other', name:'其他', color:'#868e96' }
+];
+const DEFAULT_PHRASES = {
   work:['参会交流，研究相关工作事项。','对接业务，协调推进相关工作落实。','整理材料，完善台账资料。','走访沟通，了解相关情况。','起草文稿，按时报送材料。'],
-  personal:['买菜做饭，打理日常饮食。','锻炼身体，保持健康作息。','整理家务，打扫房间卫生。','阅读学习，提升自我能力。','联系家人，问候近况。']
-};
-const REC_PHRASES = {
+  personal:['买菜做饭，打理日常饮食。','锻炼身体，保持健康作息。','整理家务，打扫房间卫生。','阅读学习，提升自我能力。','联系家人，问候近况。'],
   meeting:['参会交流，研究相关工作事项。','对接业务，协调推进相关工作落实。','会议记录，汇总会议纪要。'],
   dacument:['整理报件材料，完善台账资料。','报送材料，跟进审批进度。','收集核对，补齐报件要件。'],
   document:['领取文件，签收登记。','取件送达，转交相关科室。','核对清单，确认取件内容。'],
@@ -723,7 +825,15 @@ const ACTION_META = {
   tag_add:{label:'新建标签', group:'system'},
   tag_rename:{label:'标签改名', group:'system'},
   tag_delete_keep:{label:'删除标签（保留事项）', group:'system'},
-  tag_delete_remove:{label:'删除标签（移除所有事项）', group:'system'}
+  tag_delete_remove:{label:'删除标签（移除所有事项）', group:'system'},
+  rectype_add:{label:'新增记录类型', group:'system'},
+  rectype_rename:{label:'记录类型改名', group:'system'},
+  rectype_delete:{label:'删除记录类型', group:'system'},
+  phrase_add:{label:'新增便捷短语', group:'system'},
+  phrase_edit:{label:'编辑便捷短语', group:'system'},
+  phrase_delete:{label:'删除便捷短语', group:'system'},
+  json_export:{label:'导出 JSON 备份', group:'system'},
+  json_import:{label:'导入 JSON 备份', group:'system'}
 };
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,'0');
@@ -738,12 +848,36 @@ function fmtTime(iso){
   if (isNaN(d.getTime())) return '';
   return pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
-function fmtBytes(b){
-  if (b < 1024) return b+' B';
-  if (b < 1024*1024) return (b/1024).toFixed(1)+' KB';
-  return (b/1024/1024).toFixed(2)+' MB';
+// ====================== 记录类型 & 便捷短语（动态可编辑） ======================
+let recordTypes = [];
+let quickPhrases = {};
+function recTypeById(id){ return recordTypes.find(t => t.id === id); }
+function recTypeName(id){ const t = recTypeById(id); return t ? t.name : '其他'; }
+function recTypeColor(id){ const t = recTypeById(id); return t ? t.color : '#868e96'; }
+function hexSoft(hex, a){
+  if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return hex;
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';
 }
-// 图标
+function phrasesFor(cat){ return Array.isArray(quickPhrases[cat]) ? quickPhrases[cat].slice() : []; }
+function saveRecordTypes(){ safePut('meta', { key:KEY_REC_TYPES, value:recordTypes }); }
+function savePhrases(){ safePut('meta', { key:KEY_PHRASES, value:quickPhrases }); }
+function ensureConfigDefaults(){
+  let changed = false;
+  if (!recordTypes || !recordTypes.length){
+    recordTypes = DEFAULT_REC_TYPES.map(t => ({ id:t.id, name:t.name, color:t.color }));
+    changed = true;
+  }
+  if (!quickPhrases || typeof quickPhrases !== 'object'){ quickPhrases = {}; changed = true; }
+  for (const k in DEFAULT_PHRASES){
+    if (!Array.isArray(quickPhrases[k])){ quickPhrases[k] = DEFAULT_PHRASES[k].slice(); changed = true; }
+  }
+  recordTypes.forEach(t => {
+    if (!Array.isArray(quickPhrases[t.id])){ quickPhrases[t.id] = []; changed = true; }
+  });
+  if (changed){ saveRecordTypes(); savePhrases(); }
+}
+// ====================== 图标 ======================
 const starSVG = f => '<svg viewBox="0 0 24 24" width="15" height="15" fill="'+(f?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8l2.7 5.5 6 .9-4.35 4.25 1.03 6L12 16.5l-5.38 2.95 1.03-6L3.3 9.2l6-.9z"/></svg>';
 const pinSVG = () => '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1.1 6.6L17 13.5v1.5H7v-1.5l3.1-2.9L9 4z"/><path d="M12 15v5"/></svg>';
 const copySVG = () => '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
@@ -759,20 +893,68 @@ let todoFilter = 'all', recFilterType = 'all', dmTab = 'calendar', logFilter = '
 let todoTagFilter = 'all', permFilter = 'all', permTagFilter = 'all';
 let uiState = { todoCollapsed:false, permCollapsed:false, recCollapsed:false, dmTab:'calendar' };
 let popupMode = 'todo', editingId = null, editingKind = null, draftNew = false;
-let popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[] };
-let tagManagerOpen = false;
+let popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[], perm:false };
+let settingsOpen = false;
 let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
-// ====================== 存储 ======================
+// ====================== 存储（IndexedDB 主存储 + 内存缓存） ======================
 const KEY_BIN = 'app-bin-v1', KEY_LOGS = 'app-logs-v1', KEY_DRAFTS = 'app-drafts-v1', KEY_UI = 'app-ui-v1';
 const KEY_TAGS = 'app-tags-v1', KEY_PERM = 'app-permanent-v1';
+const KEY_REC_TYPES = 'app-rectypes-v1', KEY_PHRASES = 'app-phrases-v1';
+const IDB_NAME = 'jinli_weili_db', IDB_VERSION = 1;
+const META_KEYS = [KEY_BIN, KEY_LOGS, KEY_DRAFTS, KEY_TAGS, KEY_PERM, KEY_REC_TYPES, KEY_PHRASES];
+let dayCache = {}; // key 'day-YYYY-MM-DD' -> {todos:[], records:[]}
+// ---- IndexedDB 封装 ----
+let dbPromise = null;
+function openDB(){
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    let req;
+    try { req = indexedDB.open(IDB_NAME, IDB_VERSION); }
+    catch(err){ dbPromise = null; reject(err); return; }
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('days')) db.createObjectStore('days', { keyPath:'key' });
+      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath:'key' });
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => { dbPromise = null; reject(e); };
+  });
+  return dbPromise;
+}
+function idbTx(store, mode, fn){
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(store, mode);
+    let out;
+    tx.oncomplete = () => { if (out && typeof out.then === 'function') out.then(resolve, reject); else resolve(out); };
+    tx.onerror = e => reject(e);
+    tx.onabort = e => reject(e);
+    try { out = fn(tx.objectStore(store)); } catch(err){ reject(err); }
+  }));
+}
+function idbGet(store, key){ return idbTx(store,'readonly', os => new Promise((res,rej) => { const r = os.get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })).catch(()=>undefined); }
+function idbGetAll(store){ return idbTx(store,'readonly', os => new Promise((res,rej) => { const r = os.getAll(); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })).catch(()=>[]); }
+function idbPut(store, obj){ return idbTx(store,'readwrite', os => new Promise((res,rej) => { const r = os.put(obj); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); }
+function idbDelete(store, key){ return idbTx(store,'readwrite', os => new Promise((res,rej) => { const r = os.delete(key); r.onsuccess = () => res(); r.onerror = () => rej(r.error); })); }
+function idbClear(store){ return idbTx(store,'readwrite', os => new Promise((res,rej) => { const r = os.clear(); r.onsuccess = () => res(); r.onerror = () => rej(r.error); })); }
+function safePut(store, obj){ idbPut(store, obj).catch(() => {
+  if (store === 'days') localStorage.setItem(obj.key, JSON.stringify({ todos:obj.todos||[], records:obj.records||[] }));
+  else if (store === 'meta') localStorage.setItem(obj.key, JSON.stringify(obj.value));
+}); }
+function safeDelete(store, key){ idbDelete(store, key).catch(() => { if (store === 'days') localStorage.removeItem(key); }); }
+function safeClear(store){ idbClear(store).catch(() => {
+  if (store === 'days'){ const ks = []; for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf('day-') === 0) ks.push(k); } ks.forEach(k => localStorage.removeItem(k)); }
+}); }
 function storageKey(){ return 'day-'+getDateKey(currentDate); }
 function getDayData(dayKey){
-  const raw = localStorage.getItem(dayKey);
-  const d = raw ? JSON.parse(raw) : null;
+  const d = dayCache[dayKey];
   return d && Array.isArray(d.todos) && Array.isArray(d.records) ? d : { todos:[], records:[] };
 }
+function persistDay(dayKey, data){
+  dayCache[dayKey] = data;
+  safePut('days', { key:dayKey, todos:(data.todos||[]), records:(data.records||[]) });
+}
 function saveData(){
-  localStorage.setItem(storageKey(), JSON.stringify({ todos, records, updatedAt:new Date().toISOString() }));
+  persistDay(storageKey(), { todos, records, updatedAt:new Date().toISOString() });
 }
 function normalizeTodo(e){
   e.id = e.id || uid(); e.time = e.time || '';
@@ -790,7 +972,7 @@ function normalizePerm(e){
 }
 function normalizeRecord(r){
   r.id = r.id || uid(); r.time = r.time || '';
-  r.type = REC_TYPE_KEY[r.type] ? r.type : 'other'; r.content = r.content || '';
+  r.type = recTypeById(r.type) ? r.type : 'other'; r.content = r.content || '';
   r.pin = !!r.pin; r.star = !!r.star;
   return r;
 }
@@ -799,27 +981,28 @@ function loadData(){
   todos = d.todos.map(normalizeTodo);
   records = d.records.map(normalizeRecord);
 }
-function loadBin(){ try { bin = JSON.parse(localStorage.getItem(KEY_BIN)||'null') || []; } catch(e){ bin = []; } }
-function saveBin(){ localStorage.setItem(KEY_BIN, JSON.stringify(bin)); }
-function loadLogs(){ try { entries = JSON.parse(localStorage.getItem(KEY_LOGS)||'null') || []; } catch(e){ entries = []; } }
-function saveLogs(){ localStorage.setItem(KEY_LOGS, JSON.stringify(entries)); }
-function loadDrafts(){ try { drafts = JSON.parse(localStorage.getItem(KEY_DRAFTS)||'null') || []; } catch(e){ drafts = []; } }
-function saveDrafts(){ localStorage.setItem(KEY_DRAFTS, JSON.stringify(drafts)); }
-function loadTags(){ try { tags = JSON.parse(localStorage.getItem(KEY_TAGS)||'null') || []; } catch(e){ tags = []; } tags = tags.filter(t => t && t.name).map(t => ({ id:t.id||uid(), name:String(t.name).trim(), color:t.color||'' })); }
-function saveTags(){ localStorage.setItem(KEY_TAGS, JSON.stringify(tags)); }
-function loadPermanent(){ try { permanentTodos = JSON.parse(localStorage.getItem(KEY_PERM)||'null') || []; } catch(e){ permanentTodos = []; } permanentTodos = permanentTodos.map(normalizePerm); }
-function savePermanent(){ localStorage.setItem(KEY_PERM, JSON.stringify(permanentTodos)); }
+function loadBin(){ bin = bin || []; }
+function saveBin(){ safePut('meta', { key:KEY_BIN, value:bin }); }
+function loadLogs(){ entries = entries || []; }
+function saveLogs(){ safePut('meta', { key:KEY_LOGS, value:entries }); }
+function loadDrafts(){ drafts = drafts || []; }
+function saveDrafts(){ safePut('meta', { key:KEY_DRAFTS, value:drafts }); }
+function loadTags(){ tags = (tags||[]).filter(t => t && t.name).map(t => ({ id:t.id||uid(), name:String(t.name).trim(), color:t.color||'' })); }
+function saveTags(){ safePut('meta', { key:KEY_TAGS, value:tags }); }
+function loadPermanent(){ permanentTodos = (permanentTodos||[]).map(normalizePerm); }
+function savePermanent(){ safePut('meta', { key:KEY_PERM, value:permanentTodos }); }
 function loadUI(){
   try { uiState = Object.assign({ todoCollapsed:false, permCollapsed:false, recCollapsed:false, dmTab:'calendar' }, JSON.parse(localStorage.getItem(KEY_UI)||'{}')); } catch(e){}
   dmTab = uiState.dmTab || 'calendar';
 }
 function saveUI(){ localStorage.setItem(KEY_UI, JSON.stringify(uiState)); }
+function localStorageJSON(key){ try { return JSON.parse(localStorage.getItem(key)||'null'); } catch(e){ return null; } }
 function log(action, detail){
   entries.unshift({ id:uid(), time:new Date().toISOString(), action, day:getDateKey(currentDate), detail: detail||'' });
   if (entries.length > 500) entries.length = 500;
   saveLogs();
 }
-// 迁移旧系统数据（原记录系统键 = 纯日期，原待办系统键 = todo-日期）
+// 迁移旧系统数据
 function migrateLegacy(){
   if (localStorage.getItem('day-migrated-v1')) return 0;
   let migrated = 0;
@@ -834,7 +1017,7 @@ function migrateLegacy(){
         if (list.length){
           const dayKey = 'day-'+k;
           const cur = getDayData(dayKey);
-          list.forEach(e => { cur.records.push({ id:uid(), time:e.time||'', type:REC_TYPE_KEY[e.type]?e.type:'other', content:e.content||'' }); });
+          list.forEach(e => { cur.records.push({ id:uid(), time:e.time||'', type:recTypeById(e.type)?e.type:'other', content:e.content||'' }); });
           localStorage.setItem(dayKey, JSON.stringify(cur));
           migrated += list.length;
         }
@@ -855,6 +1038,61 @@ function migrateLegacy(){
   });
   localStorage.setItem('day-migrated-v1', '1');
   return migrated;
+}
+// 首次把 localStorage 迁入 IndexedDB，成功后移除 localStorage 键以释放 5MB 配额
+async function migrateToIDB(){
+  try {
+    await openDB();
+    const dayKeys = (await idbGetAll('days')).map(e => e.key);
+    const metaKeys = (await idbGetAll('meta')).map(m => m.key);
+    const lkeys = [];
+    for (let i = 0; i < localStorage.length; i++) lkeys.push(localStorage.key(i));
+    for (const k of lkeys){
+      if (!k) continue;
+      if (k.indexOf('day-') === 0 && !dayKeys.includes(k)){
+        try { const d = JSON.parse(localStorage.getItem(k)); await idbPut('days', { key:k, todos:d.todos||[], records:d.records||[] }); localStorage.removeItem(k); } catch(err){}
+      } else if (META_KEYS.includes(k) && !metaKeys.includes(k)){
+        try { const v = JSON.parse(localStorage.getItem(k)); await idbPut('meta', { key:k, value:v }); localStorage.removeItem(k); } catch(err){}
+      }
+    }
+  } catch(err){ /* IndexedDB 不可用则退回 localStorage */ }
+}
+// 从 IndexedDB 加载全部（含 localStorage 兜底）
+async function loadAllFromStorage(){
+  const dayEntries = await idbGetAll('days');
+  dayCache = {};
+  dayEntries.forEach(e => { dayCache[e.key] = { todos:e.todos||[], records:e.records||[] }; });
+  const lkeys = [];
+  for (let i = 0; i < localStorage.length; i++) lkeys.push(localStorage.key(i));
+  lkeys.forEach(k => {
+    if (k && k.indexOf('day-') === 0 && !dayCache[k]){
+      try { const d = JSON.parse(localStorage.getItem(k)); dayCache[k] = { todos:d.todos||[], records:d.records||[] }; } catch(e){}
+    }
+  });
+  const meta = await idbGetAll('meta');
+  const mmap = {}; meta.forEach(m => mmap[m.key] = m.value);
+  bin = mmap[KEY_BIN] || localStorageJSON(KEY_BIN) || [];
+  entries = mmap[KEY_LOGS] || localStorageJSON(KEY_LOGS) || [];
+  drafts = mmap[KEY_DRAFTS] || localStorageJSON(KEY_DRAFTS) || [];
+  tags = (mmap[KEY_TAGS] || localStorageJSON(KEY_TAGS) || []).filter(t => t && t.name).map(t => ({ id:t.id||uid(), name:String(t.name).trim(), color:t.color||'' }));
+  permanentTodos = (mmap[KEY_PERM] || localStorageJSON(KEY_PERM) || []).map(normalizePerm);
+  recordTypes = (mmap[KEY_REC_TYPES] || localStorageJSON(KEY_REC_TYPES) || []).filter(t => t && t.id && t.name)
+    .map(t => ({ id:String(t.id), name:String(t.name).trim(), color:/^#[0-9a-fA-F]{6}$/.test(t.color||'')?t.color:'#868e96' }));
+  quickPhrases = (mmap[KEY_PHRASES] || localStorageJSON(KEY_PHRASES)) || {};
+  ensureConfigDefaults();
+}
+async function persistAll(){
+  try { await openDB(); } catch(e){ return; }
+  const puts = [];
+  for (const k in dayCache) puts.push(idbPut('days', { key:k, todos:dayCache[k].todos||[], records:dayCache[k].records||[] }));
+  puts.push(idbPut('meta', { key:KEY_BIN, value:bin }));
+  puts.push(idbPut('meta', { key:KEY_LOGS, value:entries }));
+  puts.push(idbPut('meta', { key:KEY_DRAFTS, value:drafts }));
+  puts.push(idbPut('meta', { key:KEY_TAGS, value:tags }));
+  puts.push(idbPut('meta', { key:KEY_PERM, value:permanentTodos }));
+  puts.push(idbPut('meta', { key:KEY_REC_TYPES, value:recordTypes }));
+  puts.push(idbPut('meta', { key:KEY_PHRASES, value:quickPhrases }));
+  await Promise.all(puts.map(p => p.catch(()=>{})));
 }
 // ====================== 标签辅助 ======================
 function tagById(id){ return tags.find(t => t.id === id); }
@@ -892,20 +1130,14 @@ function deleteTagKeep(id){
   saveTags();
   log('tag_delete_keep', '保留事项');
 }
-// 移除标签：从今日待办 + 永久待办 + 所有历史日期待办中移除该标签
 function removeTagFromAll(id){
   tags = tags.filter(t => t.id !== id);
-  const keys = [];
-  for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf('day-') === 0) keys.push(k); }
-  keys.forEach(k => {
-    try {
-      const d = JSON.parse(localStorage.getItem(k));
-      if (d && Array.isArray(d.todos)){
-        let changed = false;
-        d.todos.forEach(t => { if (t.tags && t.tags.includes(id)){ t.tags = t.tags.filter(x => x !== id); changed = true; } });
-        if (changed) localStorage.setItem(k, JSON.stringify(d));
-      }
-    } catch(e){}
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (!d || !Array.isArray(d.todos)) return;
+    let changed = false;
+    d.todos.forEach(t => { if (t.tags && t.tags.includes(id)){ t.tags = t.tags.filter(x => x !== id); changed = true; } });
+    if (changed) persistDay(k, d);
   });
   permanentTodos.forEach(t => { if (t.tags && t.tags.includes(id)) t.tags = t.tags.filter(x => x !== id); });
   saveTags(); savePermanent();
@@ -913,11 +1145,10 @@ function removeTagFromAll(id){
 }
 function countTagUsage(id){
   let n = 0;
-  for (let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i);
-    if (!k || k.indexOf('day-') !== 0) continue;
-    try { const d = JSON.parse(localStorage.getItem(k)); if (d && Array.isArray(d.todos)) n += d.todos.filter(t => t.tags && t.tags.includes(id)).length; } catch(e){}
-  }
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (d && Array.isArray(d.todos)) n += d.todos.filter(t => t.tags && t.tags.includes(id)).length;
+  });
   n += permanentTodos.filter(t => t.tags && t.tags.includes(id)).length;
   return n;
 }
@@ -1020,10 +1251,11 @@ function permItemHTML(e){
   + '</div></div>';
 }
 function recItemHTML(r){
-  return '<div class="rec-item type-'+esc(r.type)+'" data-id="'+esc(r.id)+'">'
+  const c = recTypeColor(r.type);
+  return '<div class="rec-item" style="border-left-color:'+esc(c)+'" data-id="'+esc(r.id)+'">'
   + '<div class="rec-main">'
   + '<div class="rec-meta"><span class="meta-time">'+esc(r.time)+'</span>'
-  + '<span class="rec-type-badge '+esc(r.type)+'">'+REC_TYPE_KEY[r.type]+'</span>'
+  + '<span class="rec-type-badge" style="background:'+esc(hexSoft(c,0.16))+';color:'+esc(c)+'">'+esc(recTypeName(r.type))+'</span>'
   + (r.pin?'<span class="badge pin">置顶</span>':'')
   + (r.star?'<span class="badge star">★</span>':'')
   + '</div>'
@@ -1100,6 +1332,12 @@ function renderTagFilterBar(containerId, active){
     + '</button>'
   ).join('');
 }
+function renderRecFilter(){
+  const el = $('recFilter');
+  if (!el) return;
+  const btns = [{ id:'all', name:'全部' }].concat(recordTypes.map(t => ({ id:t.id, name:t.name })));
+  el.innerHTML = btns.map(b => '<button data-f="'+esc(b.id)+'"'+(recFilterType===b.id?' class="active"':'')+'>'+esc(b.name)+'</button>').join('');
+}
 function renderAll(){
   const hasTodo = todos.length > 0;
   const hasRec = records.length > 0;
@@ -1114,6 +1352,7 @@ function renderAll(){
   $('recModule').classList.toggle('collapsed', uiState.recCollapsed);
   renderTagFilterBar('todoTagFilter', todoTagFilter);
   renderTagFilterBar('permTagFilter', permTagFilter);
+  renderRecFilter();
   if (hasTodo){
     renderTodoList($('workList'), sortedTodos(visibleTodos('work')), 'work');
     renderTodoList($('personalList'), sortedTodos(visibleTodos('personal')), 'personal');
@@ -1122,38 +1361,73 @@ function renderAll(){
   if (hasRec) renderRecList();
   renderStats();
   renderDM();
+  updateStorageQuota();
 }
 // ====================== 数据管理 ======================
 function updateStorageBar(){
   let bytes = 0, days = 0, todoN = 0, recN = 0;
-  for (let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i);
-    if (!k) continue;
-    const v = localStorage.getItem(k) || '';
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (!d) return;
+    const v = JSON.stringify({ todos:d.todos||[], records:d.records||[] });
     bytes += (k.length + v.length) * 2;
-    if (k.indexOf('day-') === 0){
-      days++;
-      try { const d = JSON.parse(v); if (d && Array.isArray(d.todos)){ todoN += d.todos.length; recN += d.records.length; } } catch(e){}
-    }
-  }
-  const cap = 5*1024*1024;
+    days++;
+    todoN += (d.todos||[]).length;
+    recN += (d.records||[]).length;
+  });
+  bytes += (KEY_BIN.length + JSON.stringify(bin).length) * 2;
+  bytes += (KEY_LOGS.length + JSON.stringify(entries).length) * 2;
+  bytes += (KEY_DRAFTS.length + JSON.stringify(drafts).length) * 2;
+  bytes += (KEY_TAGS.length + JSON.stringify(tags).length) * 2;
+  bytes += (KEY_PERM.length + JSON.stringify(permanentTodos).length) * 2;
+  bytes += (KEY_REC_TYPES.length + JSON.stringify(recordTypes).length) * 2;
+  bytes += (KEY_PHRASES.length + JSON.stringify(quickPhrases).length) * 2;
+  const cap = 512*1024*1024;
   const pct = Math.min(100, bytes/cap*100);
-  $('storageText').textContent = fmtBytes(bytes)+' / 约 5 MB';
   const bar = $('storageBar');
-  bar.style.width = pct.toFixed(1) + '%';
+  bar.style.width = Math.max(2, pct).toFixed(2) + '%';
   bar.classList.toggle('ok', pct < 60);
   bar.classList.toggle('warn', pct >= 60 && pct < 90);
   bar.classList.toggle('danger', pct >= 90);
   $('storageInfo').textContent = '已存 '+days+' 天 · 待办 '+todoN+' 条 · 记录 '+recN+' 条 · 永久待办 '+permanentTodos.length+' 条 · 标签 '+tags.length+' 个 · 回收站 '+bin.length+' 条 · 草稿 '+drafts.length+' 条 · 日志 '+entries.length+' 条';
 }
+function fmtBytes(b){
+  if (b < 1024) return b+' B';
+  if (b < 1024*1024) return (b/1024).toFixed(2)+' KB';
+  if (b < 1024*1024*1024) return (b/1024/1024).toFixed(2)+' MB';
+  return (b/1024/1024/1024).toFixed(2)+' GB';
+}
+function computeStoredBytes(){
+  let bytes = 0;
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (!d) return;
+    bytes += (k.length + JSON.stringify({ todos:d.todos||[], records:d.records||[] }).length) * 2;
+  });
+  const metas = { bin:bin, entries:entries, drafts:drafts, tags:tags, permanentTodos:permanentTodos, recordTypes:recordTypes, quickPhrases:quickPhrases };
+  for (const key in metas){
+    bytes += (key.length + JSON.stringify(metas[key]).length) * 2;
+  }
+  return bytes;
+}
+async function updateStorageQuota(){
+  const el = $('storageQuotaInfo');
+  if (!el) return;
+  const usageStr = fmtBytes(computeStoredBytes());
+  let quotaStr = '不支持';
+  if (navigator && navigator.storage && navigator.storage.estimate){
+    try {
+      const est = await navigator.storage.estimate();
+      quotaStr = fmtBytes(est.quota || 0);
+    } catch(err){ quotaStr = '—'; }
+  }
+  el.textContent = '存储：已用 '+usageStr+' · 浏览器可用配额 '+quotaStr;
+}
 function dayCounts(key){
-  const raw = localStorage.getItem(key);
-  if (!raw) return null;
-  try {
-    const d = JSON.parse(raw);
-    const t = (d.todos || []).length, r = (d.records || []).length;
-    return (t + r > 0) ? { t, r } : null;
-  } catch(e){ return null; }
+  const d = dayCache[key];
+  if (!d) return null;
+  const t = (d.todos || []).length, r = (d.records || []).length;
+  return (t + r > 0) ? { t, r } : null;
 }
 function renderCalendar(){
   $('calTitle').textContent = calYear+' 年 '+(calMonth+1)+' 月';
@@ -1230,21 +1504,174 @@ function renderLogs(){
     + '</div></div>';
   }).join('');
 }
+function renderStatsPanel(){
+  const el = $('statsOverview'), el2 = $('statsDetail');
+  if (!el || !el2) return;
+  let days = 0, todosN = 0, doneN = 0, recs = 0, perm = permanentTodos.length;
+  let wAll = 0, wDone = 0, pAll = 0, pDone = 0;
+  const recByType = {};
+  recordTypes.forEach(t => recByType[t.id] = 0);
+  const tagUse = {};
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (!d) return;
+    const t = d.todos || [], r = d.records || [];
+    if (t.length || r.length) days++;
+    todosN += t.length;
+    t.forEach(x => {
+      if (x.done) doneN++;
+      if (x.type === 'work'){ wAll++; if (x.done) wDone++; } else { pAll++; if (x.done) pDone++; }
+      (x.tags || []).forEach(tid => { tagUse[tid] = (tagUse[tid] || 0) + 1; });
+    });
+    r.forEach(x => { recs++; recByType[x.type] = (recByType[x.type] || 0) + 1; });
+  });
+  const cards = [
+    ['全部待办', todosN, 'var(--ink)'],
+    ['已完成', doneN, 'var(--personal)'],
+    ['完成率', todosN ? Math.round(doneN/todosN*100)+'%' : '0%', 'var(--accent-deep)'],
+    ['总记录', recs, 'var(--meeting)'],
+    ['永久待办', perm, 'var(--perm)'],
+    ['有数据天数', days, 'var(--ink-2)']
+  ];
+  el.innerHTML = cards.map(a => '<div class="ov-card"><b style="color:'+a[2]+'">'+a[1]+'</b><span>'+a[0]+'</span></div>').join('');
+  let h = '';
+  const trendDays = [];
+  const nowD = new Date();
+  for (let i = 6; i >= 0; i--){
+    const dd0 = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate() - i);
+    const key = getDateKey(dd0);
+    const dd = dayCache['day-' + key];
+    const t = dd ? (dd.todos || []).length : 0;
+    const r = dd ? (dd.records || []).length : 0;
+    trendDays.push({ label: key.slice(5), t, r, isToday: i === 0 });
+  }
+  const maxN = Math.max(1, ...trendDays.map(x => Math.max(x.t, x.r)));
+  h += '<div class="stat-block"><h5>近 7 天动态（蓝：待办 · 橙：记录）</h5>';
+  trendDays.forEach(x => {
+    const tw = x.t ? Math.max(8, Math.round(x.t / maxN * 100)) : 0;
+    const rw = x.r ? Math.max(8, Math.round(x.r / maxN * 100)) : 0;
+    h += '<div class="trend-day'+(x.isToday?' today':'')+'"><span class="trend-label">'+x.label+(x.isToday?' 今':'')+'</span>'
+      + '<span class="trend-bars"><i class="tb-todo" style="width:'+tw+'%"></i><i class="tb-rec" style="width:'+rw+'%"></i></span>'
+      + '<span class="trend-num">待'+x.t+' · 记'+x.r+'</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="stat-block"><h5>各记录类型分布（全部日期）</h5>';
+  const recMax = Math.max(1, ...recordTypes.map(t => recByType[t.id] || 0));
+  recordTypes.forEach(t => {
+    const n = recByType[t.id] || 0;
+    const pct = recMax ? Math.round(n/recMax*100) : 0;
+    h += '<div class="stat-bar-row"><span class="stat-bar-label">'+esc(t.name)+'</span>'
+      + '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:'+pct+'%;background:'+esc(t.color)+'"></div></div>'
+      + '<span class="stat-bar-num">'+n+'</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="stat-block"><h5>待办完成情况（全部日期）</h5>';
+  [[wAll, wDone, '公事', 'var(--work)'], [pAll, pDone, '私事', 'var(--personal)']].forEach(x => {
+    const all = x[0], dn = x[1], label = x[2], c = x[3];
+    const pct = all ? Math.round(dn/all*100) : 0;
+    h += '<div class="stat-bar-row"><span class="stat-bar-label">'+label+'</span>'
+      + '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div>'
+      + '<span class="stat-bar-num">'+dn+'/'+all+'</span></div>';
+  });
+  h += '</div>';
+  const tagRows = Object.keys(tagUse).map(id => ({ id, n:tagUse[id] })).sort((a, b) => b.n - a.n).slice(0, 8);
+  if (tagRows.length){
+    h += '<div class="stat-block"><h5>标签使用 TOP</h5>';
+    const tagMax = Math.max(1, ...tagRows.map(x => x.n));
+    tagRows.forEach(x => {
+      const t = tagById(x.id);
+      if (!t) return;
+      const pct = Math.round(x.n/tagMax*100);
+      h += '<div class="stat-bar-row"><span class="stat-bar-label">'+esc(t.name)+'</span>'
+        + '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:'+pct+'%;background:'+esc(tagColorOf(t))+'"></div></div>'
+        + '<span class="stat-bar-num">'+x.n+'</span></div>';
+    });
+    h += '</div>';
+  }
+  el2.innerHTML = h;
+}
 function renderDM(){
-  const cap = { calendar:'dmCalendar', bin:'dmBin', drafts:'dmDrafts', logs:'dmLogs' }[dmTab] || 'dmCalendar';
+  const cap = { calendar:'dmCalendar', search:'dmSearch', stats:'dmStats', bin:'dmBin', drafts:'dmDrafts', logs:'dmLogs' }[dmTab] || 'dmCalendar';
   document.querySelectorAll('#dmModule .dm-panel').forEach(p => p.classList.remove('active'));
   const panel = $(cap);
   if (panel) panel.classList.add('active');
   renderCalendar();
+  renderSearchResults($('searchInput') ? $('searchInput').value : '');
+  renderStatsPanel();
   renderBin();
   renderDrafts();
   renderLogs();
   updateStorageBar();
 }
+// ====================== 全局搜索 ======================
+function searchMatch(e, q){
+  if ((e.content||'').toLowerCase().includes(q)) return true;
+  return itemTags(e).some(t => t.name.toLowerCase().includes(q));
+}
+function highlight(text, q){
+  const escT = esc(text);
+  if (!q) return escT;
+  const lower = escT.toLowerCase();
+  const idx = lower.indexOf(q.toLowerCase());
+  if (idx < 0) return escT;
+  return escT.slice(0, idx) + '<mark style="background:var(--accent-soft);color:var(--accent-deep);border-radius:2px;padding:0 1px">' + escT.slice(idx, idx + q.length) + '</mark>' + escT.slice(idx + q.length);
+}
+function renderSearchResults(q){
+  const el = $('searchResults');
+  if (!el) return;
+  q = (q||'').trim().toLowerCase();
+  if (!q){ el.innerHTML = '<div class="list-empty">输入关键词，搜索所有日期的待办、记录和永久待办（内容或标签）</div>'; return; }
+  const res = [];
+  Object.keys(dayCache).forEach(day => {
+    const d = dayCache[day];
+    if (!d) return;
+    (d.todos||[]).forEach(t => { if (searchMatch(t, q)) res.push({ kind:'todo', day, item:t }); });
+    (d.records||[]).forEach(r => { if (searchMatch(r, q)) res.push({ kind:'record', day, item:r }); });
+  });
+  permanentTodos.forEach(t => { if (searchMatch(t, q)) res.push({ kind:'perm', day:'', item:t }); });
+  if (!res.length){ el.innerHTML = '<div class="list-empty">未找到匹配内容</div>'; return; }
+  const groups = {};
+  res.forEach(r => { const g = r.kind === 'perm' ? '__perm__' : r.day; (groups[g] = groups[g] || []).push(r); });
+  const order = Object.keys(groups).sort((a, b) => a === '__perm__' ? 1 : (b === '__perm__' ? -1 : b.localeCompare(a)));
+  let html = '';
+  order.forEach(g => {
+    const list = groups[g];
+    const head = g === '__perm__' ? '永久待办（'+list.length+'）' : g + '（'+list.length+'）';
+    html += '<div class="search-result-group"><div class="ghead">'+esc(head)+'</div>';
+    list.slice(0, 30).forEach(r => {
+      const kindLabel = r.kind === 'todo' ? '待办' : (r.kind === 'record' ? '记录' : '永久');
+      const kindCls = r.kind === 'todo' ? 'k-todo' : (r.kind === 'record' ? 'k-record' : 'k-perm');
+      const text = (r.item.content||'').replace(/\n/g, ' ');
+      html += '<div class="search-result">'
+        + '<span class="sr-kind '+kindCls+'">'+kindLabel+'</span>'
+        + '<span class="sr-text">'+highlight(text, q)+'</span>'
+        + '<button class="ghost sr-jump" data-jump="'+esc(r.day)+'" data-kind="'+r.kind+'">跳转</button>'
+        + '</div>';
+    });
+    if (list.length > 30) html += '<div class="ghead" style="color:var(--ink-3);font-weight:600">…还有 '+ (list.length - 30) +' 条</div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+function jumpToSearchResult(day, kind){
+  if (kind === 'perm'){
+    $('permModule').scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  const d = new Date(day + 'T00:00:00');
+  currentDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  calYear = currentDate.getFullYear();
+  calMonth = currentDate.getMonth();
+  updateDatePicker();
+  loadData();
+  renderAll();
+  const el = (kind === 'todo') ? $('todoModule') : $('recModule');
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior:'smooth' });
+}
 // ====================== 标签管理 ======================
 function renderTagManager(){
-  if (!tags.length){ $('tagList').innerHTML = '<div class="tag-manage-empty">还没有标签，可在上方输入名称新建，如「随份子」。</div>'; return; }
-  $('tagList').innerHTML = tags.map(t => {
+  if (!tags.length){ $('settingsTagList').innerHTML = '<div class="tag-manage-empty">还没有标签，可在上方输入名称新建，如「随份子」。</div>'; return; }
+  $('settingsTagList').innerHTML = tags.map(t => {
     const count = countTagUsage(t.id);
     return '<div class="tag-row" data-id="'+esc(t.id)+'">'
     + '<span class="tdot" style="background:'+esc(tagColorOf(t))+'"></span>'
@@ -1257,29 +1684,13 @@ function renderTagManager(){
     + '</div>';
   }).join('');
 }
-function openTagManager(){
-  tagManagerOpen = true;
-  $('newTagName').value = '';
-  renderTagManager();
-  const mask = $('tagManagerMask');
-  mask.style.display = 'flex';
-  requestAnimationFrame(() => { mask.classList.add('show'); $('newTagName').focus(); });
-}
-function closeTagManager(){
-  tagManagerOpen = false;
-  const mask = $('tagManagerMask');
-  mask.classList.remove('show');
-  setTimeout(() => { mask.style.display = 'none'; }, 260);
-}
-// 标签改名内联编辑
 function tagRowRenameUI(id){
-  const row = document.querySelector('#tagList .tag-row[data-id="'+id+'"]');
+  const row = document.querySelector('#settingsTagList .tag-row[data-id="'+id+'"]');
   if (!row) return;
   const t = tagById(id);
   if (!t) return;
-  const name = t.name;
   row.innerHTML = '<span class="tdot" style="background:'+esc(tagColorOf(t))+'"></span>'
-    + '<input class="tag-edit-input" value="'+esc(name)+'" maxlength="20" data-rename-input>'
+    + '<input class="tag-edit-input" value="'+esc(t.name)+'" maxlength="20" data-rename-input>'
     + '<div class="item-actions">'
     + '<button class="ghost" data-action="rename-save">保存</button>'
     + '<button class="ghost" data-action="rename-cancel">取消</button>'
@@ -1289,7 +1700,7 @@ function tagRowRenameUI(id){
   inp.setSelectionRange(inp.value.length, inp.value.length);
 }
 function tagRowDeleteUI(id){
-  const row = document.querySelector('#tagList .tag-row[data-id="'+id+'"]');
+  const row = document.querySelector('#settingsTagList .tag-row[data-id="'+id+'"]');
   if (!row) return;
   const t = tagById(id);
   if (!t) return;
@@ -1303,9 +1714,161 @@ function tagRowDeleteUI(id){
     + '<button class="ghost" data-action="del-cancel">取消</button>'
     + '</div></div>';
 }
+// ====================== 设置（记录类型 + 便捷短语） ======================
+function countRecTypeUsage(id){
+  let n = 0;
+  Object.keys(dayCache).forEach(k => {
+    const d = dayCache[k];
+    if (d && Array.isArray(d.records)) n += d.records.filter(r => r.type === id).length;
+  });
+  return n;
+}
+function openSettings(){
+  settingsOpen = true;
+  document.querySelectorAll('#settingsTabs button').forEach(b => b.classList.toggle('active', b.dataset.s === 'todo'));
+  $('settingsTodoPanel').style.display = '';
+  $('settingsRecordPanel').style.display = 'none';
+  renderTagManager();
+  renderPhraseTodo();
+  renderPhraseRecord();
+  renderRecTypeList();
+  const mask = $('settingsMask');
+  mask.style.display = 'flex';
+  requestAnimationFrame(() => { mask.classList.add('show'); });
+}
+function closeSettings(){
+  settingsOpen = false;
+  const mask = $('settingsMask');
+  mask.classList.remove('show');
+  setTimeout(() => { mask.style.display = 'none'; }, 260);
+}
+function renderRecTypeList(){
+  const el = $('recTypeList');
+  if (!el) return;
+  if (!recordTypes.length){ el.innerHTML = '<div class="tag-manage-empty">暂无记录类型，可在上方新建。</div>'; return; }
+  el.innerHTML = recordTypes.map(t => {
+    return '<div class="rec-type-row" data-id="'+esc(t.id)+'">'
+    + '<span class="tdot" style="background:'+esc(t.color)+'"></span>'
+    + '<span class="tname">'+esc(t.name)+'</span>'
+    + '<span class="tcount">'+countRecTypeUsage(t.id)+' 条记录</span>'
+    + '<div class="item-actions">'
+    + '<button class="icon-btn" data-action="rename" title="改名">'+editSVG()+'</button>'
+    + (t.id === 'other' ? '' : '<button class="icon-btn danger" data-action="del" title="删除类型">'+delSVG()+'</button>')
+    + '</div></div>';
+  }).join('');
+}
+function phraseChipHTML(grp, text){
+  return '<span class="phrase-chip" data-grp="'+esc(grp)+'" data-ptext="'+esc(text)+'">'
+  + '<span class="ptext">'+esc(text)+'</span>'
+  + '<span class="ph-actions">'
+  + '<button title="编辑" data-action="edit">'+editSVG()+'</button>'
+  + '<button title="删除" data-action="del">'+delSVG()+'</button>'
+  + '</span></span>';
+}
+function renderPhraseGroups(containerId, groups){
+  const el = $(containerId);
+  if (!el) return;
+  let html = '';
+  groups.forEach(g => {
+    const list = phrasesFor(g.id);
+    html += '<div class="phrase-grp" data-grp="'+esc(g.id)+'">'
+    + '<div class="phrase-grp-head"><span class="gdot" style="background:'+esc(g.color || '#8b98a8')+'"></span>'+esc(g.label)
+    + '<span class="cnt">'+list.length+' 条</span></div>'
+    + '<div class="phrase-chips">'
+    + (list.length ? list.map(p => phraseChipHTML(g.id, p)).join('') : '<span style="font-size:12px;color:var(--ink-3)">暂无短语</span>')
+    + '</div>'
+    + '<div class="phrase-add-row"><input placeholder="新增短语，回车添加" maxlength="60"><button class="ghost" data-action="add">添加</button></div>'
+    + '</div>';
+  });
+  el.innerHTML = html;
+}
+function renderPhraseTodo(){ renderPhraseGroups('phraseTodoSettings', [{ id:'work', label:'待办 · 公事' }, { id:'personal', label:'待办 · 私事' }]); }
+function renderPhraseRecord(){ renderPhraseGroups('phraseRecordSettings', recordTypes.map(t => ({ id:t.id, label:'记录 · '+t.name, color:t.color }))); }
+function handlePhraseSettingsClick(e){
+  const isRecord = e.currentTarget && e.currentTarget.id === 'phraseRecordSettings';
+  const rerender = () => isRecord ? renderPhraseRecord() : renderPhraseTodo();
+  const addBtn = e.target.closest('[data-action="add"]');
+  if (addBtn){
+    const grpWrap = addBtn.closest('.phrase-grp');
+    if (!grpWrap) return;
+    const input = grpWrap.querySelector('.phrase-add-row input');
+    const v = (input ? input.value : '').trim();
+    if (!v){ toast('请输入短语', 'warn'); return; }
+    const grp = grpWrap.dataset.grp;
+    quickPhrases[grp] = quickPhrases[grp] || [];
+    if (quickPhrases[grp].includes(v)){ toast('短语已存在', 'warn'); return; }
+    quickPhrases[grp].push(v);
+    savePhrases(); log('phrase_add', v.slice(0, 30));
+    rerender(); toast('已添加短语');
+    return;
+  }
+  const chip = e.target.closest('.phrase-chip');
+  if (!chip) return;
+  const grp = chip.dataset.grp, text = chip.dataset.ptext;
+  const actBtn = e.target.closest('[data-action]');
+  const act = actBtn ? actBtn.dataset.action : '';
+  if (act === 'del'){
+    if (!confirm('删除该便捷短语？')) return;
+    quickPhrases[grp] = (quickPhrases[grp] || []).filter(p => p !== text);
+    savePhrases(); log('phrase_delete', text.slice(0, 30));
+    rerender(); toast('已删除短语');
+  } else if (act === 'edit'){
+    const inp = document.createElement('input');
+    inp.className = 'phrase-edit-input';
+    inp.value = text; inp.maxLength = 60;
+    chip.replaceWith(inp);
+    const commit = () => {
+      const v = (inp.value || '').trim();
+      if (!v){ rerender(); return; }
+      const arr = quickPhrases[grp] || [];
+      const idx = arr.indexOf(text);
+      if (idx >= 0) arr[idx] = v;
+      savePhrases(); log('phrase_edit', v.slice(0, 30));
+      rerender(); toast('短语已更新');
+    };
+    inp.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter'){ ev.preventDefault(); commit(); }
+      if (ev.key === 'Escape'){ rerender(); }
+    });
+    inp.addEventListener('blur', commit);
+    inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+  }
+}
+function addRecTypeFromSettings(){
+  const name = $('newRecTypeName').value.trim();
+  if (!name){ toast('请输入类型名称', 'warn'); return; }
+  if (recordTypes.some(t => t.name === name)){ toast('类型已存在', 'warn'); return; }
+  const color = $('newRecTypeColor').value || '#868e96';
+  const id = 'rt_' + uid();
+  recordTypes.push({ id, name, color });
+  quickPhrases[id] = [];
+  saveRecordTypes(); savePhrases();
+  log('rectype_add', name);
+  $('newRecTypeName').value = '';
+  renderRecTypeList();
+  renderRecFilter();
+  renderPhraseRecord();
+  toast('已添加记录类型「'+name+'」，可立即在下方向该类型添加便捷短语');
+}
 // ====================== 弹窗 ======================
 function setSeg(id, v){
   document.querySelectorAll('#'+id+' button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+}
+function renderRecTypeSeg(){
+  const el = $('recTypeSeg');
+  if (!el) return;
+  el.innerHTML = recordTypes.map(t =>
+    '<button type="button" data-v="'+esc(t.id)+'">'+esc(t.name)+'</button>'
+  ).join('');
+  setSeg('recTypeSeg', popupCache.recType);
+  document.querySelectorAll('#recTypeSeg button').forEach(b => {
+    if (b.classList.contains('active')){
+      const t = recTypeById(b.dataset.v);
+      if (t){ b.style.background = t.color; b.style.color = '#fff'; b.style.boxShadow = '0 3px 8px '+hexSoft(t.color, 0.35); }
+    } else {
+      b.style.background = ''; b.style.color = ''; b.style.boxShadow = '';
+    }
+  });
 }
 function applyModeUI(){
   const isDraft = popupMode === 'draft';
@@ -1318,12 +1881,14 @@ function applyModeUI(){
   $('popDueField').style.display = isTodo ? '' : 'none';
   $('tagField').style.display = isTodo ? '' : 'none';
   $('contentLabel').textContent = isDraft ? '草稿内容' : (isTodo ? '待办内容' : '记录内容');
+  $('permField').style.display = (popupMode === 'todo' && !editingId && !draftNew) ? '' : 'none';
+  if (isRec) renderRecTypeSeg();
   renderPhrases();
 }
 function renderPopTagSelect(){
   const el = $('popTagSelect');
   if (!tags.length){
-    el.innerHTML = '<button type="button" class="sel-chip empty">暂无标签，可先到顶部「标签管理」新建</button>';
+    el.innerHTML = '<button type="button" class="sel-chip empty">暂无标签，可在「设置 · 新增待办」中新建</button>';
     return;
   }
   el.innerHTML = tags.map(t =>
@@ -1333,14 +1898,20 @@ function renderPopTagSelect(){
   ).join('');
 }
 function renderPhrases(){
-  const raw = popupMode === 'draft' ? popupCache.draftKind : ((popupMode === 'perm' || popupMode === 'permanent') ? 'todo' : popupMode);
-  const kind = raw;
-  const list = kind === 'todo' ? TODO_PHRASES[popupCache.todoType] : REC_PHRASES[popupCache.recType];
+  const isDraft = popupMode === 'draft';
+  const isTodo = popupMode === 'todo' || popupMode === 'perm' || popupMode === 'permanent' || (isDraft && popupCache.draftKind === 'todo');
+  const isRec = popupMode === 'record' || (isDraft && popupCache.draftKind === 'record');
+  let cat = 'work';
+  if (isTodo) cat = popupCache.todoType;
+  else if (isRec) cat = popupCache.recType;
+  const list = phrasesFor(cat);
   $('phraseGroup').innerHTML = list.map(p => '<button type="button" class="phrase" data-phrase="'+esc(p)+'">'+esc(p)+'</button>').join('');
-  if (kind === 'todo'){
+  if (isTodo){
     $('popContent').placeholder = popupCache.todoType === 'work' ? '请输入公事待办内容，例如：整理迎检材料…' : '请输入私事待办内容，例如：取快递、锻炼身体…';
+  } else if (isRec){
+    $('popContent').placeholder = '请输入'+recTypeName(popupCache.recType)+'记录内容…';
   } else {
-    $('popContent').placeholder = '请输入'+REC_TYPE_KEY[popupCache.recType]+'记录内容…';
+    $('popContent').placeholder = '请输入内容…';
   }
 }
 function openPopup(mode, kind, id){
@@ -1363,7 +1934,7 @@ function openPopup(mode, kind, id){
       if (r) popupCache = { todoType:'work', priority:'medium', recType:r.type, time:r.time, due:'', content:r.content, draftKind:'record', tags:[] };
     }
   } else {
-    popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[] };
+    popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[], perm:false };
   }
   let title;
   if (editingKind === 'draft') title = '编辑草稿';
@@ -1375,10 +1946,12 @@ function openPopup(mode, kind, id){
   $('btnSubmit').textContent = (draftNew || editingKind === 'draft') ? '保存草稿' : '确认提交';
   $('btnDraftSave').style.display = (!draftNew && !editingId && (popupMode === 'todo' || popupMode === 'record' || popupMode === 'permanent' || popupMode === 'perm')) ? '' : 'none';
   applyModeUI();
+  $('permDot').classList.toggle('on', !!popupCache.perm);
+  $('permDotText').textContent = popupCache.perm ? '永久待办（将进入永久待办列表）' : '普通待办（默认）';
   setSeg('draftKindSeg', popupCache.draftKind);
   setSeg('typeSeg', popupCache.todoType);
   setSeg('prioSeg', popupCache.priority);
-  setSeg('recTypeSeg', popupCache.recType);
+  if (popupMode === 'record' || (popupMode === 'draft' && popupCache.draftKind === 'record')) renderRecTypeSeg();
   $('popTime').value = popupCache.time || nowTime();
   $('popDue').value = popupCache.due || '';
   $('popContent').value = popupCache.content;
@@ -1427,8 +2000,14 @@ function submitPopup(){
       if (e){ e.time = time; e.type = type; e.priority = priority; e.content = content; e.due = due; e.tags = selTags; }
       toast('待办已更新'); log('todo_edit', content.slice(0, 30));
     } else {
-      todos.push(normalizeTodo({ id:uid(), time, type, priority, content, due, done:false, tags:selTags }));
-      toast('已添加待办'); log('todo_add', content.slice(0, 30));
+      if (popupCache.perm){
+        permanentTodos.push(normalizePerm({ id:uid(), time, type, priority, content, due, done:false, tags:selTags }));
+        savePermanent();
+        toast('已添加为永久待办'); log('perm_add', content.slice(0, 30));
+      } else {
+        todos.push(normalizeTodo({ id:uid(), time, type, priority, content, due, done:false, tags:selTags }));
+        toast('已添加待办'); log('todo_add', content.slice(0, 30));
+      }
     }
     saveData();
   } else {
@@ -1446,14 +2025,12 @@ function submitPopup(){
   renderAll();
   if(popupMode === 'todo' || popupMode === 'perm' || popupMode === 'permanent'){
     const el = (popupMode === 'todo') ? $('todoModule') : $('permModule');
-    const offset = 110;
-    window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset, behavior:'smooth'});
+    window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 110, behavior:'smooth'});
   } else if(popupMode === 'record'){
     const el = $('recModule');
-    const offset = 110;
-    window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset, behavior:'smooth'});
+    window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 110, behavior:'smooth'});
   }
-  popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[] };
+  popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[], perm:false };
   closePopup();
 }
 function saveDraftFromPopup(){
@@ -1463,7 +2040,7 @@ function saveDraftFromPopup(){
   const mode = (popupMode === 'record') ? 'record' : 'todo';
   drafts.push({ id:uid(), mode, type:popupCache.todoType, priority:popupCache.priority, recType:popupCache.recType, time, due:$('popDue').value, content, tags:popupCache.tags.slice(), updatedAt:new Date().toISOString() });
   saveDrafts(); log('draft_add', content.slice(0, 30)); toast('已存为草稿');
-  popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[] };
+  popupCache = { todoType:'work', priority:'medium', recType:'meeting', time:nowTime(), due:'', content:'', draftKind:'todo', tags:[], perm:false };
   closePopup();
   renderAll();
 }
@@ -1534,7 +2111,7 @@ function copyPermOne(e){ return copyTodoOne(e); }
 function copyRecOne(r){
   const pin = r.pin ? '【置顶】' : '';
   const star = r.star ? '【星标】' : '';
-  return '- '+r.time+'｜'+(REC_TYPE_KEY[r.type]||'其他')+'｜'+pin+star+' '+r.content.replace(/\n/g, ' ');
+  return '- '+r.time+'｜'+(recTypeName(r.type))+'｜'+pin+star+' '+r.content.replace(/\n/g, ' ');
 }
 function copyItem(kind, id){
   if (kind === 'todo'){
@@ -1627,7 +2204,6 @@ function clearRecords(){
   renderAll();
   toast('记录已移入回收站');
 }
-// 永久待办 ↔ 每日待办 互转
 function toPerm(id){
   const e = todos.find(x => x.id === id);
   if (!e) return;
@@ -1670,7 +2246,7 @@ function restoreBinItem(id){
   const cur = getDayData(dayKey);
   if (b.kind === 'todo') cur.todos.push(normalizeTodo(b.item));
   else cur.records.push(normalizeRecord(b.item));
-  localStorage.setItem(dayKey, JSON.stringify({ todos:cur.todos, records:cur.records, updatedAt:new Date().toISOString() }));
+  persistDay(dayKey, cur);
   bin = bin.filter(x => x.id !== id);
   saveBin();
   loadData();
@@ -1704,7 +2280,7 @@ function convertDraft(id){
   const cur = getDayData(storageKey());
   if (d.mode === 'todo') cur.todos.push(normalizeTodo({ id:uid(), time:d.time, type:d.type, priority:d.priority, due:d.due, done:false, content:d.content, tags:d.tags||[] }));
   else cur.records.push(normalizeRecord({ id:uid(), time:d.time, type:d.recType, content:d.content }));
-  localStorage.setItem(storageKey(), JSON.stringify({ todos:cur.todos, records:cur.records, updatedAt:new Date().toISOString() }));
+  persistDay(storageKey(), cur);
   drafts = drafts.filter(x => x.id !== id);
   saveDrafts();
   loadData();
@@ -1748,7 +2324,7 @@ function mdRecords(){
   const list = sortedRecords(records);
   if (!list.length) return '';
   let md = '## 每日记录（'+records.length+'）\n';
-  list.forEach(r => { md += '- '+r.time+'｜'+(REC_TYPE_KEY[r.type]||'其他')+'｜'+r.content.replace(/\n/g, ' ')+'\n'; });
+  list.forEach(r => { md += '- '+r.time+'｜'+(recTypeName(r.type))+'｜'+r.content.replace(/\n/g, ' ')+'\n'; });
   return md;
 }
 function mdDay(){
@@ -1814,7 +2390,8 @@ function deleteDay(){
   todos.forEach(e => bin.unshift({ id:uid(), kind:'todo', day, item:JSON.parse(JSON.stringify(e)), deletedAt:new Date().toISOString() }));
   records.forEach(r => bin.unshift({ id:uid(), kind:'record', day, item:JSON.parse(JSON.stringify(r)), deletedAt:new Date().toISOString() }));
   saveBin();
-  localStorage.removeItem(storageKey());
+  delete dayCache[storageKey()];
+  safeDelete('days', storageKey());
   todos = [];
   records = [];
   log('day_delete', '删除 '+day+' 全部数据');
@@ -1822,37 +2399,101 @@ function deleteDay(){
   toast('已删除当日数据');
 }
 function deleteAll(){
-  const keys = [];
-  for (let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i);
-    if (k && (k.indexOf('day-') === 0 || k === KEY_PERM || k === KEY_TAGS)) keys.push(k);
-  }
-  if (!keys.length && !permanentTodos.length){ toast('暂无任何数据'); return; }
+  const hasData = Object.keys(dayCache).length > 0 || bin.length || entries.length || drafts.length || tags.length || permanentTodos.length;
+  if (!hasData){ toast('暂无任何数据'); return; }
   if (!confirm('即将删除所有日期的全部待办、记录，以及永久待办和标签，并移入回收站！\n回收站需手动彻底删除，确认继续吗？')) return;
-  keys.forEach(k => {
-    if (k === KEY_PERM){
-      permanentTodos.forEach(e => bin.unshift({ id:uid(), kind:'perm', day:'', item:JSON.parse(JSON.stringify(e)), deletedAt:new Date().toISOString() }));
-      return;
-    }
-    if (k === KEY_TAGS){ tags = []; return; }
-    let d = null;
-    try { d = JSON.parse(localStorage.getItem(k)); } catch(e){}
-    if (d){
-      const day = k.slice(4);
-      (d.todos || []).forEach(e => bin.unshift({ id:uid(), kind:'todo', day, item:JSON.parse(JSON.stringify(e)), deletedAt:new Date().toISOString() }));
-      (d.records || []).forEach(r => bin.unshift({ id:uid(), kind:'record', day, item:JSON.parse(JSON.stringify(r)), deletedAt:new Date().toISOString() }));
-    }
-    localStorage.removeItem(k);
+  const now = new Date().toISOString();
+  const newBin = bin.slice();
+  Object.keys(dayCache).forEach(day => {
+    const d = dayCache[day];
+    if (!d) return;
+    (d.todos||[]).forEach(e => newBin.push({ id:uid(), kind:'todo', day, item:JSON.parse(JSON.stringify(e)), deletedAt:now }));
+    (d.records||[]).forEach(r => newBin.push({ id:uid(), kind:'record', day, item:JSON.parse(JSON.stringify(r)), deletedAt:now }));
   });
-  saveBin();
-  savePermanent();
-  saveTags();
+  permanentTodos.forEach(e => newBin.push({ id:uid(), kind:'perm', day:'', item:JSON.parse(JSON.stringify(e)), deletedAt:now }));
+  bin = newBin;
+  dayCache = {};
   todos = [];
   records = [];
   permanentTodos = [];
+  tags = [];
+  saveBin(); savePermanent(); saveTags();
+  safeClear('days');
   log('all_delete', '删除全部数据');
   renderAll();
   toast('已清空全部数据');
+}
+// ====================== JSON 备份 / 恢复 ======================
+function collectAllData(){
+  return {
+    app: 'jinli-weili-workbench',
+    version: 3,
+    exportedAt: new Date().toISOString(),
+    days: dayCache,
+    bin: bin,
+    logs: entries,
+    drafts: drafts,
+    tags: tags,
+    permanent: permanentTodos,
+    recordTypes: recordTypes,
+    quickPhrases: quickPhrases,
+    ui: uiState
+  };
+}
+function exportJSON(){
+  const data = collectAllData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '待办记录备份_' + getDateKey(new Date()) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 300);
+  log('json_export', '导出 ' + Object.keys(dayCache).length + ' 天数据');
+  toast('已导出 JSON 备份（含回收站、草稿、日志、标签、永久待办与自定义设置）');
+}
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = async e => {
+    let data;
+    try {
+      data = JSON.parse(e.target.result);
+    } catch(err){ toast('导入失败：不是有效的 JSON', 'warn'); return; }
+    if (!data || data.app !== 'jinli-weili-workbench'){
+      toast('导入失败：不是本工作台的备份文件', 'warn'); return;
+    }
+    if (!confirm('导入将覆盖当前全部数据（含所有日期、回收站、草稿、日志、标签、永久待办与自定义设置），确定继续吗？')) return;
+    try {
+      recordTypes = (Array.isArray(data.recordTypes) ? data.recordTypes : [])
+        .filter(t => t && t.id && t.name)
+        .map(t => ({ id:String(t.id), name:String(t.name).trim(), color:/^#[0-9a-fA-F]{6}$/.test(t.color||'')?t.color:'#868e96' }));
+      quickPhrases = (data.quickPhrases && typeof data.quickPhrases === 'object') ? data.quickPhrases : {};
+      ensureConfigDefaults();
+      const nd = data.days && typeof data.days === 'object' ? data.days : {};
+      dayCache = {};
+      Object.keys(nd).forEach(k => {
+        const src = nd[k] || {};
+        dayCache[k] = {
+          todos: Array.isArray(src.todos) ? src.todos.map(normalizeTodo) : [],
+          records: Array.isArray(src.records) ? src.records.map(normalizeRecord) : []
+        };
+      });
+      bin = Array.isArray(data.bin) ? data.bin.slice() : [];
+      entries = Array.isArray(data.logs) ? data.logs.slice() : [];
+      drafts = Array.isArray(data.drafts) ? data.drafts.slice() : [];
+      tags = (Array.isArray(data.tags) ? data.tags : []).filter(t => t && t.name).map(t => ({ id:t.id||uid(), name:String(t.name).trim(), color:t.color||'' }));
+      permanentTodos = (Array.isArray(data.permanent) ? data.permanent : []).map(normalizePerm);
+      if (data.ui && typeof data.ui === 'object') uiState = Object.assign(uiState, data.ui);
+      dmTab = uiState.dmTab || 'calendar';
+      await persistAll();
+      loadData();
+      renderAll();
+      log('json_import', '恢复备份：' + Object.keys(dayCache).length + ' 天数据');
+      toast('已导入并恢复备份数据');
+    } catch(err){
+      toast('导入失败：'+err.message, 'warn');
+    }
+  };
+  reader.readAsText(file);
 }
 // ====================== 日期 ======================
 function updateDatePicker(){
@@ -1901,16 +2542,14 @@ function bindHeadToggle(headId, which){
     toggleModule(which);
   });
 }
-function init(){
+async function init(){
   updateDatePicker();
+  ensureConfigDefaults();
   const migrated = migrateLegacy();
-  loadData();
-  loadBin();
-  loadLogs();
-  loadDrafts();
-  loadTags();
-  loadPermanent();
   loadUI();
+  await migrateToIDB();
+  await loadAllFromStorage();
+  loadData();
   calYear = currentDate.getFullYear();
   calMonth = currentDate.getMonth();
   $('todoModule').classList.toggle('collapsed', uiState.todoCollapsed);
@@ -1922,6 +2561,21 @@ function init(){
     log('migrate', '迁移历史数据 '+migrated+' 条');
     toast('已自动迁移 '+migrated+' 条历史数据');
   }
+  // 全局搜索
+  $('searchInput').addEventListener('input', e => renderSearchResults(e.target.value));
+  $('searchResults').addEventListener('click', e => {
+    const b = e.target.closest('[data-jump]');
+    if (!b) return;
+    jumpToSearchResult(b.dataset.jump, b.dataset.kind);
+  });
+  // JSON 备份 / 恢复
+  $('btnExportJson').addEventListener('click', exportJSON);
+  $('btnImportJson').addEventListener('click', () => $('importJsonInput').click());
+  $('importJsonInput').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) importJSON(f);
+    e.target.value = '';
+  });
   $('btnPrev').addEventListener('click', () => changeDate(-1));
   $('btnNext').addEventListener('click', () => changeDate(1));
   $('datePicker').addEventListener('change', e => {
@@ -1945,8 +2599,13 @@ function init(){
   $('popContent').addEventListener('input', () => { popupCache.content = $('popContent').value; });
   bindSeg('typeSeg', v => { popupCache.todoType = v; renderPhrases(); });
   bindSeg('prioSeg', v => { popupCache.priority = v; });
-  bindSeg('recTypeSeg', v => { popupCache.recType = v; renderPhrases(); });
+  bindSeg('recTypeSeg', v => { popupCache.recType = v; renderRecTypeSeg(); renderPhrases(); });
   bindSeg('draftKindSeg', v => { popupCache.draftKind = v; applyModeUI(); });
+  $('permDot').addEventListener('click', () => {
+    popupCache.perm = !popupCache.perm;
+    $('permDot').classList.toggle('on', popupCache.perm);
+    $('permDotText').textContent = popupCache.perm ? '永久待办（将进入永久待办列表）' : '普通待办（默认）';
+  });
   // 弹窗内标签多选
   $('popTagSelect').addEventListener('click', e => {
     const b = e.target.closest('.sel-chip');
@@ -2030,7 +2689,6 @@ function init(){
       else if (btn.dataset.action === 'clear-records') clearRecords();
     });
   });
-  // 永久待办清空
   $('permList').parentElement.querySelector('.section-actions').addEventListener('click', e => {
     const btn = e.target.closest('button');
     if (btn && btn.dataset.action === 'clear-perm') clearPerm();
@@ -2066,13 +2724,10 @@ function init(){
   $('btnDataMgmt').addEventListener('click', () => $('dmModule').scrollIntoView({ behavior:'smooth', block:'start' }));
   $('btnDeleteDay').addEventListener('click', deleteDay);
   $('btnDeleteAll').addEventListener('click', deleteAll);
-  // 标签管理
-  $('btnTags').addEventListener('click', openTagManager);
-  $('tagClose').addEventListener('click', closeTagManager);
-  $('tagManagerMask').addEventListener('click', e => { if (e.target === $('tagManagerMask')) closeTagManager(); });
+  // 标签管理（已并入设置）
   $('newTagName').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addTagFromManager(); } });
   $('btnAddTag').addEventListener('click', addTagFromManager);
-  $('tagList').addEventListener('click', e => {
+  $('settingsTagList').addEventListener('click', e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     const row = btn.closest('.tag-row');
@@ -2095,6 +2750,65 @@ function init(){
     else if (act === 'del-remove'){ removeTagFromAll(id); renderTagManager(); renderAll(); toast('已删除标签并移除所有事项上的该标签'); }
     else if (act === 'del-cancel') renderTagManager();
   });
+  // 设置（记录类型 + 便捷短语）
+  $('btnSettings').addEventListener('click', openSettings);
+  $('settingsClose').addEventListener('click', closeSettings);
+  $('settingsMask').addEventListener('click', e => { if (e.target === $('settingsMask')) closeSettings(); });
+  $('settingsTabs').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#settingsTabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const isTodo = b.dataset.s === 'todo';
+    $('settingsTodoPanel').style.display = isTodo ? '' : 'none';
+    $('settingsRecordPanel').style.display = isTodo ? 'none' : '';
+  });
+  $('newRecTypeName').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addRecTypeFromSettings(); } });
+  $('btnAddRecType').addEventListener('click', addRecTypeFromSettings);
+  $('recTypeList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const row = btn.closest('.rec-type-row');
+    if (!row) return;
+    const id = row.dataset.id;
+    const t = recTypeById(id);
+    if (!t) return;
+    const act = btn.dataset.action;
+    if (act === 'rename'){
+      row.innerHTML = '<span class="tdot" style="background:'+esc(t.color)+'"></span>'
+        + '<input class="tag-edit-input" value="'+esc(t.name)+'" maxlength="12" data-rename-input>'
+        + '<div class="item-actions"><button class="ghost" data-action="rename-save">保存</button><button class="ghost" data-action="rename-cancel">取消</button></div>';
+      const inp = row.querySelector('[data-rename-input]');
+      inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+    } else if (act === 'rename-save'){
+      const inp = row.querySelector('[data-rename-input]');
+      const v = (inp ? inp.value : '').trim();
+      if (!v){ toast('名称不能为空', 'warn'); return; }
+      if (recordTypes.some(x => x.id !== id && x.name === v)){ toast('名称已存在', 'warn'); return; }
+      t.name = v;
+      saveRecordTypes(); log('rectype_rename', v);
+      renderRecTypeList(); renderRecFilter(); renderAll(); toast('类型已改名');
+    } else if (act === 'rename-cancel'){
+      renderRecTypeList();
+    } else if (act === 'del'){
+      if (id === 'other'){ toast('「其他」类型不可删除', 'warn'); return; }
+      if (!confirm('删除类型「'+t.name+'」？所有使用该类型的记录将改为「其他」。')) return;
+      Object.keys(dayCache).forEach(k => {
+        const d = dayCache[k];
+        if (!d || !Array.isArray(d.records)) return;
+        let ch = false;
+        d.records.forEach(r => { if (r.type === id){ r.type = 'other'; ch = true; } });
+        if (ch) persistDay(k, d);
+      });
+      delete quickPhrases[id];
+      recordTypes = recordTypes.filter(x => x.id !== id);
+      saveRecordTypes(); savePhrases(); log('rectype_delete', t.name);
+      loadData();
+      renderRecTypeList(); renderRecFilter(); renderAll(); toast('已删除类型');
+    }
+  });
+  $('phraseTodoSettings').addEventListener('click', handlePhraseSettingsClick);
+  $('phraseRecordSettings').addEventListener('click', handlePhraseSettingsClick);
   // 数据管理
   $('dmTabs').addEventListener('click', e => {
     const b = e.target.closest('button');
@@ -2108,7 +2822,15 @@ function init(){
   });
   $('calPrev').addEventListener('click', () => { calMonth--; if (calMonth < 0){ calMonth = 11; calYear--; } renderCalendar(); });
   $('calNext').addEventListener('click', () => { calMonth++; if (calMonth > 11){ calMonth = 0; calYear++; } renderCalendar(); });
-  $('calToday').addEventListener('click', () => { calYear = new Date().getFullYear(); calMonth = new Date().getMonth(); renderCalendar(); });
+  $('calToday').addEventListener('click', () => {
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    updateDatePicker();
+    loadData();
+    renderAll();
+  });
   $('calGrid').addEventListener('click', e => {
     const cell = e.target.closest('.cal-cell.day');
     if (!cell || !cell.dataset.day) return;
@@ -2169,11 +2891,24 @@ function init(){
   });
   document.addEventListener('keydown', e => {
     const mask = $('popupMask');
-    const tmask = $('tagManagerMask');
-    if (tmask.classList.contains('show') && e.key === 'Escape') closeTagManager();
-    if (!mask.classList.contains('show')) return;
-    if (e.key === 'Escape') closePopup();
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); submitPopup(); }
+    const smask = $('settingsMask');
+    if (smask.classList.contains('show') && e.key === 'Escape'){ closeSettings(); return; }
+    if (mask.classList.contains('show')){
+      if (e.key === 'Escape') closePopup();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); submitPopup(); }
+      return;
+    }
+    const tag = (e.target.tagName || '').toLowerCase();
+    const inField = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+    if ((e.ctrlKey || e.metaKey) && e.key === '1'){ e.preventDefault(); openPopup('todo'); }
+    else if ((e.ctrlKey || e.metaKey) && e.key === '2'){ e.preventDefault(); openPopup('record'); }
+    else if (!inField && e.key === '/'){
+      e.preventDefault();
+      dmTab = 'search'; uiState.dmTab = 'search'; saveUI();
+      document.querySelectorAll('#dmTabs button').forEach(x => x.classList.toggle('active', x.dataset.tab === 'search'));
+      renderDM();
+      $('searchInput').focus();
+    }
   });
   window.addEventListener('beforeunload', () => { if (todos.length || records.length) saveData(); });
 }
@@ -2187,18 +2922,17 @@ function addTagFromManager(){
   } else { toast('标签已存在', 'warn'); }
 }
 // 回到顶部按钮事件
-$('backTopBtn').addEventListener('click',()=>{
-  window.scrollTo({top:0,behavior:'smooth'});
+$('backTopBtn').addEventListener('click', () => {
+  window.scrollTo({top:0, behavior:'smooth'});
 });
-// 滚动监听，页面向下滚动才显示回到顶部
-window.addEventListener('scroll',()=>{
+// 滚动监听
+window.addEventListener('scroll', () => {
   const btn = $('backTopBtn');
-  if(window.scrollY > 180){
-    btn.classList.add('show');
-  }else{
-    btn.classList.remove('show');
-  }
+  if (window.scrollY > 180){ btn.classList.add('show'); }
+  else { btn.classList.remove('show'); }
 });
+// 配额与启动
+updateStorageQuota();
 init();
 </script>
 </body>
