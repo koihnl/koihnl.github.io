@@ -1317,7 +1317,7 @@ bottom:110px;
 草稿箱</button>
  <button data-tab="logs">
 操作日志</button>
- <button data-tab="stats">
+ <button data-tab="stats" style="display: none;">
 统计</button>
  </div>
  </div>
@@ -2296,7 +2296,7 @@ function addTag(name, color){ name = String(name || '').trim();
  const cls = ['cal-cell','day'];
  if (key === tKey) cls.push('today');
  if (key === selKey) cls.push('selected');
- html += '<div class="'+cls.join(' ')+'" data-day="'+key+'">' + '<span class="cal-dnum">'+d+'</span>' + (c ? '<div class="cal-counts">' + (c.t ? '<span class="cal-cnt todo">待'+c.t+'</span>' : '') + (c.r ? '<span class="cal-cnt rec">记'+c.r+'</span>' : '') + '</div>' : '') + '</div>';
+ html += '<div class="'+cls.join(' ')+'" data-day="'+key+'">' + '<span class="cal-dnum">'+d+'</span>' + (c ? '<div class="cal-counts">' + (c.r ? '<span class="cal-cnt rec">记'+c.r+'</span>' : '') + (c.t ? '<span class="cal-cnt todo">待'+c.t+'</span>' : '') + '</div>' : '') + '</div>';
  } $('calGrid').innerHTML = html;
 }function renderStatistics(){ const el = $('statsBody'); if (!el) return; const now = new Date(); const today = todayStr();
  let totalTodos = 0, doneTodos = 0, totalRecs = 0, overdue = 0, dueToday = 0, dayCount = 0;
@@ -2352,7 +2352,7 @@ function addTag(name, color){ name = String(name || '').trim();
  const panel = $(cap);
  if (panel) panel.classList.add('active');
  renderCalendar();
- renderStatistics();
+ // renderStatistics();
  renderSearchResults();
  renderBin();
  renderDrafts();
