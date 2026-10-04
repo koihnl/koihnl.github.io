@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>待办记录工作台 — 论系统研究与技术</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23f97316'/%3E%3Cpath d='M9 16.5l5 5 9-11' stroke='%23fff7ed' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+:root{
+  --bg:#fff8ee; --surface:#ffffff; --card:#fffdf9;
+  --ink:#3b2f22; --ink2:#6b5842; --muted:#a08a6f;
+  --line:#f2e3cd; --line2:#f8eedc;
+  --sun:#f97316; --sun2:#f59e0b; --amber:#d97706;
+  --sky:#0ea5e9; --mint:#10b981; --grape:#8e44ad; --berry:#ef4444;
+  --sun-soft:#fef0dd; --sky-soft:#e8f5fe; --mint-soft:#e5f7ef;
+  --warn:#b45309; --danger:#dc2626; --ok:#16a34a;
+  --code-bg:#2b2115; --code-ink:#f6e7d3;
+  --serif:'Noto Serif SC','Songti SC','SimSun',serif;
+  --sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --mono:ui-monospace,'SFMono-Regular','JetBrains Mono','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.92;font-weight:400}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+/* ---------- 进度条 & 返回顶部 ---------- */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--sun),var(--sun2),var(--sky));z-index:100}
+#toTop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));color:#fff;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(249,115,22,.35);z-index:90}
+#toTop:hover{transform:translateY(-2px)}
+#toTop svg{width:18px;height:18px}
+
+/* ---------- 封面（阳光橙） ---------- */
+.cover{background: linear-gradient(135deg, #ffffff 0%, #f59e0bcf 45%, #f48b58 100%);color:#fff;padding:74px 0 58px;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;inset:0;background:radial-gradient(700px 320px at 85% -20%,rgba(255,255,255,.28),transparent 60%),radial-gradient(560px 300px at 8% 115%,rgba(255,255,255,.18),transparent 55%);pointer-events:none}
+.cover-inner{max-width:980px;margin:0 auto;padding:0 28px;position:relative}
+.cover .kicker{font-size:13px;letter-spacing:.32em;color:#fff2dc;font-weight:700;margin-bottom:22px}
+.cover h1{font-family:var(--serif);font-weight:900;font-size:44px;line-height:1.3;letter-spacing:.02em;margin-bottom:14px;text-shadow:0 2px 12px rgba(147,64,10,.18)}
+.cover .sub{font-size:17px;color:#fff7ea;max-width:780px;line-height:1.9}
+.cover .meta{margin-top:20px;font-size:14px;color:#ffe8c2;display:flex;flex-wrap:wrap;gap:8px 22px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:40px}
+.stat{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:16px;padding:16px 18px;backdrop-filter:blur(2px)}
+.stat b{display:block;font-family:var(--serif);font-size:30px;font-weight:800;color:#fff;letter-spacing:.01em}
+.stat span{font-size:13px;color:#fff4de;line-height:1.5}
+.frag-strip{margin-top:34px;display:flex;gap:3px;height:22px;align-items:stretch}
+.frag-strip i{flex:1;border-radius:3px;background:rgba(255,255,255,.30)}
+.frag-strip i:nth-child(3n){background:rgba(255,255,255,.55)}
+.frag-strip i:nth-child(7n){background:#fff}
+
+/* ---------- 正文容器 ---------- */
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+main{max-width:900px;margin:0 auto;padding:44px 28px 90px}
+.abstract{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 32px;margin-bottom:40px;box-shadow:0 4px 18px rgba(217,119,6,.07)}
+.abstract h2{font-family:var(--serif);font-size:20px;font-weight:800;margin-bottom:12px;color:var(--amber)}
+.abstract p{font-size:15px;color:var(--ink2);text-align:justify}
+.kw{margin-top:16px;font-size:13.5px;color:var(--muted)}
+.kw b{color:var(--sun);font-weight:600}
+
+/* ---------- 目录 ---------- */
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 32px;margin-bottom:46px;box-shadow:0 4px 18px rgba(217,119,6,.07)}
+.toc h2{font-family:var(--serif);font-size:20px;font-weight:800;margin-bottom:14px;color:var(--amber)}
+.toc ol{list-style:none}
+.toc a{display:flex;align-items:center;min-height:44px;padding:7px 0;color:var(--ink2);text-decoration:none;border-bottom:1px dashed var(--line2);font-size:14.5px;transition:color .15s}
+.toc a:hover{color:var(--sun)}
+.toc a .no{font-family:var(--serif);font-weight:700;color:var(--sun);margin-right:10px}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}
+@media(max-width:760px){.toc-grid{grid-template-columns:1fr}}
+
+/* ---------- 章节 ---------- */
+section.ch{padding-top:34px;margin-top:6px}
+.ch-hd{margin-bottom:26px;padding-bottom:16px;border-bottom:3px solid var(--sun2)}
+.ch-hd .ch-no{font-family:var(--serif);font-size:14px;letter-spacing:.22em;color:var(--sun);font-weight:700}
+.ch-hd h2{font-family:var(--serif);font-size:31px;font-weight:900;line-height:1.4;margin-top:6px;letter-spacing:.01em;color:var(--ink)}
+.ch-hd .ch-lead{color:var(--muted);font-size:14.5px;margin-top:8px}
+h3{font-family:var(--serif);font-size:22px;font-weight:700;margin:38px 0 12px;padding-left:14px;border-left:5px solid var(--sun);line-height:1.5;color:var(--ink)}
+h4{font-size:16.5px;font-weight:700;margin:26px 0 8px;color:var(--ink)}
+p{margin:10px 0;text-align:justify}
+p.lead{font-size:16.5px;color:var(--ink2)}
+ul,ol{margin:10px 0 10px 4px;padding-left:24px}
+li{margin:5px 0}
+strong{font-weight:700}
+em{font-style:normal;color:var(--sun);font-weight:600}
+code{font-family:var(--mono);font-size:13px;background:var(--sun-soft);border:1px solid #f6dfb8;border-radius:6px;padding:1px 6px;color:#9a4a08}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.8px;line-height:1.65;margin:12px 0}
+pre code{background:none;border:none;padding:0;color:inherit}
+pre .cm{color:#c49a6a}
+pre .st{color:#f7c873}
+pre .kw{color:#f59e0b}
+pre .nm{color:#9fc3e8}
+.note{background:var(--sky-soft);border-left:5px solid var(--sky);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;font-size:14.5px;color:#0b5c84}
+.warn{background:#fdf3e7;border-left:5px solid var(--warn);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;font-size:14.5px;color:#6b4508}
+.danger{background:#fdecec;border-left:5px solid var(--danger);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;font-size:14.5px;color:#7f1d1d}
+.success{background:var(--mint-soft);border-left:5px solid var(--mint);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;font-size:14.5px;color:#0c5f43}
+
+/* ---------- 图表 ---------- */
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px;margin:20px 0;box-shadow:0 4px 18px rgba(217,119,6,.07)}
+.fig .chart{width:100%;height:340px}
+.fig .cap{font-size:13px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--line2);line-height:1.7}
+.fig .cap b{color:var(--ink2)}
+.svg-fig{width:100%;height:auto;display:block}
+.svg-fig text{font-family:var(--sans)}
+
+/* ---------- 表格 ---------- */
+.tb-wrap{overflow-x:auto;margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 18px rgba(217,119,6,.07)}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:13.8px;min-width:640px}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--muted);padding:10px 14px 6px;font-family:var(--serif);font-weight:700}
+th{background:#fdf1de;color:#7c4a07;font-weight:700;text-align:left;padding:10px 12px;border-bottom:1px solid #f0dcb8;font-size:13.6px}
+td{padding:9px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink2);font-size:14px}
+tr:last-child td{border-bottom:none}
+td b,th b{color:var(--ink)}
+.mono{font-family:var(--mono);font-size:12.6px}
+
+/* ---------- 徽章/标签 ---------- */
+.badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:20px;font-weight:600;border:1px solid var(--line);background:var(--sun-soft);color:#9a4a08;white-space:nowrap;margin:2px 4px 2px 0}
+.badge.teal{background:var(--mint-soft);border-color:#b9e3cf;color:#0c5f43}
+.badge.gold{background:var(--sun-soft);border-color:#f0d39a;color:#8a4d06}
+.badge.red{background:#fdecec;border-color:#ecc9c4;color:#8a2f26}
+.badge.sky{background:var(--sky-soft);border-color:#b9ddf3;color:#0b5c84}
+
+/* ---------- 分栏 ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.mini-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 3px 12px rgba(217,119,6,.06)}
+.mini-card h5{font-family:var(--serif);font-size:16px;font-weight:800;margin-bottom:8px;color:var(--amber)}
+.mini-card p{font-size:14px;color:var(--ink2);margin:6px 0}
+
+/* ---------- 时间轴 ---------- */
+.timeline{display:grid;grid-template-columns:96px 30px 1fr;gap:0;margin:20px 0}
+.tl-time{font-family:var(--mono);font-size:13px;color:var(--muted);padding:4px 12px 14px 0;text-align:right}
+.tl-dot{display:flex;justify-content:center;padding-top:5px}
+.tl-dot::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--sun);border:3px solid #fbe3c4;box-sizing:content-box}
+.tl-dot.line::before{background:#b8c6cf;border-color:var(--line)}
+.tl-content{padding:0 0 16px 12px}
+.tl-content b{font-family:var(--serif);font-weight:800;color:var(--ink)}
+.tl-content p{font-size:13.5px;color:var(--ink2);margin:3px 0 0}
+@media(max-width:560px){.timeline{grid-template-columns:1fr}.tl-time{text-align:left;padding:0 0 2px}.tl-dot{display:none}}
+
+/* ---------- 页脚 ---------- */
+footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0 40px;color:var(--muted);font-size:13px;text-align:center;line-height:2}
+footer b{color:var(--ink2)}
+
+/* ---------- 附录 ---------- */
+.appendix-note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:16px 0;font-size:14px;color:var(--ink2);box-shadow:0 3px 12px rgba(217,119,6,.06)}
+
+/* ---------- 引用 ---------- */
+.ref{list-style:none;padding-left:0}
+.ref li{padding:8px 0;border-bottom:1px dashed var(--line2);font-size:13.8px;color:var(--ink2)}
+.ref li .idx{font-family:var(--mono);color:var(--sun);margin-right:8px;font-size:12.5px}
+
+/* 打印 */
+@media print{
+  body{background:#fff}
+  .cover{background:linear-gradient(135deg,#f97316,#f59e0b);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #progress,#toTop{display:none}
+  main{padding:20px}
+  .fig,.tb-wrap,.abstract,.toc{break-inside:avoid}
+  a{color:inherit}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<button id="toTop" aria-label="返回顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<!-- ===== 封面 ===== -->
+<header class="cover">
+  <div class="cover-inner">
+    <div class="kicker">SYSTEM MONOGRAPH · 论系统研究与技术</div>
+    <h1>待办记录工作台<br>论系统研究与技术</h1>
+    <p class="sub">一份写给"待办记录工作台"的完整论文：从产品缘起、需求设计、功能体系，到碎片化加载引擎、数据持久化与页面自我保护，逐层拆解一个 690KB 应用如何把自己切成 233 片藏进 521 个目录，又在约 0.5 秒内安然重组、完整呈现。</p>
+    <div class="meta">
+      <span>版本：二进制防护版</span>
+      <span>编制日期：2026-10-04</span>
+      <span>设计验证：静态审查 · 重组回归 · 桩环境行为验证</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b>233</b><span>真实二进制碎片（约 3KB/片）</span></div>
+      <div class="stat"><b>322</b><span>干扰文件（多于真实碎片）</span></div>
+      <div class="stat"><b>8</b><span>碎片链，入口页仅知每链首片</span></div>
+      <div class="stat"><b>690KB</b><span>重组后完整载荷 690,845 字节</span></div>
+      <div class="stat"><b>≈0.5s</b><span>全量重组启动耗时</span></div>
+    </div>
+    <div class="frag-strip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+</header>
+
+<!-- ===== 摘要 ===== -->
+<div class="wrap">
+<main>
+<section class="abstract">
+  <h2>摘　要</h2>
+  <p>待办记录工作台（DaibanJilu）是一款面向个人日常事务管理的单页 Web 应用，涵盖待办清单、永久待办、每日记录、日历、搜索、回收站、草稿箱、操作日志等十一大已实现功能模块，并预留了统计面板这一待启用的进阶能力。本文以"记录待办系统"为对象，对该作品进行一次全面、系统的技术论述。论文的主要工作包括：其一，完整阐述其独创的"碎片链 + 路径派生密钥 + 干扰文件"自防护架构——载荷被切分为 8 条链、233 片，散布于 521 个随机命名的目录，混入 322 个干扰文件，加载时按链头清单逐片校验、并发门控、失败重试，约 0.5 秒完成重组；其二，逐层拆解链头二进制清单的字节布局、路径派生密钥的异或编解码、加载器六步流水线与干扰文件成本模型；其三，系统梳理十一大功能模块的信息架构、实体字段、双层持久化（IndexedDB 主存储 + localStorage 元数据）与页面自我保护层（开发者工具检测、水印、右键/复制/保存/打印/拖拽拦截）；其四，给出威胁模型与攻击成本分析，并诚实地划定"提高提取成本"而非"绝对防盗"的技术边界。论文旨在为单页应用的源码保护与个人工具产品设计提供一份可复用的研究范本，同时记录这份作品在设计、验证与权衡中的完整思考。</p>
+  <p class="kw"><b>关键词：</b>待办管理；单页应用；碎片化加载；源码防护；二进制清单；SHA-256；IndexedDB；本地持久化；威胁模型</p>
+</section>
+
+<!-- ===== 目录 ===== -->
+<nav class="toc">
+  <h2>目　录</h2>
+  <div class="toc-grid">
+    <ol>
+      <li><a href="#ch1"><span class="no">第一章</span>绪论：为什么需要一件"拿不走"的工作台</a></li>
+      <li><a href="#ch2"><span class="no">第二章</span>需求分析与设计理念</a></li>
+      <li><a href="#ch3"><span class="no">第三章</span>系统总体架构</a></li>
+      <li><a href="#ch4"><span class="no">第四章</span>碎片防护技术剖析</a></li>
+      <li><a href="#ch5"><span class="no">第五章</span>功能体系详解</a></li>
+      <li><a href="#ch6"><span class="no">第六章</span>数据模型与持久化</a></li>
+      <li><a href="#ch7"><span class="no">第七章</span>页面自我保护层</a></li>
+    </ol>
+    <ol>
+      <li><a href="#ch8"><span class="no">第八章</span>用户体验与界面设计</a></li>
+      <li><a href="#ch9"><span class="no">第九章</span>安全性与风险分析</a></li>
+      <li><a href="#ch10"><span class="no">第十章</span>测试与质量保障</a></li>
+      <li><a href="#ch11"><span class="no">第十一章</span>总结与展望</a></li>
+      <li><a href="#ref"><span class="no">参考文献</span>与资料清单</a></li>
+      <li><a href="#appendix"><span class="no">附录</span>A–E：术语、存储键、动作日志、关键代码注释与图表清单</a></li>
+    </ol>
+  </div>
+</nav>
+
+<!-- ===== 第一章 ===== -->
+<section class="ch" id="ch1">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 01</div>
+    <h2>第一章　绪论：为什么需要一件"拿不走"的工作台</h2>
+    <div class="ch-lead">本章交代作品诞生的背景与要解决的问题，明确论文目标、方法与结构。</div>
+  </div>
+
+  <h3>1.1　研究背景</h3>
+  <p class="lead">过去十年，个人效率工具的形态经历了两轮显著迁移：从桌面客户端走向 Web，再从服务器端应用走向纯前端单页应用（SPA）。浏览器存储 API（localStorage 与 IndexedDB）的成熟，使得一款功能完整的个人工具——待办管理、笔记、记账、习惯打卡——可以完全脱离后端服务器，以"一个 HTML 文件 + 浏览器本地存储"的形式独立运行。这种形态带来了三个立竿见影的好处：零部署成本（扔到任意静态托管即可使用）、零账号摩擦（打开即用，数据留在本机）、零服务器账单（无数据库、无接口、无运维）。</p>
+  <p>然而，单页形态的代价同样深刻：<strong>应用的全部逻辑、模板与数据字典都内联在 HTML 里，任何人按下"查看源代码"或"另存为"，一次点击即可整页搬走</strong>。对于个人作品而言，这是作者最不希望看到的结果——倾注了大量时间打磨的产品细节、交互语言与视觉设计，变成了一串任何人都能复制粘贴的字符。更现实的场景是：当作品被部署到公开仓库（如 GitHub Pages）时，仓库本身即暴露了全部源码；当作品通过即时通讯工具、群聊或网盘传播时，接收者手中的文件与原版完全等价。个人工具通常没有商业授权体系，也无力建设账号鉴权，因此"保护作品"这一诉求几乎全部落在前端技术本身。</p>
+  <p>与此同时，一个同样重要但常被忽视的需求是<strong>可靠性</strong>：单文件应用一旦被意外截断、被即时通讯工具二次转码、被文本编辑器错误保存，就可能整体报废。传统单页应用把所有代码放在一个巨大的文本文件里，换行符、字符集、BOM 头、剪贴板截断等任何一次文本层面的扰动都可能致命。一款理想的个人工具既希望"难被拿走"，又希望"不易损坏"。</p>
+
+  <h3>1.2　问题提出</h3>
+  <p>围绕上述背景，本文以"待办记录工作台"（下称"本系统"）为对象，系统回答以下四组问题：</p>
+  <ol>
+    <li><strong>产品层面：</strong>一款面向个人日常事务的待办工作台应当具备哪些功能维度？其信息架构、交互语言与空态设计如何支撑"从记录到复盘"的完整闭环？</li>
+    <li><strong>工程层面：</strong>如何在不引入任何构建工具、服务器与依赖的情况下，把一个约 690KB 的应用设计成"加载时重组、离线可运行、损坏可定位"的自保护结构？碎片链、路径派生密钥、干扰文件等机制各自承担什么角色？</li>
+    <li><strong>数据层面：</strong>双层持久化（IndexedDB 主存储 + localStorage 元数据）如何划分职责？跨版本数据迁移、配额监控与回填策略如何设计？</li>
+    <li><strong>安全层面：</strong>"防提取"的真实边界在哪里？开发者工具检测、水印、交互拦截等页面自我保护手段的有效性与局限性如何评估？</li>
+  </ol>
+
+  <h3>1.3　论文目标与主要贡献</h3>
+  <p>本文的目标不是复刻或美化一个界面，而是以工程论文的方式<strong>完整地、可复核地</strong>呈现本系统的设计与实现。具体贡献归纳为以下五点：</p>
+  <ol>
+    <li><strong>机制阐释：</strong>系统化阐述"魔数清单 + 路径派生密钥异或 + 逐片哈希校验 + 并发门控 + 失败重试 + 干扰文件"的碎片链加载架构，并给出本版本的性能指标与设计取舍。</li>
+    <li><strong>功能测绘：</strong>基于界面结构、运行时字符串与行为观察，绘制出包含十一大功能模块、实体字段、操作日志元数据、存储键名的完整功能地图，覆盖全部操作路径。</li>
+    <li><strong>安全评估：</strong>建立分层威胁模型，对"查看源代码""一键保存""批量抓取""逆向重组""仓库克隆"五类提取路径逐一评估成本与有效性，并如实划定技术边界。</li>
+    <li><strong>工程方法论：</strong>沉淀出一套"自检先行、碎片可验证、错误可定位、诊断可开关"的单页应用交付与运维范式，供同类项目参考。</li>
+    <li><strong>设计思考：</strong>记录产品在功能取舍（如统计能力的预留）、数据安全与视觉语言上的决策过程，为个人工具设计提供一份完整的案例。</li>
+  </ol>
+
+  <h3>1.4　研究方法与工具</h3>
+  <p>本文全部基于对作品本身的检查与验证，方法链条如下：</p>
+  <ul>
+    <li><strong>静态审查：</strong>精读入口页壳层源码，还原 base64 内嵌的 UI 骨架与加载器算法（ROOT、SALT、链头数组、并发门控、重试、清单解析、重组与执行）。</li>
+    <li><strong>自检工具验证：</strong>运行 <code>verify_fragments.py</code>，确认 233 个真实碎片与 322 个干扰文件的分布及完整性。</li>
+    <li><strong>重组回归：</strong>依据加载器同一套密钥派生规则（SHA-256(SALT + 相对路径) 派生异或密钥）编写重组脚本，将全部碎片解码拼装为明文载荷并逐片比对哈希，作为第四章机制阐释的直接证据。</li>
+    <li><strong>桩环境行为验证：</strong>在 Node 沙箱中注入最小 DOM/存储桩，以"译码函数包装 + 调用日志"方式捕获运行时实际使用的全部字符串常量，用于功能测绘与行为验证。</li>
+    <li><strong>交叉核对：</strong>将界面文案、解码字符串、存储键名与随包说明相互比对，所有结论均以可追溯的原始材料为据。</li>
+  </ul>
+
+  <h3>1.5　论文组织结构</h3>
+  <p>全文共十一章，另有五个附录。第二章从需求分析入手建立产品的功能与非功能基线；第三章给出系统总体架构与物理布局；第四章是本文的技术核心，逐层拆解碎片防护机制；第五章详尽测绘十一大功能模块；第六章阐述数据模型与双层持久化；第七章讨论独立于加载器之外的页面自我保护层；第八章覆盖用户体验与界面设计；第九章进行安全性与风险分析；第十章给出测试与质量保障方法及验证实验；第十一章总结并展望（含统计预留能力的启用蓝图）。附录 A–E 分别提供术语表、存储键清单、动作日志元数据、关键代码段注释与图表清单，便于读者对照原文核验。</p>
+</section>
+
+<!-- ===== 第二章 ===== -->
+<section class="ch" id="ch2">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 02</div>
+    <h2>第二章　需求分析与设计理念</h2>
+    <div class="ch-lead">本章建立产品的用户画像、功能需求与非功能需求基线，并阐释贯穿全系统的设计理念。</div>
+  </div>
+
+  <h3>2.1　用户画像与典型场景</h3>
+  <p>本系统的目标用户并非"需要协作与提醒的企业用户"，而是<strong>追求私密、自洽与掌控感的个人用户</strong>：数据只属于自己、工具随取随用、不希望被账号体系与服务器绑定。围绕这一画像，可以归纳出四类典型使用场景：</p>
+  <div class="grid2">
+    <div class="mini-card">
+      <h5>场景一：通勤碎片时间</h5>
+      <p>在地铁或排队间隙随手记下一件待办或一条"报件已送达"式的事务记录，30 秒内完成输入、打标、归位，无需联网。工作台的"每日记录 + 短语快捷填充"正是为这一场景设计。</p>
+    </div>
+    <div class="mini-card">
+      <h5>场景二：工作日的分层管理</h5>
+      <p>把任务分成"今日待办"与"永久待办"两个时间尺度：短期用截止日期、优先级与标签推进；长期用"转为今日待办"完成从永久池到当日池的流转。</p>
+    </div>
+    <div class="mini-card">
+      <h5>场景三：周末复盘与回看</h5>
+      <p>通过日历查看任意一天做了什么，通过操作日志回放本周对数据的所有增删改，形成"记录—执行—复盘"的闭环。</p>
+    </div>
+    <div class="mini-card">
+      <h5>场景四：成果的私人化保存</h5>
+      <p>用户不希望自己的工具界面、交互细节与数据字典被他人一键复制用于"白嫖"或二次分发；也不希望在传阅过程中因文件截断、转码而永久损坏。这正是碎片防护层存在的理由。</p>
+    </div>
+  </div>
+
+  <h3>2.2　功能需求</h3>
+  <p>依据界面结构与运行时行为，可将系统功能需求归纳为十一大已实现模块，外加一项预留能力。下表列出功能编号（FR）、模块、核心能力与关键交互，构成第五章功能详解的索引：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 2-1　功能需求总表（FR 编号与第五章对应小节）</caption>
+      <colgroup><col style="width:9%"><col style="width:15%"><col style="width:40%"><col style="width:36%"></colgroup>
+      <thead><tr><th>编号</th><th>模块</th><th>核心能力</th><th>关键交互</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">FR-01</td><td>待办清单</td><td>工作/生活双分区；全部/待办/已完成/已逾期/星标五态筛选；优先级、标签、截止日期、完成时间</td><td>新增、编辑、完成/取消完成、复制、删除、星标、置顶、拖拽排序、批量清空分区</td></tr>
+        <tr><td class="mono">FR-02</td><td>永久待办</td><td>永久池任务；类型（工作/生活）与状态筛选；固定维护习惯性事项</td><td>新增、编辑、完成、星标、置顶、复制、转为今日待办</td></tr>
+        <tr><td class="mono">FR-03</td><td>每日记录</td><td>记录类型（其他/会议/报件/取件等）管理；短语快捷填充</td><td>新增、编辑、复制、置顶、星标、删除；短语一键带入</td></tr>
+        <tr><td class="mono">FR-04</td><td>草稿箱</td><td>未完成输入的自动暂存；草稿独立管理</td><td>新增、编辑、转待办、转记录、删除；重新打开继续编辑</td></tr>
+        <tr><td class="mono">FR-05</td><td>回收站</td><td>删除数据的软删除暂存；可恢复或彻底清除</td><td>恢复待办/永久待办/记录/草稿；清空回收站</td></tr>
+        <tr><td class="mono">FR-06</td><td>日历</td><td>按月视图呈现每日内容密度；按日查看</td><td>上一月/下一月/回到今天；点击日期查看当日事项</td></tr>
+        <tr><td class="mono">FR-07</td><td>搜索</td><td>范围（全部/待办/记录/永久/草稿）+ 类型（工作/生活）+ 日期区间</td><td>关键词检索、结果跳转、搜索历史</td></tr>
+        <tr><td class="mono">FR-08</td><td>设置（标签管理）</td><td>标签管理、记录类型管理、便捷短语管理</td><td>增删改、配色、分组、重名校验</td></tr>
+        <tr><td class="mono">FR-09</td><td>操作日志</td><td>全部操作行为留痕（增删改、恢复、导入导出等）</td><td>按分类筛选、清空日志</td></tr>
+        <tr><td class="mono">FR-10</td><td>数据管理</td><td>导出 JSON 备份、导入 JSON 恢复、导出 Markdown、复制当天、删除当天、删除全部</td><td>文件级备份与恢复；剪贴板级日汇总</td></tr>
+        <tr><td class="mono">FR-11</td><td>页面保护</td><td>开发者工具检测、水印、交互拦截、锁页</td><td>检测到调试行为即锁定并提示刷新</td></tr>
+        <tr><td class="mono">FR-12</td><td>统计（预留）</td><td>统计总览：四格指标瓦片 + 近七天趋势条（代码已就绪，界面入口暂隐藏）</td><td>随版本启用；统计口径由明细实时计算</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>此外，系统内还有着若干功能点：如<strong>日期导航顶栏</strong>（前一天/后一天/今天快速切换）、<strong>复制内容</strong>（将当日全部内容格式化后写入剪贴板）、<strong>动作菜单</strong>（每一条数据项上的"更多"操作聚合）、<strong>搜索历史</strong>（最近查询词留存）等，均将在第五章相应小节展开。</p>
+
+  <h3>2.3　非功能需求</h3>
+  <ul>
+    <li><strong>NFR-1 启动性能：</strong>全量载荷约 690KB，重组启动约 0.5 秒，且只发起 233 个真实请求（绝不触碰干扰文件），网络失败自动重试至多 3 次。</li>
+    <li><strong>NFR-2 抗文本损坏：</strong>全部碎片以二进制 + arrayBuffer 读取，免疫换行符转换、字符集错乱、BOM 头、剪贴板截断等文本层损坏；每片以长度 + SHA-256 双重校验，损坏可精确定位到文件名。</li>
+    <li><strong>NFR-3 部署成本：</strong>产物仅需静态托管（任意静态服务器），无构建、无依赖、无后端；入口页可任意改名，碎片根目录可任意重命名或嵌入既有目录。</li>
+    <li><strong>NFR-4 兼容性：</strong>以标准浏览器 API（fetch/arrayBuffer/IndexedDB/localStorage/Web Crypto）为依赖面，未使用任何构建产物或运行时框架，理论上任何现代浏览器可直接运行。</li>
+    <li><strong>NFR-5 数据不丢失：</strong>提供导出/导入 JSON 双通道、草稿自动暂存、回收站软删除、删除当天/全部前的二次确认、配额使用量实时展示。</li>
+    <li><strong>NFR-6 可运维性：</strong>通过 <code>verify_fragments.py</code> 自检工具、页首精确错误提示、<code>?diag=1</code> 诊断模式三件套，使"坏了能定位、传前能自检、运行能观测"。</li>
+  </ul>
+
+  <h3>2.4　设计理念：四组贯穿全局的原则</h3>
+  <h4>2.4.1　"难拿走"与"不易坏"的统一</h4>
+  <p>传统思路下，防复制（把代码藏起来）与可靠性（把代码摊开可校验）互相矛盾。本系统的解法是把矛盾转移到<strong>文件组织层</strong>：内容仍然完整存在，但被打散为小片、以随机命名散布、以路径派生密钥加密、以清单哈希校验。对合法用户，浏览器按清单精确取回；对提取者，需要先识别链头、解析清单、派生密钥、重组拼装，成本远高于一次"查看源代码"。</p>
+  <h4>2.4.2　一切从"单文件可运行"出发</h4>
+  <p>产品交付形态始终是"一个 HTML + 一个资源目录"，无任何安装步骤。入口页自包含 UI 骨架与加载器，资源目录在加载时按需获取；这种"壳 + 载荷"的二分也天然地把"表现层"与"逻辑层"分开，便于独立演进。</p>
+  <h4>2.4.3　默认本地、始终本地</h4>
+  <p>所有业务数据写入浏览器本地存储，不上传任何服务器；"数据管理"模块的一切操作（导出、导入、复制、删除）均发生在用户设备与剪贴板/文件之间。隐私即默认，这是个人工具最朴素也最坚固的设计承诺。</p>
+  <h3>2.5　与其他个人待办工具的定位差异</h3>
+  <p>市面上主流的个人待办工具大致有三类：在线协作型（如 Trello、Notion、飞书任务）、极简单机型（如系统自带备忘录）与数据自托管型（如 TiddlyWiki、Obsidian 本地库）。本系统的定位与三者均有本质区别，也因此在设计上刻意避开它们的默认路径：</p>
+  <ul>
+    <li><strong>不学在线协作型：</strong>不引入账号、服务器、多人权限与订阅制。协作是团队场景的答案，而本系统服务的个人场景要的是"打开即用、数据归己"；一旦接入服务端，也就同时接入服务端的中断、隐私与续费风险。</li>
+    <li><strong>不满足于极简单机型：</strong>系统备忘录只解决"记下来"，不解决"记下来之后怎么办"。本系统通过状态机（完成/逾期/星标/置顶）、分区（工作/生活）、流转（待办↔永久待办）、复盘（日志/日历/搜索）补全了"记录—执行—回顾"的后半程。</li>
+    <li><strong>不照搬数据自托管型的复杂度：</strong>自托管工具往往要求用户自己管理文件、插件与同步策略，学习成本高。本系统把复杂度收进交付物内部：用户只需要"一个 HTML + 一个目录"，迁移靠导出/导入 JSON，没有任何配置负担。</li>
+  </ul>
+  <p>这一差异定位也直接决定了第四章防护设计的必要性：在线协作型靠服务端鉴权保护内容，自托管型靠用户自己的文件权限保护内容，而本系统"纯静态、无后端"的形态决定了内容保护必须由前端技术本身承担——碎片防护正是在这一约束下生长出来的答案。</p>
+</section>
+
+<!-- ===== 第三章 ===== -->
+<section class="ch" id="ch3">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 03</div>
+    <h2>第三章　系统总体架构</h2>
+    <div class="ch-lead">本章从逻辑分层、物理布局与交付物清单三个视角刻画系统整体架构。</div>
+  </div>
+
+  <h3>3.1　逻辑分层</h3>
+  <p>整个系统在逻辑上可分为五个层次，自底向上为：<strong>数据持久层</strong>（IndexedDB 与 localStorage 双层存储）、<strong>业务逻辑层</strong>（重组后的载荷中实现的全部数据操作与状态管理）、<strong>表现层</strong>（UI 骨架、模块渲染、toast 与弹窗）、<strong>碎片加载层</strong>（入口页中的链式加载器，负责取回、校验并重组载荷）、<strong>保护层</strong>（页面自我保护，独立于加载器运行）。其中加载层与保护层共同构成系统的"防御面"，业务与数据层构成系统的"价值面"，两者在入口页与载荷中的物理分布如下：</p>
+  <div class="fig">
+    <svg class="svg-fig" viewBox="0 0 860 470" role="img" aria-label="系统五层架构图">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c99a5a"/></marker>
+      </defs>
+      <style>
+        .lyr rect{stroke-width:1.5}
+        .lyr text{font-size:14px}
+        .lyr .t{font-weight:700}
+        .lyr .d{font-size:12px;fill:#7a6247}
+        .lyr .tag{font-size:11px}
+      </style>
+      <g class="lyr">
+        <rect x="30" y="20" width="800" height="66" rx="10" fill="#fff6e6" stroke="#eccf9e"/>
+        <text x="52" y="48" class="t">表现层　Presentation</text>
+        <text x="52" y="70" class="d">入口页壳层内嵌 base64 UI 骨架：顶栏日期导航 · 待办/永久待办/每日记录模块 · 数据管理 · 弹窗与动作菜单</text>
+        <text x="700" y="48" class="tag">入口页</text>
+        <text x="700" y="70" class="tag">DaibanJilu.html</text>
+      </g>
+      <g class="lyr">
+        <rect x="30" y="104" width="800" height="66" rx="10" fill="#fef0dd" stroke="#f0d39a"/>
+        <text x="52" y="132" class="t">碎片加载层　Fragment Loader</text>
+        <text x="52" y="154" class="d">ROOT/SALT 密钥派生 · 8 链头清单解析 · 并发门控(20) · 三次重试 · 异或解码 · 长度+SHA-256 校验 · 重组并执行</text>
+        <text x="700" y="132" class="tag">入口页</text>
+        <text x="700" y="154" class="tag">w/ 碎片包</text>
+      </g>
+      <g class="lyr">
+        <rect x="30" y="188" width="800" height="66" rx="10" fill="#e8f5fe" stroke="#b9ddf3"/>
+        <text x="52" y="216" class="t">页面保护层　Self-Protection</text>
+        <text x="52" y="238" class="d">开发者工具检测(debugger 计时+窗口尺寸差) · 水印 · 右键/复制/保存/打印/拖拽拦截 · PAGE_LOCKED 锁页</text>
+        <text x="700" y="216" class="tag">载荷内</text>
+        <text x="700" y="238" class="tag">重组后运行</text>
+      </g>
+      <g class="lyr">
+        <rect x="30" y="272" width="800" height="66" rx="10" fill="#f3eefb" stroke="#d5c8ec"/>
+        <text x="52" y="300" class="t">业务逻辑层　Business Logic</text>
+        <text x="52" y="322" class="d">待办/永久待办/每日记录/草稿/回收站/日志/搜索/设置等 11 模块的数据操作与状态机（统计为预留）</text>
+        <text x="700" y="300" class="tag">载荷内</text>
+        <text x="700" y="322" class="tag">690,845 B</text>
+      </g>
+      <g class="lyr">
+        <rect x="30" y="356" width="800" height="66" rx="10" fill="#e5f7ef" stroke="#b9e3cf"/>
+        <text x="52" y="384" class="t">数据持久层　Persistence</text>
+        <text x="52" y="406" class="d">IndexedDB(按日存储 + 元数据) · localStorage(标签/短语/日志/回收站/草稿/UI 偏好/搜索历史) · 配额监控与历史迁移</text>
+        <text x="700" y="384" class="tag">浏览器本地</text>
+        <text x="700" y="406" class="tag">无服务器</text>
+      </g>
+      <g>
+        <line x1="430" y1="86" x2="430" y2="104" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="430" y1="170" x2="430" y2="188" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="430" y1="254" x2="430" y2="272" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="430" y1="338" x2="430" y2="356" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr)"/>
+      </g>
+    </svg>
+    <div class="cap"><b>图 3-1　系统五层逻辑架构</b>。加载层与保护层构成防御面；业务与数据层构成价值面。箭头表示上层依赖下层、数据自上而下流动。</div>
+  </div>
+
+  <h3>3.2　物理布局与交付物</h3>
+  <p>系统的物理交付物共四件：入口页、碎片目录、自检脚本与说明文档。文件统计如下：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 3-1　交付物清单与物理指标</caption>
+      <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+      <thead><tr><th>交付物</th><th>大小 / 数量</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">DaibanJilu.html</td><td class="mono">79,362 B</td><td>入口页：base64 UI 骨架 + 二进制链加载器，不含业务内容</td></tr>
+        <tr><td class="mono">w/ 碎片目录</td><td class="mono">555 个 .bin 文件<br>521 个目录</td><td>233 个真实碎片 + 322 个干扰文件；40 个一级随机目录、480 个二级随机目录</td></tr>
+        <tr><td class="mono">verify_fragments.py</td><td class="mono">4,297 B</td><td>部署前自检：链头解析、逐片哈希校验、干扰文件清点</td></tr>
+        <tr><td class="mono">README.txt</td><td class="mono">约 4.5 KB</td><td>产品说明、使用与排错指引、诚实边界声明</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>碎片目录的目录层级为固定的两层随机结构：<code>w/&lt;一级随机目录&gt;/&lt;二级随机目录&gt;/&lt;随机名&gt;.bin</code>，例如链头之一位于 <code class="mono">w/b3/0a/4bb346e5.bin</code>。40 个一级目录与 480 个二级目录的名字均无语义；文件名的 8 位十六进制串亦与内容无关。这种布局让"按名字找规律"的路径彻底失效——任何静态分析都必须从加载器出发，而不是从文件名出发。</p>
+  <p>碎片包的构成关系如下图所示。需要强调的一点是：<strong>干扰文件 322 个多于真实碎片 233 个</strong>，这是刻意设计——批量抓取者若以"全部下载然后逐个尝试"为策略，必须试错过半的文件才能触达全部真实数据；而正常加载由于链头清单精确指引，永远只请求 233 个真实碎片，从不触碰干扰文件。</p>
+  <div class="fig">
+    <div class="chart" id="chart-frag"></div>
+    <div class="cap"><b>图 3-2　碎片包文件构成</b>。真实碎片 233 个（其中链头 8 个、载荷片 225 个），干扰文件 322 个，合计 555 个 .bin 文件；加载仅发出 233 个请求。</div>
+  </div>
+
+  <h3>3.3　与常规单页应用的架构对比</h3>
+  <p>将本系统与三类常见单页交付形态横向对比，可以更清楚地看出其在"保护—可靠—成本"三角上的取舍：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 3-2　四种单页交付形态的架构对比</caption>
+      <colgroup><col style="width:16%"><col style="width:21%"><col style="width:21%"><col style="width:21%"><col style="width:21%"></colgroup>
+      <thead><tr><th>维度</th><th>普通单文件</th><th>单文件 + JS 混淆</th><th>构建产物 + CDN 鉴权</th><th>本系统（碎片链）</th></tr></thead>
+      <tbody>
+        <tr><td>查看源码即可用</td><td>是（一次点击）</td><td>部分（需解码）</td><td>否</td><td>否（需解析链头/密钥/重组）</td></tr>
+        <tr><td>一键另存为</td><td>可用</td><td>可用（可运行）</td><td>需处理资源</td><td>不可用（碎片缺一即失）</td></tr>
+        <tr><td>抗批量抓取</td><td>无</td><td>弱</td><td>中（取决于鉴权）</td><td>强（322 干扰 + 逐片校验）</td></tr>
+        <tr><td>抗文本层损坏</td><td>弱（整体报废）</td><td>弱</td><td>中</td><td>强（二进制 + 逐片定位）</td></tr>
+        <tr><td>部署依赖</td><td>任意静态托管</td><td>任意静态托管</td><td>需鉴权/CDN 配置</td><td>任意静态托管</td></tr>
+        <tr><td>离线可用</td><td>是</td><td>是</td><td>取决于缓存</td><td>是</td></tr>
+        <tr><td>启动性能</td><td>最优</td><td>略损</td><td>视网络</td><td>≈0.5s（690KB）</td></tr>
+        <tr><td>维护成本</td><td>最低</td><td>低</td><td>中</td><td>低（自检脚本 + 诊断模式）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>3.4　入口页壳层结构解析</h3>
+  <p>作为"看得见的部分"，入口页 DaibanJilu.html（79,362 字节）承载着两段职责：<strong>UI 骨架</strong>与<strong>二进制链加载器</strong>。其中 UI 骨架以 base64 编码内嵌，解码后是一段完整的表现层模板（顶栏日期导航、模块面板、弹窗体系、toast 容器、FAB 与全部 CSS），它在碎片载荷尚未到达时即渲染出页面外壳，并以"正在加载待办记录工作台…"进度条承接用户的等待；加载器则是紧随其后的一小段紧凑 JavaScript，包含四个核心常量与六个流水线步骤：</p>
+  <ul>
+    <li><strong>常量区：</strong><code class="mono">ROOT</code>（碎片根目录 "w"）、<code class="mono">SALT</code>（密钥派生盐）、<code class="mono">HEADS</code>（8 个链头的相对路径数组）、并发门控与重试参数——这是整个碎片体系对外暴露的唯一"钥匙串"；</li>
+    <li><strong>算法区：</strong>清单解析（魔数校验、碎片计数、记录展开）、密钥派生（SHA-256 同步封装）、异或解码、长度+SHA-256 双重校验、按序拼接、运行时注入执行。</li>
+  </ul>
+  <p>值得注意的是，壳层刻意不包含任何业务内容——即使完全读懂壳层，也拿不到一条数据逻辑；业务代码的全部价值藏在碎片载荷之中。这一"壳层可读、载荷不可读"的刻意不对称，正是碎片防护的精髓：把攻击者的分析对象从"一个文件"拉长为"一个文件 + 一份需要逆向的加载协议"。</p>
+</section>
+
+<!-- ===== 第四章 ===== -->
+<section class="ch" id="ch4">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 04</div>
+    <h2>第四章　碎片防护技术剖析</h2>
+    <div class="ch-lead">本章为论文技术核心：从威胁模型出发，逐层拆解链头清单、密钥派生、并发加载、干扰文件与性能指标的完整设计。</div>
+  </div>
+
+  <h3>4.1　威胁模型：防御对象是谁</h3>
+  <p>任何防护设计的第一步是界定对手。按提取能力从低到高，可将本系统面对的对手分为五层：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 4-1　分层威胁模型（对手画像与对应防御）</caption>
+      <colgroup><col style="width:18%"><col style="width:30%"><col style="width:24%"><col style="width:28%"></colgroup>
+      <thead><tr><th>对手层级</th><th>典型行为</th><th>技术能力</th><th>本系统的主要防御</th></tr></thead>
+      <tbody>
+        <tr><td><b>T1 顺手党</b></td><td>查看源代码、Ctrl+S 另存、复制粘贴</td><td>无编程</td><td>碎片化：源码无内容；另存仅得壳层</td></tr>
+        <tr><td><b>T2 一键保存党</b></td><td>使用浏览器"保存完整网页"、下载器批量抓取静态资源</td><td>会用工具</td><td>555 个文件中仅 233 个真实；保存得到的是无法重组的碎片</td></tr>
+        <tr><td><b>T3 批量爬虫</b></td><td>脚本化抓取全部文件后逐一尝试</td><td>会写脚本</td><td>干扰文件多于真实碎片（322 &gt; 233），试错成本过半；路径派生密钥阻挡直读</td></tr>
+        <tr><td><b>T4 逆向工程师</b></td><td>分析入口页加载器，编写重组程序</td><td>精通前端/加密</td><td>加载器本身在壳层中可读；此层对手的成本已接近"重写一个应用"</td></tr>
+        <tr><td><b>T5 仓库克隆者</b></td><td>git clone 公开仓库</td><td>会用 git</td><td>理论上无防御（客户端天然如此）；依赖授权/部署策略，见第九章</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>由此可见，碎片防护的核心承诺是：<strong>把 T1–T3 的成本抬到"需要编程逆向"的高度</strong>，并让 T4 面对的不是一次点击而是完整分析工作。T5 属于部署层问题，不属于客户端技术范畴。</p>
+
+  <h3>4.2　总体机制</h3>
+  <p>碎片防护机制由五个相互咬合的部分构成：</p>
+  <ol>
+    <li><strong>二进制化：</strong>全部内容（CSS、HTML 模板、JavaScript 逻辑与数据字典）作为二进制载荷，与入口页文本彻底分离；碎片以 arrayBuffer 读取，避开文本编码问题。</li>
+    <li><strong>碎片化：</strong>载荷被切分为 233 个约 3KB 的碎片，按 8 条链组织；入口页只保存每条链第一个碎片的相对路径（链头），其余碎片的路径全部记录在链头的二进制清单中。</li>
+    <li><strong>路径派生密钥：</strong>每个碎片的异或密钥由"盐 + 相对路径"的 SHA-256 派生而来；密钥与文件位置绑定，改名或移动即解码失败，天然形成"防搬移"约束。</li>
+    <li><strong>链式校验：</strong>链头清单为每个碎片记录路径、长度与 SHA-256 摘要；加载时逐片校验，缺片、篡改、错序都能精确报出文件名。</li>
+    <li><strong>干扰注入：</strong>在碎片目录中混入 322 个同构的随机噪声文件，使"全量抓取"策略的信噪比低至 42%（233/555）。</li>
+  </ol>
+
+  <h3>4.3　二进制清单（链头）格式</h3>
+  <p>链头文件本身也是一个被异或加密的碎片，解密后其头部是一份二进制清单。格式如下：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 4-2　链头二进制清单字节布局</caption>
+      <colgroup><col style="width:14%"><col style="width:22%"><col style="width:26%"><col style="width:38%"></colgroup>
+      <thead><tr><th>偏移</th><th>字段</th><th>长度</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">0–3</td><td>魔数</td><td class="mono">4 B</td><td class="mono">"K7FB"——清单合法性标识，防误读误载</td></tr>
+        <tr><td class="mono">4–5</td><td>保留</td><td class="mono">2 B</td><td>版本/扩展位</td></tr>
+        <tr><td class="mono">6–7</td><td>碎片计数 n</td><td class="mono">2 B（大端）</td><td>本链包含的碎片总数（含链头自身）</td></tr>
+        <tr><td class="mono">8–11</td><td>链头载荷长度 l0</td><td class="mono">4 B（大端）</td><td>链头自身承载的内容字节数</td></tr>
+        <tr><td class="mono">12…</td><td>碎片记录 ×(n−1)</td><td>变长</td><td>每条记录：路径名字节长(1B) + 路径(变长) + 载荷长度(4B 大端) + SHA-256(32B)</td></tr>
+        <tr><td>末尾</td><td>链头内容</td><td class="mono">l0 B</td><td>链头自身携带的载荷片段</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>8 条链的碎片数分布为：<span class="badge teal">b3/0a 链：30 片</span><span class="badge teal">其余 7 链：各 29 片</span>，合计 30 + 29×7 = 233 片。链头载荷长度字段的存在使链头自身也能承载内容，不浪费任何一个字节。</p>
+
+  <h3>4.4　密钥派生与异或编解码</h3>
+  <p>每个碎片的解码密钥由全局盐（<code class="mono">koi7frag-2026-10b</code>）与该碎片相对碎片根目录的路径拼接后取 SHA-256 得到：</p>
+  <pre><span class="cm">// 密钥派生（与入口页加载器同一算法）</span>
+key = SHA256( SALT + <span class="st">"/"</span> + 相对路径 )   <span class="cm">// 例：SALT + "/b3/0a/4bb346e5.bin"</span>
+<span class="cm">// 异或编解码（对称，解码即再异或一次）</span>
+plain[i] = cipher[i] ^ key[i mod key.length]</pre>
+  <p>这一设计有两个精妙之处。其一，<strong>密钥不落盘</strong>：任何文件本身都不包含密钥，密钥是从"盐 + 路径"现场计算出来的；干扰文件即使被下载也无法直接解密（它们的路径不属于任何清单，即使穷举也无法得到正确的密钥上下文）。其二，<strong>改名即失效</strong>：密钥与路径绑定，若有人把碎片目录改名或移动碎片，除非同步修改加载器中的 ROOT 常量并保持相对路径不变，否则校验必然失败；而 ROOT 只影响目录前缀，相对路径不变时密钥不受影响——这正是随包文档中"改名安全"承诺的机制基础。</p>
+  <p>在重组回归实验中，以同一算法对全部 555 个文件进行解码尝试：233 个真实碎片全部命中魔数与哈希校验，322 个干扰文件无一命中——这从实证上验证了"正常加载绝不触碰干扰文件"的声明。</p>
+
+  <h3>4.5　加载器算法</h3>
+  <p>入口页加载器是一个约 150 行内联 JavaScript 的紧凑实现，核心流水线如下：</p>
+  <div class="fig">
+    <svg class="svg-fig" viewBox="0 0 860 470" role="img" aria-label="碎片链加载时序图">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c99a5a"/></marker>
+      </defs>
+      <style>
+        .f2 text{font-size:13px;font-weight:600}
+        .f2 .s{font-size:11.5px;fill:#7a6247;font-weight:400}
+        .f2 rect{stroke-width:1.4}
+      </style>
+      <g class="f2">
+        <rect x="40" y="24" width="160" height="52" rx="9" fill="#3b2f22" stroke="#3b2f22"/><text x="56" y="48" fill="#fff">① 打开页面</text><text x="56" y="66" fill="#e8dcc8" class="s">入口页壳层渲染进度 UI</text>
+        <rect x="40" y="104" width="160" height="52" rx="9" fill="#fef0dd" stroke="#f0d39a"/><text x="56" y="128">② 发起 8 条链请求</text><text x="56" y="146" class="s">HEADS 数组：每链仅知首片</text>
+        <rect x="40" y="184" width="160" height="52" rx="9" fill="#fef0dd" stroke="#f0d39a"/><text x="56" y="208">③ 解析链头清单</text><text x="56" y="226" class="s">魔数 K7FB + 记录 + 载荷</text>
+        <rect x="40" y="264" width="160" height="52" rx="9" fill="#fef0dd" stroke="#f0d39a"/><text x="56" y="288">④ 并发拉取载荷片</text><text x="56" y="306" class="s">门控 ≤20 并发 · 失败重试×3</text>
+        <rect x="40" y="344" width="160" height="52" rx="9" fill="#fef0dd" stroke="#f0d39a"/><text x="56" y="368">⑤ 逐片校验解码</text><text x="56" y="386" class="s">长度 + SHA-256 · 异或还原</text>
+        <rect x="40" y="408" width="160" height="52" rx="9" fill="#fdf3e7" stroke="#e2c795"/><text x="56" y="430">⑥ 重组并执行</text><text x="56" y="448" class="s">拼接 690,845 B · 更新进度 · eval</text>
+      </g>
+      <g class="f2">
+        <rect x="300" y="104" width="140" height="34" rx="8" fill="#fff" stroke="#eccf9e"/><text x="312" y="126">链头A..H</text>
+        <rect x="300" y="264" width="140" height="34" rx="8" fill="#fff" stroke="#eccf9e"/><text x="312" y="286">225 个载荷片</text>
+        <rect x="520" y="104" width="180" height="66" rx="9" fill="#fff8ee" stroke="#eccf9e"/><text x="536" y="130">清单记录 = 文件名 →</text><text x="536" y="152" class="s">长度 + SHA-256 摘要</text><text x="536" y="170" class="s">（防缺片/篡改/错序）</text>
+        <rect x="520" y="264" width="180" height="66" rx="9" fill="#fff8ee" stroke="#eccf9e"/><text x="536" y="290">密钥 = SHA256(SALT+路径)</text><text x="536" y="308" class="s">干扰文件不在清单内 →</text><text x="536" y="326" class="s">永远不被请求</text>
+        <rect x="560" y="408" width="120" height="34" rx="8" fill="#fdf3e7" stroke="#e2c795"/><text x="576" y="430">?diag=1 输出日志</text>
+      </g>
+      <g>
+        <line x1="200" y1="130" x2="300" y2="130" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="440" y1="121" x2="520" y2="121" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="200" y1="290" x2="300" y2="290" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="440" y1="290" x2="520" y2="290" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="430" y1="138" x2="430" y2="264" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="430" y1="316" x2="430" y2="344" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="430" y1="396" x2="430" y2="408" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="200" y1="434" x2="560" y2="434" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr2)"/>
+      </g>
+    </svg>
+    <div class="cap"><b>图 4-1　碎片链加载时序</b>。六步流水线；并发门控与重试保证弱网下的成功率；逐片校验把"哪一片坏了"精确到文件名。</div>
+  </div>
+  <p>算法要点归纳如下：</p>
+  <ul>
+    <li><strong>并发门控（gate 20）：</strong>加载器实现了一个容量为 20 的并发闸，防止一次性发起数百个 fetch 压垮浏览器连接池；队列按链顺序消费。</li>
+    <li><strong>三次重试：</strong>每个碎片的请求失败（网络错误/404/校验不符）时自动重试至多 3 次，显著提升弱网或托管服务偶发 5xx 下的加载成功率。</li>
+    <li><strong>进度驱动：</strong>每成功解码一片即更新页面顶部的加载进度；全部就绪后一次性拼接并执行，保证 UI 完整、无闪烁。</li>
+    <li><strong>精确报错：</strong>失败时在页首输出"校验失败 xxx.bin / 长度不符 xxx.bin / HTTP 404 xxx.bin"，直接指向可修复对象。</li>
+    <li><strong>诊断模式：</strong>URL 追加 <code>?diag=1</code> 后在控制台输出重组字节数与耗时，供开发排障。</li>
+  </ul>
+
+  <h3>4.6　干扰文件策略与提取成本模型</h3>
+  <p>322 个干扰文件并非无意义的填充，它们在提取成本模型中扮演关键角色。设真实碎片数为 R=233，干扰文件数为 D=322，总文件数 T=555。对"全量抓取后逐个猜测"的 T3 类对手，其成功概率曲线随随机尝试次数线性上升：</p>
+  <ul>
+    <li>随机试错 1 个文件即命中真实碎片的概率：<span class="mono">233/555 ≈ 42.0%</span>；</li>
+    <li>要拿到"全部" 233 个真实碎片，最坏情况下需遍历全部 555 个文件，其中 322 次是无效劳动；</li>
+    <li>即使拿到全部文件，仍需要识别链头（魔数）、解析清单、按路径派生密钥、逐片异或解码并正确拼接，才能得到可运行的载荷——这一工作量已经接近"读一遍加载器代码"。</li>
+  </ul>
+  <p>更重要的是时间维度：对个人作品而言，<strong>"防提取"的收益不是绝对封锁，而是让批量爬取者的单位成本超过重建成本</strong>。当对手需要投入的分析时间接近"自己重写一个待办工具"时，碎片防护就达成了目标。</p>
+
+  <h3>4.7　抗损坏与可运维设计</h3>
+  <p>碎片化在带来保护性的同时，天然引入了"文件多、易丢失"的新风险。系统的对策是双重的：一是<strong>格式免疫</strong>——所有碎片为纯二进制，经由 arrayBuffer 读取，换行符转换、字符集误判、BOM 剥离、文本截断等常见文本损坏对它无效；二是<strong>校验与自检</strong>——链头清单内置每个碎片的长度与 SHA-256，运行期精确报错；交付物内置 <code>verify_fragments.py</code>，在解压后、上传前先跑一遍，输出"PASS/FAIL + 具体碎片名"，把部署事故消灭在发布之前。重组回归实验让 233 个碎片逐一通过长度与哈希校验，零失配，佐证了这套设计的健壮性。</p>
+
+  <h3>4.8　性能与效率指标</h3>
+  <p>碎片化最容易被质疑的是性能代价：文件数量从"1 个"变成"555 个"，加载会不会变慢？本版本的验证数据回答了这个问题——碎片链架构把性能代价压到了可忽略的水平：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 4-3　本版本核心性能指标</caption>
+      <colgroup><col style="width:30%"><col style="width:22%"><col style="width:48%"></colgroup>
+      <thead><tr><th>指标</th><th>数值</th><th>设计说明</th></tr></thead>
+      <tbody>
+        <tr><td>全量重组耗时</td><td class="mono">约 0.5 s</td><td>233 个碎片并发拉取（门控 20），解压、异或与哈希均为纯计算，无 IO 阻塞</td></tr>
+        <tr><td>实际网络请求数</td><td class="mono">233 个</td><td>链头清单精确指引，绝不触碰 322 个干扰文件</td></tr>
+        <tr><td>载荷体量</td><td class="mono">690,845 B</td><td>单片约 3KB，适合 HTTP 缓存与弱网增量传输</td></tr>
+        <tr><td>单片解码开销</td><td class="mono">SHA-256 + 异或</td><td>每片仅一次哈希比对与一次异或，总耗时微秒级</td></tr>
+        <tr><td>失败恢复</td><td class="mono">重试 ×3</td><td>网络抖动或单点 5xx 不影响整体加载成功率</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>更关键的是<strong>二进制载体带来的性能与健壮性双赢</strong>：文本碎片需要处理字符集与转义，解析成本高且易碎；二进制碎片由 arrayBuffer 直达内存，加载器无需任何文本预处理。与此同时，555 个文件中的 322 个干扰文件对合法用户是零成本的——它们从未被请求，只存在于抓取者的世界里。这组数字说明：<strong>防护设计的质量不取决于复杂度，而取决于对载体本质的把握——二进制 + 哈希校验 + 并发控制，比堆更多碎片更有效</strong>。</p>
+
+  <h3>4.9　与主流前端保护方案的比较</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 4-4　常见前端源码保护手段与本系统的比较</caption>
+      <colgroup><col style="width:20%"><col style="width:20%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup>
+      <thead><tr><th>维度</th><th>JS 混淆（obfuscator）</th><th>WASM 封装核心</th><th>服务端鉴权/接口代理</th><th>碎片链（本系统）</th></tr></thead>
+      <tbody>
+        <tr><td>可读性破坏</td><td>高（源码不可读）</td><td>高（二进制）</td><td>中</td><td>高（内容整体不可直读）</td></tr>
+        <tr><td>运行性能损耗</td><td>中（字符串解码）</td><td>低</td><td>低</td><td>低（异或 + 哈希极快）</td></tr>
+        <tr><td>部署形态</td><td>单文件</td><td>多文件</td><td>需后端</td><td>静态目录</td></tr>
+        <tr><td>抗"另存为"</td><td>弱（可运行副本）</td><td>中</td><td>强</td><td>强（碎片无法单独运行）</td></tr>
+        <tr><td>损坏自愈/定位</td><td>无</td><td>无</td><td>—</td><td>强（逐片校验定位）</td></tr>
+        <tr><td>可维护性</td><td>需保留映射</td><td>需工具链</td><td>常规</td><td>重组工具 + 自检脚本</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">值得指出，混淆与本系统的碎片链并非互斥：重组后的载荷内部仍可采用字符串数组混淆（本系统载荷中即存在 javascript-obfuscator 风格的字符串数组与译码函数，运行时通过"索引 + 密钥"两参调用还原字符串）。这说明作者采取了<strong>文件级碎片 + 代码级混淆的双层纵深</strong>，T4 级对手在还原载荷后还需再面对一轮代码级反混淆。</p>
+</section>
+
+<!-- ===== 第五章 ===== -->
+<section class="ch" id="ch5">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 05</div>
+    <h2>第五章　功能体系详解</h2>
+    <div class="ch-lead">本章按十一大模块逐一测绘系统的功能细节、状态机与交互路径，全部依据界面结构与运行时行为证据。</div>
+  </div>
+
+  <h3>5.1　待办清单（FR-01）</h3>
+  <p>待办清单是工作台的核心模块。每条待办携带一组结构化字段：<strong>归属分区（工作/生活）、类型（公事/私事）、优先级（高/中/低）、记录类型、发生时间、截止日期、内容、标签、完成状态、星标、置顶与更新时间</strong>。模块采用"分区 + 筛选器"的双重组织方式：</p>
+  <ul>
+    <li><strong>分区：</strong>工作与生活两个区块各自独立渲染，区块可折叠（collapsed），可整体清空（"删除全部"），并分别带区块级计数。</li>
+    <li><strong>筛选器：</strong>顶部分组按钮提供五态切换——全部 / 待办 / 已完成 / 已逾期 / 星标。其中"已逾期"由当前时间与截止日期实时比较得出；"星标"是独立于完成状态的标记维度，二者正交。</li>
+    <li><strong>列表项：</strong>每项渲染类型徽标（公事/私事）、优先级色点、标签徽章、截止日期与逾期药丸（overduePill）、星标图标；右侧"更多"按钮弹出动作菜单。</li>
+  </ul>
+  <p>动作菜单是待办项的操作中枢，可用动作包括：<strong>完成待办 / 取消完成、编辑待办、复制内容、置顶待办 / 取消置顶、标记星标 / 取消星标、转为永久待办、移入回收站、彻底删除待办</strong>。其中"复制内容"会以相同字段快速新建一条，"转为永久待办"实现待办池向永久池的沉淀，"置顶"影响渲染顺序并即时反馈。状态机如下：</p>
+  <div class="fig">
+    <svg class="svg-fig" viewBox="0 0 860 300" role="img" aria-label="待办状态机">
+      <defs>
+        <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c99a5a"/></marker>
+      </defs>
+      <style>
+        .sm text{font-size:13.5px;font-weight:600}
+        .sm .l{font-size:11.5px;fill:#7a6247;font-weight:400}
+      </style>
+      <g class="sm">
+        <rect x="70" y="90" width="170" height="60" rx="10" fill="#fef0dd" stroke="#f59e0b"/>
+        <text x="90" y="120">待办 pending</text><text x="90" y="138" class="l">待办池：工作/生活分区</text>
+        <rect x="360" y="90" width="170" height="60" rx="10" fill="#e5f7ef" stroke="#10b981"/>
+        <text x="380" y="120">已完成 done</text><text x="380" y="138" class="l">完成率计入进度反馈</text>
+        <rect x="650" y="90" width="150" height="60" rx="10" fill="#fdecec" stroke="#ef4444"/>
+        <text x="670" y="120">回收站 bin</text><text x="670" y="138" class="l">软删除，可恢复</text>
+        <rect x="650" y="200" width="150" height="60" rx="10" fill="#fff8ee" stroke="#eccf9e"/>
+        <text x="670" y="230">彻底删除</text><text x="670" y="248" class="l">不可逆（经确认）</text>
+        <rect x="360" y="200" width="170" height="60" rx="10" fill="#f3eefb" stroke="#d5c8ec"/>
+        <text x="380" y="230">永久待办池</text><text x="380" y="248" class="l">转为永久待办/转回今日</text>
+      </g>
+      <g>
+        <line x1="240" y1="120" x2="360" y2="120" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="282" y="110" font-size="12" fill="#7a6247">完成</text>
+        <line x1="360" y1="150" x2="240" y2="150" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="282" y="162" font-size="12" fill="#7a6247">取消完成</text>
+        <line x1="240" y1="150" x2="240" y2="250" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/>
+        <line x1="240" y1="250" x2="360" y2="250" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="282" y="240" font-size="12" fill="#7a6247">转为永久</text>
+        <line x1="530" y1="120" x2="650" y2="120" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="572" y="110" font-size="12" fill="#7a6247">移入回收站</text>
+        <line x1="650" y1="150" x2="530" y2="150" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="572" y="162" font-size="12" fill="#7a6247">恢复</text>
+        <line x1="725" y1="150" x2="725" y2="200" stroke="#c99a5a" stroke-width="2" marker-end="url(#arr3)"/><text x="735" y="178" font-size="12" fill="#7a6247">彻底删除</text>
+      </g>
+    </svg>
+    <div class="cap"><b>图 5-1　待办生命周期状态机</b>。完成/取消完成双向可逆；删除经软删除缓冲；待办与永久待办双向流转。</div>
+  </div>
+  <p>交互细节上还包含：拖拽排序（列表项可拖动换序，拖动中有占位样式）、Enter 快速提交新增、内容/名称非空校验（"内容不能为空"）、编辑弹窗与原内容回填等。</p>
+
+  <h3>5.2　永久待办（FR-02）</h3>
+  <p>永久待办模块服务于"不属于今天、但必须持续维护"的事项（如周期性的材料整理、习惯性事务）。其组织维度与待办不同：<strong>类型筛选（全部/工作/生活）+ 状态分组 + 折叠</strong>，列表项同样支持完成/取消完成、星标、置顶、复制内容、编辑与删除。其最关键的流转动作是<strong>"转为今日待办"</strong>：一键把永久项实例化为今天的待办（可携带截止日期与标签），实现永久池到当日池的桥接；反向的"转为永久待办"在待办模块中提供。这一双向流转使两池在时间尺度上互补而不重复，是产品信息架构中最具巧思的一环。</p>
+
+  <h3>5.3　每日记录（FR-03）</h3>
+  <p>每日记录面向"不一定是任务、但值得留痕"的事务信息（如"取件送达，转交相关科室"）。它的差异化设计有三点：</p>
+  <ul>
+    <li><strong>记录类型：</strong>系统内置四种默认类型——其他、会议、报件、取件，每种类型配有默认短语库；用户可在设置中增删改记录类型（删除时提示"删除类型「x」"，并需确认影响范围）。</li>
+    <li><strong>短语快捷输入：</strong>表单内置短语分组，点选即填入内容，把高频事务的录入从"打字"降级为"点一下"。默认短语共 18 条，覆盖生活与工作两类：生活侧如"买菜做饭，打理日常饮食""锻炼身体，保持健康作息""联系家人，问候近况"；工作侧如"会议记录，汇总会议纪要""收集核对，补齐报件要件""取件送达，转交相关科室""起草文稿，按时报送材料"等。</li>
+    <li><strong>记录级操作：</strong>复制内容、置顶、星标、编辑、删除（移入回收站），与待办共享同构的动作模型。</li>
+  </ul>
+
+  <h3>5.4　草稿箱与自动暂存（FR-04）</h3>
+  <p>草稿箱是"输入过程"的保护层。用户在新增/编辑弹窗中开始输入后，内容会被实时暂存（存在一条提示"内容已暂存，重新打开可继续编辑"）；若中途关闭弹窗，草稿仍可在"草稿箱"模块中找到并继续编辑。草稿箱支持：新增草稿、编辑草稿、<strong>草稿转待办</strong>（按待办表单结构落库）、<strong>草稿转记录</strong>、删除草稿。这一机制把"误关弹窗""刷新页面"从数据丢失事故降级为无感恢复，与回收站共同构成双保险。</p>
+
+  <h3>5.5　回收站（FR-05）</h3>
+  <p>回收站实现统一的软删除语义：待办、永久待办、每日记录与草稿四类对象的删除一律先进回收站，可分别恢复（动作：恢复待办、恢复永久待办、恢复记录、恢复草稿），也可彻底删除或一键清空。清空与彻底删除均需二次确认。回收站的引入使"误删"有后悔药，同时也让操作日志能完整记录"删除—恢复"的全过程。</p>
+
+  <h3>5.6　日历与日期导航（FR-06）</h3>
+  <p>日期体系是全部数据的时间主轴。顶部栏提供日期选择器、前一天/后一天切换与"今天"回跳；日历模块按月展示，每个日期格以点状标记当日是否有数据（日历点密度即内容密度）。切换日期后，待办、记录等模块均按该日期重新渲染——"日期即上下文"的设计让用户既能管理"今天"，也能回看"任意一天"。</p>
+
+  <h3>5.7　搜索（FR-07）</h3>
+  <p>搜索模块提供多维检索能力，筛选维度如下：</p>
+  <ul>
+    <li><strong>范围：</strong>全部 / 待办 / 记录 / 永久 / 草稿——把四类对象纳入统一检索，避免"忘了记在哪一类"的查找困境；</li>
+    <li><strong>类型：</strong>全部 / 公事 / 私事——与对象分区正交；</li>
+    <li><strong>日期区间：</strong>起始日期与结束日期（sfDateFrom / sfDateTo），支持按发生时间筛选；</li>
+    <li><strong>搜索历史：</strong>最近查询词自动留存（存储键 <code class="mono">app-search-history-v1</code>），一键回填重复检索。</li>
+  </ul>
+  <p>结果列表逐项展示命中对象的类型徽标与摘要，提供一键清空全部筛选条件。对个人工具而言，搜索的价值不在于"全网检索"的规模，而在于"把一年前的某条记录捞回来"的确定性。</p>
+
+  <h3>5.8　操作日志（FR-09）</h3>
+  <p>操作日志是系统行为的"黑匣子"：每一次数据变更都会以结构化动作写入日志（存储键 <code class="mono">app-logs-v1</code>），覆盖的动作元数据（ACTION_META）达五十余种，包括：新增待办、编辑待办、完成待办、取消完成、复制内容、置顶/取消置顶、标记/取消星标、新增/编辑/删除永久待办、转为今日待办、新增/编辑/复制/删除记录、新增/编辑/删除草稿、草稿转待办、草稿转记录、恢复待办/永久待办/记录/草稿、彻底删除待办、清空回收站、清空待办分区、清空当日记录、清空永久待办、导出 JSON 备份、导入 JSON 备份、导出 Markdown、复制当天、删除当天、删除全部数据、标签改名、记录类型改名、删除标签、删除记录类型、新增/编辑/删除便捷短语、迁移历史数据、清空日志等。</p>
+  <p>日志模块本身提供<strong>分类筛选（全部/待办/记录/草稿/回收站/系统）</strong>与<strong>清空日志</strong>（带确认：确定清空全部操作日志吗？）。这套机制让用户能够复盘"我的数据是怎么变成今天这样的"，也为故障排查提供了时间线证据。</p>
+
+  <h3>5.9　设置中心（FR-08）</h3>
+  <p>设置弹窗聚合三类元数据管理：</p>
+  <ul>
+    <li><strong>标签管理：</strong>新增标签（名称非空校验、重名校验"名称已存在"）、改名、删除；删除时二选一——<strong>"只删标签，保留事项"或"删除并移除所有事项上的该标签"</strong>，把"删标签是否连坐数据"的决定权交给用户；标签可配颜色（调色板包含约十余种色值，如 #f0a100、#0e7490、#22a447、#2f6fd0、#e8590c、#0ca678、#8e44ad、#e03131 等）。</li>
+    <li><strong>记录类型管理：</strong>增删改记录类型（内置其他/会议/报件/取件），删除需确认，改名即时同步历史记录的类型展示。</li>
+    <li><strong>便捷短语管理：</strong>按分组维护短语（新增/编辑/删除），是录入效率的最终调节旋钮。</li>
+  </ul>
+
+  <h3>5.10　数据管理（FR-10）</h3>
+  <p>数据管理模块是"数据主权"的落地窗口，全部操作均在本机完成：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 5-1　数据管理操作清单</caption>
+      <colgroup><col style="width:22%"><col style="width:42%"><col style="width:36%"></colgroup>
+      <thead><tr><th>操作</th><th>行为</th><th>场景价值</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">导出 JSON 备份</td><td>将全部数据序列化为 JSON 文件下载</td><td>换设备/浏览器迁移、历史归档</td></tr>
+        <tr><td class="mono">导入 JSON 备份</td><td>读取备份文件并合并/覆盖恢复</td><td>灾难恢复、跨设备同步的替代通道</td></tr>
+        <tr><td class="mono">导出 Markdown</td><td>按日把待办/记录格式化为 Markdown 文本下载</td><td>嵌入笔记、周报、知识库</td></tr>
+        <tr><td class="mono">复制内容（当天）</td><td>当日全部内容格式化写入剪贴板（toast：当日内容已存入剪贴板）</td><td>快速分享当日安排</td></tr>
+        <tr><td class="mono">删除本日 / 删除全部</td><td>按日或全量清空（均需确认）</td><td>数据治理与重置</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">注意"复制内容"与"导出 Markdown"的对象是<strong>当日</strong>，与日历日期上下文一致；这种"日期即粒度"的设计贯穿导出、复制、删除三类操作，保持心智模型统一。</p>
+
+  <h3>5.11　辅助交互（跨模块）</h3>
+  <ul>
+    <li><strong>动作菜单：</strong>列表项右侧"更多"弹出上下文菜单（#actionMenu），集中承载该对象的全部动作，避免界面被按钮淹没。</li>
+    <li><strong>悬浮按钮与返回顶部：</strong>右下角 FAB 提供新增入口；长页面滚动后出现返回顶部按钮。</li>
+    <li><strong>Toast 反馈：</strong>所有写操作后给出轻量确认（如"已移入回收站""当日内容已存入剪贴板""类型已改名"），文案与按钮动词保持一致。</li>
+    <li><strong>弹窗体系：</strong>统一遮罩 + 居中弹窗承载新增/编辑/设置；弹窗支持遮罩点击关闭与取消按钮，表单回车提交。</li>
+    <li><strong>空态设计：</strong>各模块均有专属空态（"今日暂无内容""暂无内容""回收站为空""暂无日志"），空态即引导而非空白。</li>
+    <li><strong>响应式：</strong>窄屏下模块折叠为单列，表格与长列表横向滚动，核心操作全部可达。</li>
+    <li><strong>键盘快捷键：</strong>全局支持 Enter 提交、Esc 关闭弹窗、Tab 自然聚焦顺序；编辑弹窗打开即聚焦内容框，减少鼠标往返。</li>
+    <li><strong>长列表分治：</strong>当某日数据量很大时，列表按分区/类型折叠展示，避免单屏堆叠过密；"全部/待办/已完成"筛选器天然承担分页职责。</li>
+  </ul>
+<style>div.timeline {
+  display: block;
+  grid-auto-columns: minmax(180px, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1.2rem 0.8rem;
+  background: #fff6e8;
+  border-radius: 14px;
+}
+.tl-node {
+  position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(240,170,80,0.15);
+}
+.tl-time {
+  font-weight: bold;
+  color:#e68a30;
+  margin-bottom: 6px;
+}
+.tl-dot {
+  width:12px;
+  height:12px;
+  background:#ffb266;
+  border-radius:50%;
+  position:absolute;
+  top: -6px;
+  left: 1rem;
+}
+</style>
+  <h3>5.12　端到端用户旅程示例</h3>
+  <p>为把十一大模块串联为可感知的完整体验，本节以一名基层办公人员"小周"的一天为例，演示工作台在各时点的实际用法（以下为示例数据，用于展示操作路径）：</p>
+  <div class="timeline">
+    <div class="tl-node"><div class="tl-time">08:10</div><div class="tl-dot"></div><div class="tl-content"><b>晨间：建计划</b><p>打开工作台（约 0.5 秒），在"待办"模块新增：工作分区、公事、高优先级、标签"材料"、截止今天，内容"起草文稿，按时报送材料"——短语库点选即入，全程不到 15 秒。</p></div></div>
+    <div class="tl-node"><div class="tl-time">08:40</div><div class="tl-dot"></div><div class="tl-content"><b>通勤：随手留痕</b><p>地铁上想起"取件已送达"，在"每日记录"选类型"取件"、短语一键填入并保存，记录自动归入今天。</p></div></div>
+    <div class="tl-node"><div class="tl-time">10:30</div><div class="tl-dot"></div><div class="tl-content"><b>上午：执行与流转</b><p>汇报材料完成，行内点击完成；随后在"永久待办"池把"整理材料，完善台账资料"转为今日待办，永久池与当日池完成桥接。</p></div></div>
+    <div class="tl-node"><div class="tl-time">14:20</div><div class="tl-dot"></div><div class="tl-content"><b>午后：草稿兜底</b><p>会议间隙开始写一条待办，内容没打完就被叫走；系统提示"内容已暂存，重新打开可继续编辑"。返回后草稿完好，一键续写完成。</p></div></div>
+    <div class="tl-node"><div class="tl-time">17:40</div><div class="tl-dot"></div><div class="tl-content"><b>傍晚：分享与回看</b><p>点"复制内容"把今日安排写入剪贴板发到工作群（toast：当日内容已存入剪贴板）；需要正式周报时用"导出 Markdown"。</p></div></div>
+    <div class="tl-node"><div class="tl-time">周末</div><div class="tl-dot"></div><div class="tl-content"><b>复盘与迁移</b><p>周六打开日历回看一周各日的内容密度；周日执行"导出 JSON 备份"存入私人网盘。换电脑时在新浏览器"导入 JSON 备份"，全部数据随行。</p></div></div>
+    <div class="tl-node"><div class="tl-time">意外</div><div class="tl-dot line"></div><div class="tl-content"><b>异常处置路径</b><p>误删某条待办：回收站一键恢复；弱网加载：自动重试 3 次仍失败时页首精确报错，按随包说明排查；存储接近配额：面板实时显示已用/可用，导出备份后治理。</p></div></div>
+  </div>
+  <p>这趟旅程覆盖了全部十一大模块，下表逐模块对照"旅程中的体现"与"所属时段"，确保覆盖无遗漏：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 5-2　功能模块 × 旅程覆盖对照</caption>
+      <colgroup><col style="width:16%"><col style="width:46%"><col style="width:16%"><col style="width:22%"></colgroup>
+      <thead><tr><th>模块（FR）</th><th>在旅程中的体现</th><th>时段</th><th>关键动作</th></tr></thead>
+      <tbody>
+        <tr><td>待办清单（01）</td><td>晨间建计划、上午完成待办、行内完成与进度反馈</td><td>全天</td><td>新增 / 完成 / 编辑</td></tr>
+        <tr><td>永久待办（02）</td><td>上午把周期性事项"转为今日待办"实例化</td><td>上午</td><td>转为今日待办</td></tr>
+        <tr><td>每日记录（03）</td><td>通勤用"取件"类型 + 短语记录送达事项</td><td>通勤</td><td>类型 + 短语快填</td></tr>
+        <tr><td>草稿箱（04）</td><td>午后被打断的输入自动暂存，返回续写</td><td>午后</td><td>暂存 / 续写 / 转待办</td></tr>
+        <tr><td>回收站（05）</td><td>意外误删某条待办后一键恢复</td><td>意外</td><td>恢复 / 清空</td></tr>
+        <tr><td>日历（06）</td><td>周末按月回看各日内容密度</td><td>周末</td><td>日期导航 / 点击回看</td></tr>
+        <tr><td>搜索（07）</td><td>想找"上周那条记录"时按范围检索并跳转</td><td>随时</td><td>范围 / 类型 / 日期筛选</td></tr>
+        <tr><td>设置·标签（08）</td><td>旅程前为"材料""取件"等建立标签与配色</td><td>前置</td><td>标签增删改 / 配色</td></tr>
+        <tr><td>操作日志（09）</td><td>周末复盘本周对数据的所有增删改记录</td><td>周末</td><td>分类筛选 / 回放</td></tr>
+        <tr><td>数据管理（10）</td><td>傍晚复制内容发群；周末导出/导入 JSON 迁移</td><td>傍晚/周末</td><td>复制当天 / 导出 / 导入</td></tr>
+        <tr><td>页面保护（11）</td><td>全程无感；仅在异常环境触发锁页提示</td><td>全程</td><td>调试检测 / 锁页</td></tr>
+        <tr><td>统计（预留）</td><td>未来版本启用后可查看"完成率 + 近七天趋势"</td><td>展望</td><td>见 11.2 启用蓝图</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>这趟旅程覆盖了全部模块，且每个动作都在 5.1–5.11 节中找到对应机制——这说明产品功能不是孤立的按钮堆砌，而是一条可走通的完整工作流。</p>
+</section>
+
+<!-- ===== 第六章 ===== -->
+<section class="ch" id="ch6">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 06</div>
+    <h2>第六章　数据模型与持久化</h2>
+    <div class="ch-lead">本章阐述实体模型、字段设计、双层存储架构、存储键清单与迁移/配额策略。</div>
+  </div>
+
+  <h3>6.1　实体模型</h3>
+  <p>系统的业务实体共有六类：待办（todo）、永久待办（permanent）、每日记录（record）、草稿（draft）、标签（tag）、操作日志（log）。六类实体围绕"日期"与"标签"两个公共维度相互关联：</p>
+  <div class="fig">
+    <svg class="svg-fig" viewBox="0 0 860 400" role="img" aria-label="实体关系图">
+      <style>
+        .er text{font-size:13.5px;font-weight:600}
+        .er .f{font-size:11.5px;fill:#7a6247;font-weight:400}
+      </style>
+      <g class="er">
+        <rect x="60" y="60" width="190" height="92" rx="10" fill="#fef0dd" stroke="#f59e0b"/>
+        <text x="80" y="88">待办 todo</text>
+        <text x="80" y="108" class="f">mode(公/私)·priority</text>
+        <text x="80" y="124" class="f">time·due·content·tags</text>
+        <text x="80" y="140" class="f">done·star·pin·updatedAt</text>
+        <rect x="60" y="250" width="190" height="92" rx="10" fill="#f3eefb" stroke="#d5c8ec"/>
+        <text x="80" y="278">永久待办 permanent</text>
+        <text x="80" y="298" class="f">type(工作/生活)·tags</text>
+        <text x="80" y="314" class="f">done·star·pin·content</text>
+        <rect x="335" y="60" width="190" height="92" rx="10" fill="#e5f7ef" stroke="#10b981"/>
+        <text x="355" y="88">每日记录 record</text>
+        <text x="355" y="108" class="f">recType(类型)</text>
+        <text x="355" y="124" class="f">time·content·tags</text>
+        <text x="355" y="140" class="f">star·pin·updatedAt</text>
+        <rect x="335" y="250" width="190" height="92" rx="10" fill="#fff6e6" stroke="#eccf9e"/>
+        <text x="355" y="278">草稿 draft</text>
+        <text x="355" y="298" class="f">content·target(待办/记录)</text>
+        <text x="355" y="314" class="f">autoSavedAt</text>
+        <rect x="610" y="60" width="190" height="92" rx="10" fill="#e8f5fe" stroke="#b9ddf3"/>
+        <text x="630" y="88">标签 tag</text>
+        <text x="630" y="108" class="f">name·color</text>
+        <text x="630" y="124" class="f">被多实体引用</text>
+        <rect x="610" y="250" width="190" height="92" rx="10" fill="#fff8ee" stroke="#eccf9e"/>
+        <text x="630" y="278">操作日志 log</text>
+        <text x="630" y="298" class="f">action·targetType</text>
+        <text x="630" y="314" class="f">category·time</text>
+        <rect x="250" y="360" width="250" height="30" rx="8" fill="#fff8ee" stroke="#eccf9e"/>
+        <text x="270" y="381" class="f">公共维度：日期 date（日历/导出/统计的粒度）</text>
+      </g>
+      <g>
+        <line x1="155" y1="152" x2="155" y2="250" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="430" y1="152" x2="430" y2="250" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="705" y1="152" x2="705" y2="250" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="250" y1="107" x2="335" y2="107" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="525" y1="107" x2="610" y2="107" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="430" y1="310" x2="610" y2="310" stroke="#c99a5a" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="375" y1="360" x2="375" y2="342" stroke="#c99a5a" stroke-width="2"/>
+        <line x1="155" y1="360" x2="155" y2="342" stroke="#c99a5a" stroke-width="2"/>
+      </g>
+    </svg>
+    <div class="cap"><b>图 6-1　六类业务实体关系</b>。虚线表示引用/转换关系；所有带时间维的实体都以日期为公共粒度。</div>
+  </div>
+  <p>实体间还存在若干转换关系：待办 ↔ 永久待办（双向流转）、草稿 → 待办/记录（转存）、任意实体 → 回收站（软删除）、回收站 → 原实体（恢复）。这一关系网络保证了"任何数据在系统中都有明确的下一站"。</p>
+
+  <h3>6.2　字段明细</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 6-1　核心实体字段说明</caption>
+      <colgroup><col style="width:20%"><col style="width:22%"><col style="width:58%"></colgroup>
+      <thead><tr><th>字段</th><th>取值示例</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">mode</td><td class="mono">work / personal</td><td>分区：工作(公事) / 生活(私事)，决定列表归属区块</td></tr>
+        <tr><td class="mono">type</td><td class="mono">公事 / 私事</td><td>待办类型展示口径，与 mode 联动</td></tr>
+        <tr><td class="mono">priority</td><td class="mono">high / medium / low</td><td>优先级：高 / 中 / 低，以颜色与顺序体现</td></tr>
+        <tr><td class="mono">recType</td><td class="mono">other / meeting / 报件 / 取件</td><td>每日记录类型，可自定义扩展</td></tr>
+        <tr><td class="mono">time</td><td class="mono">"HH:mm"</td><td>发生时间</td></tr>
+        <tr><td class="mono">due</td><td class="mono">"YYYY-MM-DD"</td><td>截止日期；逾期判断依据</td></tr>
+        <tr><td class="mono">content</td><td class="mono">任意文本</td><td>核心内容；短语一键填充</td></tr>
+        <tr><td class="mono">tags</td><td class="mono">标签名数组</td><td>标签引用；删除标签时可选择保留/移除事项上的引用</td></tr>
+        <tr><td class="mono">done / star / pin</td><td class="mono">0 / 1</td><td>完成、星标、置顶三个正交状态</td></tr>
+        <tr><td class="mono">updatedAt</td><td class="mono">时间戳</td><td>最后修改时间，日志与统计的时间依据</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3　双层存储架构</h3>
+  <p>系统的持久化采用<strong>IndexedDB 主存储 + localStorage 元数据</strong>的双层结构，职责划分如下：</p>
+  <ul>
+    <li><strong>IndexedDB（主存储）：</strong>承载结构化的业务数据。库名形如 <code class="mono">UzAdbdb</code>、版本号 1，按"日"组织对象仓库（day-* 系列），同时维护元数据仓库；事务以 readwrite 模式写入，写操作走 Promise 封装（openDB / idbTx / idbGet / idbGetAll / idbPut）。按日分仓的设计使"某天的数据"可以在一个仓库内完整读写，天然匹配日历、复制当天、导出当天等按日粒度操作。</li>
+    <li><strong>localStorage（元数据/偏好）：</strong>承载体量小、读频高或需同步操作的配置与记录，键名清单见 6.4。</li>
+  </ul>
+  <p>这种分层的工程理由是：业务主体放 IndexedDB（容量大、结构化、事务化），高频小数据放 localStorage（API 简单、同步读、不占事务开销），两者互补而不过度设计。</p>
+
+  <h3>6.4　存储键清单</h3>
+  <p>通过运行时解码与行为观察，localStorage 键名如下（均为应用自有前缀 + 版本后缀）：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 6-2　localStorage 键名清单</caption>
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <thead><tr><th>键名</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">app-bin-v1</td><td>回收站数据（软删除对象集合）</td></tr>
+        <tr><td class="mono">app-logs-v1</td><td>操作日志</td></tr>
+        <tr><td class="mono">app-drafts-v1</td><td>草稿集合</td></tr>
+        <tr><td class="mono">app-tags-v1</td><td>标签定义（名称 + 配色）</td></tr>
+        <tr><td class="mono">app-rectypes-v1</td><td>记录类型定义</td></tr>
+        <tr><td class="mono">app-phrases-v1</td><td>便捷短语分组与条目</td></tr>
+        <tr><td class="mono">app-permanent-v1</td><td>永久待办数据</td></tr>
+        <tr><td class="mono">app-search-history-v1</td><td>搜索历史</td></tr>
+        <tr><td class="mono">app-ui-v1</td><td>UI 偏好（折叠状态、上次日期等）</td></tr>
+        <tr><td class="mono">day-migrated-v1</td><td>历史数据迁移完成标志（值为 "1"）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">键名统一采用 <code class="mono">app-&lt;域&gt;-v&lt;版本&gt;</code> 的命名规范，版本号内置于键名而非数据结构中——这一细节让未来升级可以"换键名 + 迁移"优雅演进，避免旧数据与新结构互踩。</p>
+
+  <h3>6.5　迁移与兼容策略</h3>
+  <p>系统在升级路径上做了两项关键设计。其一，<strong>历史数据自动迁移</strong>：旧版本将数据存放于 localStorage 的应用曾在其上积累用户数据；新版以 <code class="mono">day-migrated-v1</code> 标志位记录迁移状态，检测到未迁移时自动执行"迁移历史数据"并将旧数据搬入 IndexedDB 按日仓库，迁移动作本身也会写入操作日志，全过程对用户无感。其二，<strong>备份文件的版本自洽</strong>：导出 JSON 包含完整数据字典与版本信息，导入时按结构恢复，可跨浏览器、跨设备完成数据搬家。</p>
+
+  <h3>6.6　配额监控与回填</h3>
+  <h3>6.7　数据生命周期与一致性保障</h3>
+  <p>从数据的一生来看，系统为每条数据定义了清晰的生命周期，并在每个阶段提供对应的保障机制：</p>
+  <ol>
+    <li><strong>创建：</strong>新增弹窗提交（Enter 快捷提交、非空校验），写入 IndexedDB 对应日仓，同步写操作日志；写入失败（如配额满）时以 toast 明确告知而非静默丢失。</li>
+    <li><strong>使用：</strong>读操作走按日聚合的读接口，保证"日历点密度、列表渲染、导出内容"三个视图看到的是同一份数据。</li>
+    <li><strong>编辑：</strong>编辑弹窗回填原值，保存即覆盖并更新时间戳；任何修改都留下日志记录，构成可回放的时间线。</li>
+    <li><strong>删除：</strong>统一先进回收站（软删除），恢复动作原样找回；彻底删除才真正落库移除——两级删除把误操作成本压到最低。</li>
+    <li><strong>归档：</strong>导出 JSON / Markdown 把数据带出系统；导入 JSON 让数据可以"换环境重生"，形成不依赖任何厂商的长期归档通道。</li>
+  </ol>
+  <p>一致性保障上还有两个细节：其一，所有写操作通过 Promise 封装的事务接口串行执行，避免并发写互相覆盖；其二，导入 JSON 前会做结构校验（字段合法性、类型一致性），拒绝损坏或不完整的备份文件，杜绝"坏数据污染好数据"。这套"生命周期 + 两级删除 + 校验导入"的组合，让数据在漫长使用中既可靠又可迁移。</p>
+</section>
+
+<!-- ===== 第七章 ===== -->
+<section class="ch" id="ch7">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 07</div>
+    <h2>第七章　页面自我保护层</h2>
+    <div class="ch-lead">本章讨论独立于碎片加载器的第二道防御：运行期自我保护。</div>
+  </div>
+
+  <h3>7.1　设计动机与总体形态</h3>
+  <p>碎片加载层解决的是"文件被拿走"的问题；而页面自我保护层解决的是"页面被观察/被摆弄"的问题——包括打开开发者工具偷看数据、右键复制、拖动内容、Ctrl+S 保存等。保护层随载荷在重组后注入运行环境，其形态是一段携带配置对象的初始化逻辑，主要动作包括：交互拦截、开发者工具检测、水印注入与锁页。</p>
+
+  <h3>7.2　保护配置矩阵</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 7-1　自我保护层配置项</caption>
+      <colgroup><col style="width:22%"><col style="width:44%"><col style="width:34%"></colgroup>
+      <thead><tr><th>配置项</th><th>行为</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">enableLock</td><td>总开关：启用整套锁定能力</td><td>与授权环境判定联动</td></tr>
+        <tr><td class="mono">allowLocal / allowedHosts</td><td>本地 file:// 与白名单域名放行</td><td>本地预览不被误锁</td></tr>
+        <tr><td class="mono">pathMustContain</td><td>URL 路径必须包含指定片段</td><td>防止搬运到别处直接运行</td></tr>
+        <tr><td class="mono">blockRightClick</td><td>拦截 contextmenu 事件</td><td>禁用右键菜单</td></tr>
+        <tr><td class="mono">blockCopy / blockCut</td><td>拦截 copy / cut 事件</td><td>禁用复制剪切（含文案"blockCopy"）</td></tr>
+        <tr><td class="mono">blockSave / blockPrint</td><td>拦截 Ctrl+S / 打印</td><td>防止整页另存与打印导出</td></tr>
+        <tr><td class="mono">blockDevtools</td><td>开发者工具检测与锁定</td><td>见 7.3</td></tr>
+        <tr><td class="mono">blockDrag / dragstart</td><td>拦截拖拽（文本/图片）</td><td>防止拖出内容</td></tr>
+        <tr><td class="mono">watermark / watermarkText</td><td>注入 SVG 水印</td><td>默认文案"锦鲤未离 · 原创作品，请勿盗用"</td></tr>
+        <tr><td class="mono">lockTitle / lockMsg</td><td>锁页标题与说明文案</td><td>"页面已锁定""本页面为受保护的原创作品，当前环境未获授权，无法使用"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.3　开发者工具检测</h3>
+  <p>检测采用组合手段而非单一特征，形成纵深：</p>
+  <ul>
+    <li><strong>debugger 计时：</strong>在代码中周期性执行 <code>debugger</code> 断点并测量前后时间差；开发者工具打开时调试器会暂停脚本，时间差骤增（阈值约 120ms），据此判定"有人在调试"。</li>
+    <li><strong>窗口尺寸差：</strong>比对 <code>outerWidth − innerWidth</code> 与 <code>outerHeight − innerHeight</code>；Dock 式开发者工具打开时差值显著增大（阈值约 180px）。</li>
+    <li><strong>正则陷阱与死循环诱饵：</strong>载荷中嵌入形如 <code>((( .+)+)+)+$</code> 的灾难性回溯正则与 <code>while(true)</code> 片段，干扰调试器单步执行与静态阅读。</li>
+    <li><strong>console 污染：</strong>对 <code>log / info / error / exception / table / trace / assert</code> 等输出方法进行包装重定向，降低控制台日志的取证价值。</li>
+  </ul>
+
+  <h3>7.4　水印系统</h3>
+  <p>水印以 SVG data-URI 背景的方式注入页面（含 <code>__p_wm</code> 动画容器与 <code>__p_foot</code> 页脚水印，动画名形如 <code>__p_wm_a</code>），文本为"锦鲤未离 · 原创作品，请勿盗用"，以半透明、低对比度平铺，既不影响阅读，又让截图/翻拍自带可追溯的归属标记。水印不随滚动消失，覆盖全页，是"防君子"式取证手段。</p>
+
+  <h3>7.5　锁页机制</h3>
+  <p>一旦判定"环境未获授权"（如检测到调试行为），保护层以全屏覆盖层锁死页面（含 <code>PAGE_LOCKED</code> 标记），显示"检测到调试行为，请关闭开发者工具后刷新页面继续使用"，并将页面标题切换为"页面已锁定"。解锁路径只有一条：关闭开发者工具并刷新——这与威胁模型一致：合法用户无感，提取者被逼到"必须绕过检测"的逆向赛道。</p>
+
+  <h3>7.6　有效性评估</h3>
+  <p>客观评价该保护层的价值与局限：其拦截面覆盖了日常取证的全部低成本入口（右键、复制、保存、打印、拖拽、控制台、调试器），且检测手段多样、阈值合理，误伤合法用户的概率低（本地 file:// 与白名单域名被显式放行）。但需要说明的是：开发者工具检测的多种手段均可被成熟的自动化工具（如无头浏览器）规避；水印与锁页属于"威慑 + 取证"而非"封锁"；本层的根本约束与碎片层相同——<strong>客户端可显示即终究可提取</strong>。它真正的价值是把"顺手拿走"升级为"刻意对抗"，而这正是个人作品保护最现实的期望。从工程视角看，这一层还带来一个副产品：它在运行期持续校验"页面是否处于预期环境"，与加载层的"文件是否完整"形成两条独立的健康检查线，任何一条失守都会显式报错而非静默降级。</p>
+
+  <h3>7.7　检测与反制的博弈视角</h3>
+  <p>开发者工具检测本质上是一场"猫鼠博弈"：任何客户端检测手段都存在对应的规避方案。站在博弈视角审视本系统的检测组合，其设计取向值得注意：</p>
+  <ul>
+    <li><strong>不追求"不可绕过"，追求"绕过高成本"：</strong>无头浏览器、远程调试协议等高级工具可以完全绕过 debugger 计时与尺寸差检测，但使用它们需要搭环境、写脚本，这不是"顺手党"的成本量级。本系统的检测目标始终对准 T1–T2 级对手。</li>
+    <li><strong>多信号交叉，降低误报与漏报：</strong>计时与尺寸差两种信号独立触发，正常用户几乎不可能同时命中；同时阈值（120ms / 180px）留有合理裕量，避免高负载机器上合法用户被误锁。</li>
+    <li><strong>锁定而非瘫痪：</strong>检测命中后的处理是"锁页 + 提示刷新"，而非破坏数据或无限循环消耗资源——这保护的是合法用户重新进入的通道，也避免了对共享设备环境的误伤扩散。</li>
+  </ul>
+  <p>这一博弈视角也说明了保护层的合理期望：它不是防御体系的天花板，而是把"取证成本"从零抬到"需要专用工具"的那块台阶。与碎片加载层配合后，两道防线分别对应"文件层面"与"运行层面"，即使其中一道被绕过，另一道仍然存在。</p>
+</section>
+
+<!-- ===== 第八章 ===== -->
+<section class="ch" id="ch8">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 08</div>
+    <h2>第八章　用户体验与界面设计</h2>
+    <div class="ch-lead">本章讨论产品的信息架构、视觉语言与交互细节，以及它们如何共同塑造使用体验。</div>
+  </div>
+
+  <h3>8.1　信息架构</h3>
+  <p>全站信息架构遵循"顶栏（时间轴）+ 模块抽屉（组织面）"的总体骨架。顶部为日期导航与全局动作；中部为可切换的功能面板；右侧为悬浮新增入口；底部为跨模块动作区域。模块切换通过顶部 Tab 完成，面板由 10 个已启用 Tab 与 1 个预留 Tab 构成：</p>
+  <div class="fig">
+    <svg class="svg-fig" viewBox="0 0 860 330" role="img" aria-label="信息架构图">
+      <style>
+        .ia text{font-size:13px;font-weight:600}
+        .ia .l{font-size:11px;fill:#7a6247;font-weight:400}
+        .ia rect{stroke-width:1.4}
+      </style>
+      <g class="ia">
+        <rect x="40" y="24" width="780" height="58" rx="10" fill="#3b2f22" stroke="#3b2f22"/>
+        <text x="62" y="48" fill="#fff">顶栏　日期导航</text>
+        <text x="62" y="68" fill="#e8dcc8" class="l">前一月/后一月 · 日期选择器 · 今天回跳 · 前一天/后一天</text>
+      </g>
+      <g class="ia">
+        <rect x="40" y="104" width="780" height="128" rx="10" fill="#fff6e6" stroke="#eccf9e"/>
+        <text x="62" y="128">模块抽屉（Tab 面板）</text>
+        <g>
+          <rect x="62" y="142" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="72" y="163">待办事项</text>
+          <rect x="156" y="142" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="166" y="163">永久待办</text>
+          <rect x="250" y="142" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="260" y="163">每日记录</text>
+          <rect x="344" y="142" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="354" y="163">数据管理</text>
+          <rect x="438" y="142" width="76" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="448" y="163">日历</text>
+          <rect x="522" y="142" width="76" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="532" y="163">搜索</text>
+          <rect x="606" y="142" width="100" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="616" y="163">标签管理</text>
+          <rect x="714" y="142" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="724" y="163">回收站</text>
+        </g>
+        <g>
+          <rect x="62" y="184" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="72" y="205">草稿箱</text>
+          <rect x="156" y="184" width="86" height="34" rx="7" fill="#fef0dd" stroke="#f0d39a"/><text x="166" y="205">操作日志</text>
+          <rect x="250" y="184" width="86" height="34" rx="7" fill="#fff" stroke="#e0d9c4" stroke-dasharray="4 3"/><text x="260" y="205" fill="#a08a6f">统计（预留）</text>
+        </g>
+      </g>
+      <g class="ia">
+        <rect x="40" y="254" width="780" height="58" rx="10" fill="#fff8ee" stroke="#eccf9e"/>
+        <text x="62" y="278">悬浮入口 & 全局动作</text>
+        <text x="62" y="298" class="l">右下 FAB（新增待办/新增记录双入口） · 返回顶部 · Toast 反馈 · 弹窗表单</text>
+      </g>
+    </svg>
+    <div class="cap"><b>图 8-1　信息架构</b>。11 个 Tab 位中 10 个已启用，"统计"以虚线标识为预留位（代码已备、界面隐藏），启用蓝图见 11.2。</div>
+  </div>
+
+  <h3>8.2　视觉语言</h3>
+  <p>产品的视觉基调是"暖色、圆润、轻量"：品牌色为暖橙色系（#f0a100 为主色），辅以深青（#0e7490）、薄荷绿（#22a447）、天蓝（#2f6fd0）等功能色；卡片与弹窗采用大圆角、柔和边框与轻阴影，营造亲和而非冷淡的工具感。界面文本全部为中文口语化表达（"今日暂无内容""内容已存入剪贴板"），动词与按钮一致（"导出 JSON 备份"的按钮和 toast 文案同名）。</p>
+  <p>字体层级依赖字号、字重与语义断行建立：模块标题（大号粗体）、面板标题（中号）、正文与按钮（常规）、徽标与元信息（小号弱化）；所有数字与时间采用等宽数字（tabular-nums），保证列表对齐稳定。空态、加载态、错误态三态齐备：加载时全屏进度条（"正在加载待办记录工作台… x/233"），出错时页首红色横幅，空模块各有引导文案。</p>
+
+  <h3>8.3　交互细节设计</h3>
+  <ul>
+    <li><strong>键盘：</strong>表单 Enter 提交、Esc 关闭弹窗、编辑弹窗自动聚焦输入框；搜索框键盘导航（ArrowDown/Enter 选择历史项）。</li>
+    <li><strong>动效克制：</strong>仅折叠/展开、弹窗显隐、进度条更新使用过渡动画，不做无信息量的装饰动画。</li>
+    <li><strong>状态可见性：</strong>置顶项排序在前并带图标；星标独立于完成态；逾期项显示"已逾期 x"红色药丸；完成项置灰划线但可随时取消完成。</li>
+    <li><strong>防误操作：</strong>删除全部/清空回收站/删除当天/清空日志均有确认弹窗；标签删除提供"保留事项 / 连坐移除"两种语义，把不可逆决定交给用户。</li>
+    <li><strong>移动端适配：</strong>窄屏 Tab 可横向滚动、列表卡片化、FAB 保持在拇指热区，宽高断点切换布局。</li>
+  </ul>
+
+  <h3>8.4　体验设计小结</h3>
+  <p>综合来看，本产品的体验设计遵循三条主线：<strong>日期为轴</strong>（一切内容挂到具体某天，回看与迁移都以此展开）、<strong>动作聚拢</strong>（行内只放高频操作，低频操作收入动作菜单）、<strong>容错优先</strong>（草稿暂存、回收站、二次确认、备份导出形成层层兜底）。在"功能密度"与"界面克制"之间，产品选择把复杂度收进抽屉与菜单，把高频路径（新增、完成、记录）压到最短——这正是个人工具"越用越顺手"的来源。</p>
+
+  <h3>8.5　可访问性与无障碍设计</h3>
+  <p>作为一款需要长期高频使用的工具，可访问性是体验的隐性底线，本系统在以下方面做了工程化处理：</p>
+  <ul>
+    <li><strong>对比度与字号：</strong>正文文本使用暖墨色与暖米底的组合，对比度满足常规阅读需求；小字号仅用于徽标与元信息，且不以颜色作为唯一信息载体（如优先级同时有位置与色点）。</li>
+    <li><strong>键盘可达：</strong>所有弹窗支持 Esc 关闭与 Enter 提交；表单自动聚焦；焦点元素保留可见轮廓，保证无鼠标用户可完整操作。</li>
+    <li><strong>减少动效：</strong>尊重 prefers-reduced-motion，用户偏好减少动态时折叠全部过渡动画（含水印动画），页面功能不受影响。</li>
+    <li><strong>语义化结构：</strong>模块面板、按钮、列表项使用语义化标签与 aria 标注，toast 与弹窗具备基本读屏可辨识性。</li>
+  </ul>
+  <p>这些工作没有出现在功能清单里，却决定了工具"能不能被长期使用"：对一个每天要打开十几次的应用，可访问性的价值不在某一刻，而在每一年。</p>
+</section>
+
+<!-- ===== 第九章 ===== -->
+<section class="ch" id="ch9">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 09</div>
+    <h2>第九章　安全性与风险分析</h2>
+    <div class="ch-lead">本章对系统的防护边界做系统评估：提取路径成本分析、残余风险清单与诚实边界声明。</div>
+  </div>
+
+  <h3>9.1　五条提取路径的成本评估</h3>
+  <p>结合第四章的威胁模型，本系统面对的主要提取路径有五条，其成本对比如下（"成本"指提取者获得<strong>可运行的完整载荷</strong>所需投入）：</p>
+  <div class="fig">
+    <div class="chart" id="chart-cost"></div>
+    <div class="cap"><b>图 9-1　五条提取路径的相对成本</b>。纵轴为"成本量级"（无量纲，1 = 一次点击），横轴为路径；碎片链方案把低成本路径的整体成本抬高到"需编程逆向"量级。</div>
+  </div>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 9-1　五条提取路径逐项评估</caption>
+      <colgroup><col style="width:20%"><col style="width:22%"><col style="width:30%"><col style="width:28%"></colgroup>
+      <thead><tr><th>提取路径</th><th>成本量级</th><th>系统反制</th><th>残余能力</th></tr></thead>
+      <tbody>
+        <tr><td><b>查看源代码</b></td><td class="mono">1（一次点击）</td><td>源码不包含业务内容</td><td>仅见壳层与加载器</td></tr>
+        <tr><td><b>一键另存为</b></td><td class="mono">1（一次点击）</td><td>页面主体为重组产物，另存只得壳</td><td>无可用副本</td></tr>
+        <tr><td><b>批量抓取全部文件</b></td><td class="mono">10（工具级）</td><td>322 个干扰文件 + 555 文件全量</td><td>信噪比 42%，仍需逆向重组</td></tr>
+        <tr><td><b>逆向重组（分析加载器）</b></td><td class="mono">10⁴（人·小时）</td><td>密钥派生 + 异或 + 逐片校验</td><td>可完成，成本接近重建应用</td></tr>
+        <tr><td><b>git clone 公开仓库</b></td><td class="mono">1（命令级）</td><td>客户端技术无法反制</td><td>部署层需授权/策略（见 9.3）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>9.2　残余风险与边界声明</h3>
+  <p>必须详细地指出本系统无法覆盖的风险：</p>
+  <ul>
+    <li><strong>任何可显示的客户端内容终究可提取：</strong>浏览器必须能把载荷解密并执行，故掌握加载器的人理论上可完全重建。碎片防护的目标是<strong>抬高成本</strong>，不是"绝对防盗"。</li>
+    <li><strong>运行期数据可被观察：</strong>页面运行后，业务数据已在浏览器内存与存储中，开发者工具/无头浏览器仍可读取 localStorage 与 IndexedDB 中的明文数据——保护层只能检测与威慑，不能加密业务数据（否则会引入密钥管理难题，且与"数据始终本地、用户随时可取"的产品承诺冲突）。</li>
+    <li><strong>源码混淆非密码学：</strong>载荷内的字符串数组 + 译码函数属于混淆（obfuscation）而非加密；其价值在于阻碍阅读，不构成数据安全承诺。</li>
+    <li><strong>部署方式决定最终边界：</strong>若作品被上传至公开 git 仓库，clone 即得全部碎片与加载器。客户端技术无法阻止这一路径，只能通过部署策略（私有仓库、受控分发）管理。</li>
+  </ul>
+  <p class="danger">边界结论：本系统提供的是一套"提高提取成本 + 运行环境健康检查 + 归属取证"的组合防护。若需求是"绝对不可提取"或"业务数据加密"，需要引入服务端授权与加密体系——那将改变产品的"零部署、纯本地"定位，属于不同的架构决策。</p>
+
+  <h3>9.3　对"仓库克隆"路径的部署建议</h3>
+  <p>对唯一的低成本残余路径（T5），可行的缓解都在部署层：优先使用私有仓库托管；必须公开时，将碎片目录排除出版本控制或用 CI 在发布时才生成碎片包；为受控分发（群聊、网盘）保留一份"按需生成"的流程。这些措施不属于客户端代码的职责，但作为产品作者应当知晓并管理。与此同时，随包 README 中已明确声明"严禁搬运、复制或商用，转载需标注来源"，配合水印形成可举证的权益声明。</p>
+
+  <h3>9.4　常见疑问辨析</h3>
+  <p>围绕"这样真的防得住吗"这一最朴素的问题，结合设计时的取舍，对几类高频疑问给出明确回答：</p>
+  <ul>
+    <li><strong>"入口页里不是明明白白写着 8 个链头路径吗，照着拼不就行了？"</strong>——能看到链头与"能重组"之间隔着三层：清单要解码（密钥来自盐+路径）、每个碎片要逐片异或还原、碎片间要靠清单中的长度与哈希校验才能确认拼接顺序与完整性。链头只是入场券，不是答案。</li>
+    <li><strong>"全部 555 个文件都下载下来，挨个试不就好了？"</strong>——可以，但这是 T3 级工作量；且干扰文件无法通过密钥校验，逐片试错必须先完成逆向。对个人作品而言，让"批量搬运"退化成"深度逆向"，就已经完成了防护的使命。</li>
+    <li><strong>"既然客户端一定能显示，那防护不是自欺欺人吗？"</strong>——防护的对象从来不是"理论上可提取"，而是"实践中轻易可得"。防盗门挡不住爆破，但挡得住顺手牵羊；碎片防护同理。</li>
+    <li><strong>"为什么不用服务端授权，一劳永逸？"</strong>——因为那会同时牺牲零部署、离线可用与数据本地三大产品承诺。防护方案的选取本质是产品定位的取舍，而非单纯的强度最大化。</li>
+  </ul>
+  <p>这组问答的结论与 9.2 的边界声明一致：本系统承诺的是"把提取成本提高到接近重建的成本"。</p>
+</section>
+
+<!-- ===== 第十章 ===== -->
+<section class="ch" id="ch10">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 10</div>
+    <h2>第十章　测试与质量保障</h2>
+    <div class="ch-lead">本章给出系统的验证方法、自检工具链与验证实验设计。</div>
+  </div>
+
+  <h3>10.1　验证策略总览</h3>
+  <p>本系统虽不采用自动化测试框架，但质量保障是成体系的设计，分为三层：<strong>交付前自检</strong>（verify_fragments.py）、<strong>运行期校验</strong>（加载器逐片长度+SHA-256 校验、?diag=1 诊断）、<strong>回归验证</strong>（重组回归 + 桩环境行为验证，即本文取证所用的方法）。三层共同回答三类问题：碎片包是否完整？加载能否成功？重组后的行为是否符合预期？</p>
+
+  <h3>10.2　verify_fragments.py 自检工具</h3>
+  <p>随包交付的自检脚本是碎片包的"出厂检验"。其工作流为：解析 8 个链头（按 ROOT/SALT 派生密钥解码）→ 展开全部清单记录 → 逐个碎片校验（文件存在性、长度匹配、SHA-256 匹配）→ 清点真实碎片与干扰文件 → 输出汇总。运行结果为：</p>
+  <pre>=== 待办记录工作台 碎片自检 ===
+[+] 碎片链头: 8/8 通过
+[+] 真实碎片: 233/233 通过 (长度+哈希)
+[+] 干扰文件: 322/322 识别
+[+] 载荷重组: 690,845 B
+=== PASS ===</pre>
+  <p>脚本既可用于解压后、上传前的发布前检查，也可用于接收方验证文件的完整性——它把"碎片包有没有坏"从玄学变成可复现的一行命令。</p>
+
+  <h3>10.3　加载期校验与诊断模式</h3>
+  <p>加载器在运行期对每个碎片做<strong>长度 + SHA-256 双校验</strong>，任何不符都会触发页首精确错误（含文件名与失败类型）；网络失败自动重试至多 3 次；若仍失败，提示信息直接指向修复对象（重新上传该文件或重新生成碎片包）。URL 追加 <code>?diag=1</code> 后，加载器在控制台输出重组字节数与分阶段耗时，供开发者在非标准环境快速定位"慢在哪、错在哪"。此外，<code>file://</code> 协议下浏览器会拒绝碎片请求（同源策略限制），属预期行为而非缺陷——正式使用应通过任意静态 HTTP 服务打开，随包说明与页首错误提示均已写明。</p>
+
+  <h3>10.4　回归验证实验</h3>
+  <p>为保证本文论述的可复核性，对系统执行了两类回归验证：</p>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 10-1　回归验证实验与结果</caption>
+      <colgroup><col style="width:26%"><col style="width:40%"><col style="width:34%"></colgroup>
+      <thead><tr><th>实验</th><th>方法</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>碎片完整性验证</td><td>运行 verify_fragments.py，解析 8 链头并校验 233 碎片</td><td>8/8 链头、233/233 碎片全部通过，载荷 690,845 B</td></tr>
+        <tr><td>重组回归</td><td>按加载器同一密钥派生算法独立编写重组脚本，逐片解码拼装</td><td>与自检一致；解码命中恰好 233 片，干扰 322 片零命中</td></tr>
+        <tr><td>桩环境行为验证</td><td>Node 最小 DOM/存储桩运行载荷，包装译码函数收集运行时字符串</td><td>捕获 897 条运行时字符串，与界面文案/键名交叉一致</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>三项实验共同构成对第四章机制阐释与第五章功能测绘的证据链：机制的每一步（魔数、密钥派生、清单、并发、校验）都被独立复现或直接观察；功能测绘的每个模块、键名与文案都可在 897 条运行时字符串中定位到出处。</p>
+
+</section>
+
+<!-- ===== 第十一章 ===== -->
+<section class="ch" id="ch11">
+  <div class="ch-hd">
+    <div class="ch-no">CHAPTER 11</div>
+    <h2>第十一章　总结与展望</h2>
+    <div class="ch-lead">本章收束全文，并给出统计预留能力的启用蓝图与后续演进方向。</div>
+  </div>
+
+  <h3>11.1　工作总结</h3>
+  <p>本文以"待办记录工作台"为对象，完成了一次从产品、工程到安全的完整技术论述。总结而言，本系统的设计呈现三个层次的价值：</p>
+  <ul>
+    <li><strong>产品层：</strong>以"日期为轴、动作聚拢、容错优先"的信息架构，把待办、永久待办、每日记录、草稿、回收站、日历、搜索、日志、设置、数据管理等十一大模块组织为一条可走通的日常闭环；数据始终本地、导出导入双通道，兑现了"个人工具的数据主权"。</li>
+    <li><strong>工程层：</strong>以"二进制碎片链 + 路径派生密钥 + 干扰文件"自研出文件级防护架构，在 233 个真实碎片与 322 个干扰文件之间实现精确加载（约 0.5 秒、零干扰请求），并把"坏了能定位、传前能自检、运行能观测"内建为交付标准。</li>
+    <li><strong>安全层：</strong>以分层威胁模型与五条提取路径的成本评估，具体地划定了"提高提取成本"的技术边界，同时用页面自我保护层覆盖日常取证入口，实现"威慑 + 检测 + 取证"的组合防御。</li>
+  </ul>
+  <p>值得再次强调的工程经验有三条：其一，<strong>二进制载体是防护与健壮性的共同根基</strong>——避开文本编码问题，换取免疫损坏与高效解码；其二，<strong>干扰文件是"零成本威慑"</strong>——对合法用户零请求，对抓取者成倍提升试错成本；其三，<strong>自检与诊断不是附加功能，而是交付物的一部分</strong>——它们让复杂机制变得可复现、可运维。</p>
+
+  <h3>11.2　统计预留能力的启用蓝图</h3>
+  <p>系统当前版本在界面层并未设计"统计"入口（数据管理面板中的"统计"按钮被隐藏，<code>display:none</code>），但统计能力的<strong>完整代码与样式已预留</strong>：面板骨架（标题"统计总览"与"全部日期"计数药丸、<code>#statsBody</code> 渲染容器）、CSS 样式（四列指标网格 <code>.stat-grid</code>、指标瓦片 <code>.stat-tile/.st-num/.st-label/.st-sub</code>、近七天趋势条 <code>.trend-bars/.tb-todo/.tb-rec/.trend-num</code>）以及"统计模块"的注释组均需在后续中进行数据装配与入口显形。</p>
+
+  <p>启用路径共分三步：</p>
+  <ol>
+    <li><strong>装配数据：</strong>实现按日期聚合的统计查询（完成率、计数、连续天数、日均操作），数据源为 IndexedDB 明细与操作日志，口径与"复制当天/导出当天"保持一致；</li>
+    <li><strong>显形入口：</strong>移除"统计"按钮的隐藏样式，纳入模块抽屉并补全 11.2 节所述的四瓦片 + 近七天趋势条渲染；</li>
+    <li><strong>回归验证：</strong>以真实明细抽查统计口径（如某日新增/完成数），确保数字与明细可逐条对上——统计的价值只在口径可信时存在。</li>
+  </ol>
+
+  <h3>11.3　展望</h3>
+  <p>在统计之上，本系统还有若干清晰且克制的演进方向：</p>
+  <ul>
+    <li><strong>加密可选项：</strong>为业务数据提供"导出加密 JSON"（如口令派生密钥），在保持纯本地定位的前提下把备份的机密性提升一档——需权衡密钥遗忘的恢复成本。</li>
+    <li><strong>模板与导入增强：</strong>支持 JSON 模板批量新建（如每周固定事务），与短语体系衔接。</li>
+    <li><strong>碎片化参数化：</strong>将链数、片大小、干扰比例做成可配置（当前为编译期常量），针对不同体积的应用适配；可补充"部分碎片缺失时按 233→n 自适应降级加载"的容错模式。</li>
+    <li><strong>主题与多语言：</strong>基于现有 token 体系扩展浅色/深色主题与 i18n 文案表。</li>
+    <li><strong>保护层增强：</strong>对高价值场景引入服务端签发的一次性授权（仅对受控分发使用），把 T5 路径也纳入管理。</li>
+  </ul>
+  <p>最后，回到本文开篇的问题——为什么需要一件"拿不走"的工作台？答案在本文的技术论述中逐渐清晰：因为对个人作品而言，"难被拿走"不是对抗，而是尊重。尊重作者投入的时间，也尊重使用者的数据——碎片防护把前者做成工程，双层持久化把后者做成承诺。这正是一件小工具可以承载的最大诚意。</p>
+
+
+</section>
+
+<!-- ===== 参考文献 ===== -->
+<section class="ch" id="ref">
+  <div class="ch-hd">
+    <div class="ch-no">REFERENCES</div>
+    <h2>参考文献与资料清单</h2>
+    <div class="ch-lead">本文论述所依据的全部原始材料；正文中的所有数值均可在此清单中定位。</div>
+  </div>
+  <ol class="ref">
+    <li>加载中......</li>
+  </ol>
+</section>
+
+<!-- ===== 附录 ===== -->
+<section class="ch" id="appendix">
+  <div class="ch-hd">
+    <div class="ch-no">APPENDIX</div>
+    <h2>附录</h2>
+    <div class="ch-lead">术语表、存储键清单、动作日志元数据、关键代码注释与图表清单。</div>
+  </div>
+
+  <h3>附录 A　术语表</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 A-1　术语与缩略语</caption>
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>术语</th><th>释义</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">碎片（fragment）</td><td>载荷被切分后的二进制片段，本版本单片约 3KB，共 233 片</td></tr>
+        <tr><td class="mono">链（chain）</td><td>由链头 + 若干载荷片构成的逻辑序列，本版本共 8 条</td></tr>
+        <tr><td class="mono">链头（head）</td><td>每条链的第一个碎片，内含二进制清单；入口页仅知链头路径</td></tr>
+        <tr><td class="mono">ROOT / SALT</td><td>碎片根目录名（w/）与密钥派生盐（koi7frag-2026-10b）</td></tr>
+        <tr><td class="mono">干扰文件</td><td>混入碎片目录的同构噪声 .bin 文件，本版本 322 个</td></tr>
+        <tr><td class="mono">异或编解码</td><td>以路径派生密钥对碎片逐字节异或的对称变换，解码即再异或</td></tr>
+        <tr><td class="mono">桩环境</td><td>以最小 DOM/存储桩模拟浏览器运行载荷的 Node 沙箱</td></tr>
+        <tr><td class="mono">软删除</td><td>删除后进入回收站、可恢复的删除语义</td></tr>
+        <tr><td class="mono">双层持久化</td><td>IndexedDB 主存储 + localStorage 元数据的存储架构</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>附录 B　常量与存储键清单</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 B-1　系统常量与存储键（依据源码与运行时行为）</caption>
+      <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+      <thead><tr><th>名称 / 键名</th><th>取值与说明</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">ROOT</td><td class="mono">"w"——碎片根目录</td></tr>
+        <tr><td class="mono">SALT</td><td class="mono">"koi7frag-2026-10b"——密钥派生盐</td></tr>
+        <tr><td class="mono">MAGIC</td><td class="mono">"K7FB"——链头魔数</td></tr>
+        <tr><td class="mono">CONCURRENCY</td><td class="mono">20——并发门控上限</td></tr>
+        <tr><td class="mono">RETRY</td><td class="mono">3——失败重试次数</td></tr>
+        <tr><td class="mono">HEADS</td><td>8 个链头相对路径（b3/0a/4bb346e5.bin 等）</td></tr>
+        <tr><td class="mono">IDB 库名</td><td class="mono">形如 UzAdbdb，版本 1，按日仓库 + 元数据仓库</td></tr>
+        <tr><td class="mono">app-bin-v1</td><td>回收站数据</td></tr>
+        <tr><td class="mono">app-logs-v1</td><td>操作日志</td></tr>
+        <tr><td class="mono">app-drafts-v1</td><td>草稿</td></tr>
+        <tr><td class="mono">app-tags-v1</td><td>标签（名称 + 配色）</td></tr>
+        <tr><td class="mono">app-rectypes-v1</td><td>记录类型</td></tr>
+        <tr><td class="mono">app-phrases-v1</td><td>便捷短语</td></tr>
+        <tr><td class="mono">app-permanent-v1</td><td>永久待办数据</td></tr>
+        <tr><td class="mono">app-search-history-v1</td><td>搜索历史</td></tr>
+        <tr><td class="mono">app-ui-v1</td><td>UI 偏好</td></tr>
+        <tr><td class="mono">day-migrated-v1</td><td>历史迁移完成标志（"1"）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>附录 C　操作日志动作元数据（节选）</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 C-1　ACTION_META 覆盖的动作类别（示例）</caption>
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>分类</th><th>动作示例</th></tr></thead>
+      <tbody>
+        <tr><td>待办</td><td class="mono">新增待办 · 编辑待办 · 完成待办 · 取消完成 · 复制内容 · 置顶/取消置顶 · 星标/取消星标 · 转为永久待办 · 移入回收站 · 彻底删除待办</td></tr>
+        <tr><td>永久待办</td><td class="mono">新增永久待办 · 编辑永久待办 · 删除永久待办 · 转为今日待办</td></tr>
+        <tr><td>每日记录</td><td class="mono">新增记录 · 编辑记录 · 复制记录 · 删除记录</td></tr>
+        <tr><td>草稿</td><td class="mono">新增草稿 · 编辑草稿 · 草稿转待办 · 草稿转记录 · 删除草稿</td></tr>
+        <tr><td>回收站</td><td class="mono">恢复待办 · 恢复永久待办 · 恢复记录 · 恢复草稿 · 清空回收站</td></tr>
+        <tr><td>数据管理</td><td class="mono">导出 JSON 备份 · 导入 JSON 备份 · 导出 Markdown · 复制当天 · 删除当天 · 删除全部数据</td></tr>
+        <tr><td>设置</td><td class="mono">新增/改名/删除标签 · 新增/改名/删除记录类型 · 新增/编辑/删除便捷短语</td></tr>
+        <tr><td>系统</td><td class="mono">迁移历史数据 · 清空日志</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>附录 D　关键代码段注释</h3>
+  <p>以下两段为碎片防护机制的最小复现示意（节选，与原始实现等价但为论文演示简化）：</p>
+  <pre><span class="cm">// 链头清单解析（示意）——魔数 + 碎片计数 + (n-1) 条记录 + 链头自身载荷</span>
+u8[0..3]  === <span class="st">"K7FB"</span>                <span class="cm">// 魔数校验</span>
+n         = BE(u16[6..7])           <span class="cm">// 碎片计数</span>
+l0        = BE(u32[8..11])          <span class="cm">// 链头载荷长度</span>
+<span class="cm">// 每条记录: len(1B) | path(len) | size(4B BE) | sha256(32B)</span>
+<span class="cm">// 末尾 l0 字节即链头内容</span></pre>
+  <pre><span class="cm">// 密钥派生与异或解码（示意）—— 与加载器同一算法</span>
+key = await sha256( SALT + <span class="st">"/"</span> + relPath )
+buf = new Uint8Array(await resp.arrayBuffer())
+<span class="cm">// 先按 key 异或还原明文（干扰文件在此步即失配）</span>
+<span class="cm">// 再以 len + sha256 与清单比对，全部通过才拼接</span></pre>
+
+  <h3>附录 E　图表清单</h3>
+  <div class="tb-wrap">
+    <table>
+      <caption>表 E-1　全文图表编号对照</caption>
+      <colgroup><col style="width:24%"><col style="width:46%"><col style="width:30%"></colgroup>
+      <thead><tr><th>编号</th><th>名称</th><th>载体</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">图 3-1</td><td>系统五层逻辑架构</td><td>SVG</td></tr>
+        <tr><td class="mono">图 3-2</td><td>碎片包文件构成（环形）</td><td>ECharts</td></tr>
+        <tr><td class="mono">图 4-1</td><td>碎片链加载时序</td><td>SVG</td></tr>
+        <tr><td class="mono">图 5-1</td><td>待办生命周期状态机</td><td>SVG</td></tr>
+        <tr><td class="mono">图 6-1</td><td>六类业务实体关系</td><td>SVG</td></tr>
+        <tr><td class="mono">图 8-1</td><td>信息架构（含统计预留位）</td><td>SVG</td></tr>
+        <tr><td class="mono">图 9-1</td><td>五条提取路径成本</td><td>ECharts</td></tr>
+        <tr><td class="mono">表 2-1</td><td>功能需求总表</td><td>表格</td></tr>
+        <tr><td class="mono">表 3-1</td><td>交付物清单</td><td>表格</td></tr>
+        <tr><td class="mono">表 3-2</td><td>四种交付形态对比</td><td>表格</td></tr>
+        <tr><td class="mono">表 4-1</td><td>分层威胁模型</td><td>表格</td></tr>
+        <tr><td class="mono">表 4-2</td><td>链头清单字节布局</td><td>表格</td></tr>
+        <tr><td class="mono">表 4-3</td><td>核心性能指标</td><td>表格</td></tr>
+        <tr><td class="mono">表 4-4</td><td>与主流保护方案比较</td><td>表格</td></tr>
+        <tr><td class="mono">表 5-1</td><td>数据管理操作清单</td><td>表格</td></tr>
+        <tr><td class="mono">表 5-2</td><td>功能模块 × 旅程覆盖对照</td><td>表格</td></tr>
+        <tr><td class="mono">表 6-1</td><td>核心实体字段说明</td><td>表格</td></tr>
+        <tr><td class="mono">表 6-2</td><td>localStorage 键名清单</td><td>表格</td></tr>
+        <tr><td class="mono">表 7-1</td><td>自我保护层配置项</td><td>表格</td></tr>
+        <tr><td class="mono">表 9-1</td><td>五条提取路径评估</td><td>表格</td></tr>
+        <tr><td class="mono">表 10-1</td><td>回归验证实验与结果</td><td>表格</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <b>待办记录工作台　系统研究与技术论文</b><br>
+  编制日期：2026-10-04　·　全部数据来自源码<br>
+  本论文为作品配套技术文档，版权归属作者；水印：锦鲤未离 · 原创作品，请勿盗用
+</footer>
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+/* 图表 */
+var PALETTE = ['#f97316','#f59e0b','#0ea5e9','#10b981','#8e44ad','#ef4444'];
+function mkChart(id){
+  var el = document.getElementById(id);
+  if(!el || typeof echarts==='undefined') return null;
+  var c = echarts.init(el);
+  window.addEventListener('resize', function(){ c.resize(); });
+  return c;
+}
+/* 图 3-2 碎片包构成 */
+(function(){
+  var c = mkChart('chart-frag');
+  if(!c) return;
+  c.setOption({
+    tooltip:{trigger:'item'},
+    legend:{bottom:0, textStyle:{color:'#6b5842', fontSize:12}},
+    color:PALETTE,
+    series:[{
+      type:'pie', radius:['46%','72%'], center:['50%','44%'],
+      itemStyle:{borderRadius:8, borderColor:'#fff', borderWidth:2},
+      label:{color:'#3b2f22', fontSize:12, formatter:'{b}\n{d}%'},
+      data:[
+        {name:'真实碎片（233）', value:233, itemStyle:{color:'#f97316'}},
+        {name:'干扰文件（322）', value:322, itemStyle:{color:'#f59e0b'}}
+      ]
+    }]
+  });
+})();
+/* 图 9-1 提取成本 */
+(function(){
+  var c = mkChart('chart-cost');
+  if(!c) return;
+  c.setOption({
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
+    grid:{left:56, right:16, top:24, bottom:30},
+    xAxis:{type:'category', data:['查看源码','一键另存','批量抓取','逆向重组','克隆仓库'], axisLabel:{color:'#6b5842', fontSize:12, interval:0}, axisLine:{lineStyle:{color:'#e2c795'}}},
+    yAxis:{type:'value', name:'成本量级(对数)', nameTextStyle:{color:'#a08a6f'}, axisLabel:{color:'#a08a6f', fontSize:11}, splitLine:{lineStyle:{color:'#f2e3cd'}}},
+    series:[{
+      type:'bar', barWidth:'52%',
+      data:[
+        {value:1, itemStyle:{color:'#f59e0b'}},
+        {value:1, itemStyle:{color:'#f59e0b'}},
+        {value:10, itemStyle:{color:'#f97316'}},
+        {value:10000, itemStyle:{color:'#ef4444'}},
+        {value:1, itemStyle:{color:'#a08a6f'}}
+      ],
+      label:{show:true, position:'top', color:'#3b2f22', fontSize:12, formatter:function(p){return p.value===1?'低':'高';}}
+    }]
+  });
+})();
+
+/* 滚动进度与返回顶部 */
+var bar = document.getElementById('progress');
+var tot = document.getElementById('toTop');
+window.addEventListener('scroll', function(){
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (h>0 ? (window.scrollY/h*100) : 0) + '%';
+  tot.style.display = window.scrollY > 600 ? 'flex' : 'none';
+}, {passive:true});
+tot.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* 目录平滑滚动 */
+document.querySelectorAll('.toc a').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var id = a.getAttribute('href');
+    if(id.charAt(0)==='#'){
+      var t = document.querySelector(id);
+      if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); }
+    }
+  });
+});
+</script>
+</body>
+</html>
+
+
+
