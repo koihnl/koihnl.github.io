@@ -1038,39 +1038,96 @@ document.write(s);
 })();
 </script>
 <script>
-// 碎片链加载器：入口页只含此脚本。运行时按 8 条链并行拉取碎片，逐文件异或解码+校验后拼回原脚本执行。
-// ROOT / SALT / HEADS 由构建脚本注入；修改 ROOT 目录名时同步改 ROOT 常量即可。
+// 待办工作台 · 碎片链加载器 v2（二进制版）
+// 全部碎片为 .bin 二进制：fetch 取 arrayBuffer → 按路径派生密钥异或 → 长度+SHA256 校验 → 拼回执行。
+// 无 base64、无 JSON 文本解析，天然免疫换行符/字符集/BOM 等文本损坏。
 (function(){
 "use strict";
 var ROOT="js/w";
-var SALT="koi7frag-2026-10";
-var HEADS=["b3/jp/4640aba0.txt", "lo/gg/98aa0729.txt", "i9/ws/7ec7eb6d.txt", "7x/gw/d236a65e.txt", "9e/dr/05ddc522.txt", "59/3w/295c65db.txt", "kt/uk/ba996ff4.txt", "pe/1a/1940a196.txt"];
-var FAIL="";
+var SALT="koi7frag-2026-10b";
+var HEADS=["b3/jp/4640aba0.bin", "lo/gg/98aa0729.bin", "i9/ws/7ec7eb6d.bin", "7x/gw/d236a65e.bin", "9e/dr/05ddc522.bin", "59/3w/295c65db.bin", "kt/uk/ba996ff4.bin", "pe/1a/1940a196.bin"];
+var DIAG=/[?&]diag=1/.test(location.search);
+var LOADED=0,TOTAL=0,PILL=null;
 
-function b2b(b){var s=atob(b),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}
 function hex(u){var s="";for(var i=0;i<u.length;i++)s+=("0"+u[i].toString(16)).slice(-2);return s;}
-function keyFor(p){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(SALT+"/"+ROOT+"/"+p)).then(function(a){return new Uint8Array(a);});}
-function xr(u,k){var o=new Uint8Array(u.length);for(var i=0;i<u.length;i++)o[i]=u[i]^k[i%k.length];return o;}
-function dec(p,t){return keyFor(p).then(function(k){var raw=xr(b2b(t),k);return JSON.parse(new TextDecoder().decode(raw));});}
-function sha(p){return crypto.subtle.digest("SHA-256",p).then(function(a){return hex(new Uint8Array(a));});}
+function keyFor(p){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(SALT+"/"+p)).then(function(a){return new Uint8Array(a);});}
+function xorB(u,k){var o=new Uint8Array(u.length);for(var i=0;i<u.length;i++)o[i]=u[i]^k[i%k.length];return o;}
 function gate(n){var q=[],r=0;function go(){while(r<n&&q.length){r++;var t=q.shift();t.fn().then(function(v){r--;t.rs(v);go();},function(e){r--;t.rj(e);go();});}}return function(fn){return new Promise(function(rs,rj){q.push({fn:fn,rs:rs,rj:rj});go();});};}
-var g=gate(24);
-function get(p){return new Promise(function(rs,rj){g(function(){return fetch(ROOT+"/"+p).then(function(x){if(!x.ok)throw new Error("HTTP "+x.status+" "+p);return x.text();}).then(function(t){return new Promise(function(a,b){dec(p,t).then(a,b);});});}).then(rs,rj);});}
-function chain(h){return get(h).then(function(m){
-  var ps=m.l,cs=m.cs,ds=new Array(ps.length);ds[0]=m.d;
-  var chk=function(x,i){return sha(b2b(x.d)).then(function(hx){if(hx!==x.c)throw new Error("校验失败 @"+ps[i]);});};
-  var jobs=[chk(m,0)];
-  for(var i=1;i<ps.length;i++){(function(i){jobs.push(get(ps[i]).then(function(x){
-    if(x.n!==(i<ps.length-1?ps[i+1]:""))throw new Error("链断裂 @"+ps[i]);
-    return chk(x,i).then(function(){ds[i]=x.d;});
-  }));})(i);}
-  return Promise.all(jobs).then(function(){return ds.join("");});
+var g=gate(20);
+
+function fetchBin(p,rt){
+  var tries=rt||0;
+  return fetch(ROOT+"/"+p).then(function(res){
+    if(!res.ok)throw new Error("HTTP "+res.status+" "+p);
+    return res.arrayBuffer();
+  }).catch(function(e){
+    if(tries<2)return new Promise(function(rs){setTimeout(rs,300*(tries+1));}).then(function(){return fetchBin(p,tries+1);});
+    throw e;
+  });
+}
+function get(p){return new Promise(function(rs,rj){
+  g(function(){return fetchBin(p);}).then(function(ab){
+    keyFor(p).then(function(k){rs(xorB(new Uint8Array(ab),k));},rj);
+  },rj);
 });}
-function boot(){return Promise.all(HEADS.map(chain)).then(function(parts){(0,eval)(parts.join(""));});}
+
+// 链头二进制清单：K7FB |ver|flags|count(2B)|chunk0len(4B)| 记录×N-1: [namelen|name|len(4B)|sha256(32B)] | chunk0 数据
+function parseMan(u){
+  var dv=new DataView(u.buffer,u.byteOffset,u.byteLength);
+  if(u.length<12||hex(u.subarray(0,4))!=="4b374642")throw new Error("链头文件损坏");
+  var n=dv.getUint16(6),l0=dv.getUint32(8),off=12,recs=[];
+  for(var i=1;i<n;i++){
+    var nl=u[off++];
+    var name=String.fromCharCode.apply(null,u.subarray(off,off+nl));off+=nl;
+    var plen=dv.getUint32(off);off+=4;
+    var sha=hex(u.subarray(off,off+32));off+=32;
+    recs.push({name:name,len:plen,sha:sha});
+  }
+  return {recs:recs,head:u.subarray(off,off+l0)};
+}
+function chain(h){
+  return get(h).then(function(u){
+    var M=parseMan(u);
+    TOTAL+=M.recs.length+1;upd();
+    var parts=new Array(M.recs.length+1);parts[0]=M.head;
+    var jobs=M.recs.map(function(r,i){
+      return get(r.name).then(function(d){
+        if(d.length!==r.len)throw new Error("长度不符 "+r.name+"（期望 "+r.len+", 实际 "+d.length+"）");
+        return crypto.subtle.digest("SHA-256",d).then(function(dg){
+          if(hex(new Uint8Array(dg))!==r.sha)throw new Error("校验失败 "+r.name);
+          parts[i+1]=d;LOADED++;upd();
+        });
+      });
+    });
+    return Promise.all(jobs).then(function(){
+      var t=0;parts.forEach(function(p){t+=p.length;});
+      var all=new Uint8Array(t),o=0;
+      parts.forEach(function(p){all.set(p,o);o+=p.length;});
+      return new TextDecoder().decode(all);
+    });
+  });
+}
+function upd(){if(PILL)PILL.textContent="正在加载碎片 "+LOADED+"/"+TOTAL;}
+function boot(){
+  if(DIAG)console.log("[frag] start",new Date().toISOString());
+  PILL=document.createElement("div");
+  PILL.style.cssText="position:fixed;right:12px;bottom:12px;z-index:99998;background:rgba(44,62,80,.92);color:#fff;font-size:12px;border-radius:999px;padding:6px 12px;";
+  PILL.textContent="正在加载碎片 0/…";
+  document.body.appendChild(PILL);
+  var t0=Date.now();
+  return Promise.all(HEADS.map(chain)).then(function(segs){
+    var code=segs.join("");
+    if(PILL)PILL.remove();
+    if(DIAG)console.log("[frag] ok bytes="+code.length+" ms="+(Date.now()-t0));
+    (0,eval)(code);
+  });
+}
 boot().catch(function(e){
+  if(PILL)PILL.remove();
   var d=document.createElement("div");
   d.style.cssText="position:fixed;left:12px;right:12px;top:12px;z-index:99999;background:#fff7f7;border:1px solid #f0b4b4;color:#b3261e;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.8;box-shadow:0 4px 18px rgba(0,0,0,.14);white-space:pre-wrap";
-  d.textContent="加载失败："+(e&&e.message||e)+"\n\n"+FAIL;
+  var msg="加载失败："+(e&&e.message||e)+"\n\n排查：\n1) 确认 w/ 文件夹与入口页同目录、目录名一致（改名需同步改入口里 var ROOT=\"w\"）\n2) 本地自检：python3 verify_fragments.py（压缩包内已附）\n3) 上传：整文件夹拖拽到 GitHub，或用 git 且 core.autocrlf=false\n4) 本地预览：python3 -m http.server 后访问 http://localhost:8000/DaibanJilu.html\n\n加 ?diag=1 可看控制台详细日志";
+  d.textContent=msg;
   document.body.appendChild(d);
 });
 })();
