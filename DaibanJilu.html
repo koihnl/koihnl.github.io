@@ -1038,14 +1038,11 @@ document.write(s);
 })();
 </script>
 <script>
-// 待办工作台 · 碎片链加载器 v2（二进制版）
-// 全部碎片为 .bin 二进制：fetch 取 arrayBuffer → 按路径派生密钥异或 → 长度+SHA256 校验 → 拼回执行。
-// 无 base64、无 JSON 文本解析，天然免疫换行符/字符集/BOM 等文本损坏。
 (function(){
 "use strict";
 var ROOT="js/w";
 var SALT="koi7frag-2026-10b";
-var HEADS=["b3/jp/4640aba0.bin", "lo/gg/98aa0729.bin", "i9/ws/7ec7eb6d.bin", "7x/gw/d236a65e.bin", "9e/dr/05ddc522.bin", "59/3w/295c65db.bin", "kt/uk/ba996ff4.bin", "pe/1a/1940a196.bin"];
+var HEADS=["b3/0a/4bb346e5.bin", "hx/lq/47270c36.bin", "u9/wy/f5b9d8c4.bin", "6f/h3/9e69d144.bin", "pg/ue/d803b2ac.bin", "9q/a2/38fec2cf.bin", "n3/rc/25fed8f4.bin", "gh/05/542a401e.bin"];
 var DIAG=/[?&]diag=1/.test(location.search);
 var LOADED=0,TOTAL=0,PILL=null;
 
