@@ -808,6 +808,179 @@ void main() {
 	O=vec4(col,1);
 }</script>
 		<-- END -->
+		  <style>
+  :root{
+    --ink:#5a4a5e; --sub:#8a7a90; --line:#f0e6ef;
+    --bg1:#fff6ef; --bg2:#f2ecff; --accent:#ff8fa3; --accent2:#b9a7ff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    /* background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%); */
+    min-height:100%; overflow-x:hidden;
+  }
+  .glow{position:fixed; border-radius:50%; filter:blur(90px); opacity:.55; z-index:0; pointer-events:none;}
+  .glow.l{ left:-140px; top:10%; width:320px; height:320px; background:#ffd7c2;}
+  .glow.r{ right:-140px; bottom:8%; width:340px; height:340px; background:#d9ccff;}
+
+  /* ============ 看板娘槽位 ============
+     结构：.char-wrap（定位 + 上下浮动，用于感应区测量）
+            └ .actor（水平镜像 flip / 缩回 hide 都作用在这一层）
+                └ img（人物）
+     说明：缩回始终朝“它靠的那条边”缩 —— 靠左的朝左、靠右的朝右，与是否镜像无关。
+  */
+  .char-wrap{
+    position:fixed; z-index:5;
+    transform:translateY(-50%);
+    animation:bob 3.6s ease-in-out infinite;
+    will-change:transform; pointer-events:none; user-select:none; -webkit-user-select:none;
+  }
+  .char-wrap .actor{
+    display:block;
+    transition:transform .55s cubic-bezier(.4,1.6,.6,1);
+    will-change:transform;
+  }
+  /* 锚点固定：靠左的始终以左边缘为锚，靠右的始终以右边缘为锚（动画期间不跳变，平滑缩回/滑出） */
+  .char-wrap.from-left  .actor{ transform-origin:left  center; }
+  .char-wrap.from-right .actor{ transform-origin:right center; }
+  /* 缩回：向自己靠的那条边收；鼠标移开时沿同一条边反向滑出 */
+  .char-wrap.from-left  .actor.hide{ transform:translateX(-56%) scaleX(.03); }
+  .char-wrap.from-right .actor.hide{ transform:translateX( 56%) scaleX(.03); }
+  /* 镜像：只翻转图片内容，不加过渡、不参与缩回动画，因此不影响缩回方向与平滑度 */
+  .char-wrap .actor img{
+    display:block; width:clamp(110px,16vw,230px); height:auto;
+    filter:drop-shadow(0 10px 18px rgba(90,74,94,.22));
+  }
+  .char-wrap .actor img.flip{ transform:scaleX(-1); }
+  .char-wrap .shadow{
+    position:absolute; left:50%; bottom:-14px; width:64%; height:14px; transform:translateX(-50%);
+    background:radial-gradient(ellipse at center, rgba(90,74,94,.24), transparent 70%);
+    transition:opacity .4s, width .5s;
+  }
+  .char-wrap.hide .shadow{ opacity:0; width:12%; }
+  @keyframes bob{
+    0%,100%{ transform:translateY(-50%) translateY(0);}
+    50%{ transform:translateY(-50%) translateY(-7px);}
+  }
+
+  
+</style>
+  <div class="glow l" aria-hidden="true"></div>
+  <div class="glow r" aria-hidden="true"></div>
+<script>
+  // ============================================================
+  //  看板娘人物池：共 20 位，姿态各异（token 为永久链接，可放心使用）
+  //  想增删人物：直接在这里加/删一行即可。
+  // ============================================================
+  const BASE = atob('aHR0cHM6Ly9tZWRpYS5kb3ViYW8uY29tL3NwYWNlL2FwaS9ib3gvc3RyZWFtL2Rvd25sb2FkL2FsbF9ieV9tb3VudF9wb2ludC8=');
+  const CHARACTERS = [
+    { name:'wink 比耶',        src: BASE+'YRaRbaDjGo2xTUxUklJc5gb0njd' },
+    { name:'躲猫猫偷看',        src: BASE+'R3UPbr0GsoGsOXx3AsFcA4kjn4e' },
+    { name:'挥手打招呼',        src: BASE+'YJJWbhCQdohX6WxaLv0cd6lNnTc' },
+    { name:'害羞捂脸',          src: BASE+'WJ8abpRB0odBhmxYIgzc6Wt8nIg' },
+    { name:'捧热饮',            src: BASE+'BBAobhszsoIAGsx1ggucYrC8nWb' },
+    { name:'抱玩偶',            src: BASE+'PFFCb0AxyokJ3AxNj7UcbQAxnof' },
+    { name:'敬礼',              src: BASE+'YPqLbSGBuoBGuIxIIlEcpqWgnGb' },
+    { name:'托腮思考',          src: BASE+'YLkqbraCDoJye8xs2OZcwrMxnMe' },
+    { name:'吃甜甜圈',          src: BASE+'RBlUbLtE6oZbDixzP2EcqUHhnKd' },
+    { name:'看书',              src: BASE+'IlkTbrr6CokjhNxiU2CcXzZbnqc' },
+    { name:'兴奋跳跃',          src: BASE+'GFW3bSGkFoRUpyx8thccN38bnhc' },
+    { name:'开心鼓掌',          src: BASE+'KgmYbhre4oFo9XxWbEYcgHz6nwg' },
+    { name:'比心 wink',         src: BASE+'O4imbhB3hoUUudxoSM4c0no9nEb' },
+    { name:'叉腰自信',          src: BASE+'ALo0bezbeosaOLxNkwZcVgJOnRd' },
+    { name:'撑伞偷看',          src: BASE+'NOyCbndpQoPDtXxfKBOckGITneg' },
+    { name:'握拳加油',          src: BASE+'GFLNbuu5go5KWJx7EWAcwhQznjc' },
+    { name:'抹泪',              src: BASE+'KRfEbjFeJoZVnuxhE2HcSUcWnFf' },
+    { name:'捧腹大笑',          src: BASE+'Lzpwb26KFoBYW0x5kvIc12hvnkX' },
+    { name:'蹲下躲猫猫',        src: BASE+'EuQUbmOyCoNwFbxvZ57cp5lhn8c' },
+    { name:'踮脚眺望',          src: BASE+'ZfPSbO8hmoZrcwxkfS7chnuhntf' }
+  ];
+
+  // ============================================================
+  //  位置 / 数量配置（前端不显示，改这里即可）
+  //  ------------------------------------------------------------
+  //  每条 = 一个看板娘槽位，字段含义：
+  //   top   : 距视口顶部的百分比（0=最上，100=最下）
+  //   from  : 靠哪条边 —— 'left' 靠左，'right' 靠右
+  //   x     : 距 from 那条边的百分比（靠左=左边距；靠右=右边距）
+  //   flip  : 是否水平镜像（true=镜像，用于让朝向左的人转向）
+  //
+  //  例：要「一个左上、一个左下」，改成下面这样：
+  //   { label:'左上', top:20, from:'left',  x:2, flip:false },
+  //   { label:'左下', top:80, from:'left',  x:2, flip:false },
+  //  想放第三个 / 第四个，直接往下加一条即可。
+  // ============================================================
+  const SLOTS = [
+    { label:'左',  top:70, from:'left',  x:2, flip:false },
+    { label:'右',  top:30, from:'right', x:2, flip:true  }
+  ];
+
+  // ---- 渲染一个槽位（结构：char-wrap > actor > img）----
+  function createSlot(s){
+    const w = document.createElement('div');
+    w.className = 'char-wrap from-' + s.from;
+    w.id = 'slot-' + s.id;
+    w.innerHTML = '<div class="actor"><img alt="看板娘" draggable="false"></div><div class="shadow" aria-hidden="true"></div>';
+    document.body.appendChild(w);
+    return w;
+  }
+  // 按 SLOTS 配置摆放位置
+  function applySlot(s){
+    const w = document.getElementById('slot-' + s.id);
+    if(!w) return;
+    w.style.top = s.top + '%';
+    if(s.from === 'left'){ w.style.left = s.x + '%'; w.style.right = 'auto'; }
+    else { w.style.right = s.x + '%'; w.style.left = 'auto'; }
+    w.classList.toggle('from-left',  s.from === 'left');
+    w.classList.toggle('from-right', s.from === 'right');
+    // 镜像只作用在图片层（不参与缩回动画），不影响缩回方向
+    const img = w.querySelector('.actor img');
+    img.classList.toggle('flip', !!s.flip);
+  }
+
+  // ---- 随机分配人物（各槽位独立、同一页不重复）----
+  function randomize(){
+    const order = CHARACTERS.map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+    SLOTS.forEach((s,i)=>{
+      const img = document.getElementById('slot-'+s.id).querySelector('img');
+      img.src = CHARACTERS[order[i]].src;
+      s.charName = CHARACTERS[order[i]].name;
+    });
+  }
+
+  // ---- 鼠标靠近 → 朝所在那条边水平缩回（每个槽位独立）----
+  function updateOne(s, x, y){
+    const w = document.getElementById('slot-' + s.id);
+    const r = w.getBoundingClientRect(); // 用 char-wrap 感应，不随缩回而缩小
+    const inY = y >= r.top - 40 && y <= r.bottom + 40;
+    let hit = false;
+    if(s.from === 'left')  hit = x <= r.right + 26;
+    else                   hit = x >= r.left  - 26;
+    const actor = w.querySelector('.actor');
+    actor.classList.toggle('hide', inY && hit);
+    w.classList.toggle('hide', inY && hit); // 同时收起脚下影子
+  }
+  function update(x, y){ SLOTS.forEach(s=>updateOne(s, x, y)); }
+  window.addEventListener('pointermove', e=>update(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e=>update(e.clientX, e.clientY));
+  document.documentElement.addEventListener('pointerleave', ()=>{
+    SLOTS.forEach(s=>{
+      const w = document.getElementById('slot-'+s.id);
+      w.querySelector('.actor').classList.remove('hide');
+      w.classList.remove('hide');
+    });
+  });
+
+  // ---- 初始化 ----
+  SLOTS.forEach((s,i)=>{ s.id = i; createSlot(s); });
+  randomize();
+  SLOTS.forEach(applySlot);
+  document.getElementById('btnRandom').addEventListener('click', randomize);
+  document.getElementById('btnRefresh').addEventListener('click', ()=>location.reload());
+</script>
 </body>
 
 </html>
