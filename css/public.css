@@ -2580,7 +2580,7 @@ display: none !important;
   color: #545454;
   padding: 0.5em;
 }
-
+.kbg-fab {display: none !important;}
 .highlight .emphasis {
   font-style: italic;
 }
