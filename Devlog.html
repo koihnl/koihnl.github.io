@@ -1,153 +1,197 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>锦鲤未离的小站研发日志 | 锦鲤未离</title>
-  <script src="/js/logo.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    :root {
-      --bg-page: #f7f9fc;
-      --bg-card: #ffffff;
-      --text-main: #2c3340;
-      --text-secondary: #5a6373;
-      --accent: #3b7ddd;
-      --accent-light: #6399e8;
-      --border: #e2e8f0;
-      --toc-bg: rgba(255,255,255,0.94);
-    }
-    body {
-      background-color: var(--bg-page);
-      color: var(--text-main);
-      max-width: 64%;
-      margin: 0 auto;
-      padding: 32px 24px;
-      line-height: 1.75;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-      color: var(--text-main);
-    }
-    h4 {
-      font-size: 17px;
-      margin: 26px 0 10px;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    p {
-      margin: 10px 0;
-      color: var(--text-secondary);
-    }
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-size: 15px;
-      font-family: "Consolas", "Microsoft YaHei", monospace;
-      background-color: var(--bg-card);
-      padding: 16px 20px;
-      border-radius: 10px;
-      border:1px solid var(--border);
-      margin: 8px 0 18px 0;
-      color: var(--text-main);
-    }
-    ul {
-      list-style-type: none;
-      margin:10px 0 16px 0;
-    }
-    ul li {
-      margin:7px 0;
-      padding-left:14px;
-      position:relative;
-      color: var(--text-secondary);
-    }
-    ul li::before {
-      content:"•";
-      position:absolute;
-      left:0;
-      color:var(--accent-light);
-    }
-    blockquote {
-      margin:10px 0 10px 16px;
-      padding:10px 14px;
-      border-left:3px solid var(--accent-light);
-      background:#f0f5fc;
-      border-radius:0 8px 8px 0;
-      color:var(--text-secondary);
-    }
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    a:hover {
-      color: var(--accent-light);
-      text-decoration: underline;
-    }
-    mark {
-      background-color: #fff2b3;
-      padding:0 3px;
-    }
-    .highlight {
-      color:#e53e3e;
-    }
-    /* 悬浮目录 TOC */
-    #toc {
-      width: 290px;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: fixed;
-      top:0;
-      left:0;
-      background: var(--toc-bg);
-      box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-      padding:14px 12px;
-      border-radius:0 0 12px 0;
-      z-index:100;
-      border-right:1px solid var(--border);
-      border-bottom:1px solid var(--border);
-    }
-    #toc > p {
-      font-size:13px;
-      color:#777;
-      margin-bottom:10px;
-    }
-    #toc-list li {
-      font-size:14px;
-      line-height:1.55;
-      margin:5px 0;
-    }
-    /* 移动端适配 */
-    @media(max-width: 900px){
-      body {
-        max-width:94%;
-        padding:20px 14px;
-      }
-      #toc {
-        width:240px;
-      }
-      h1 {
-        font-size:22px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>锦鲤未离的小站研发日志 | 锦鲤未离</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1017'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f0a100' font-family='serif' font-weight='bold'%3E鲤%3C/text%3E%3C/svg%3E">
+<style>
+/* ===== 基础 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f1e5;
+  --bg2:#efe6d3;
+  --panel:#fffdf7;
+  --line:rgba(217,142,0,.30);
+  --line-soft:rgba(140,120,80,.35);
+  --glass:rgba(255,253,248,.86);
+  --card1:#fffdf7;
+  --card2:#f6efe0;
+  --pre-bg:#f3ebd9;
+  --chip-bg:rgba(217,142,0,.08);
+  --float-bg:rgba(255,253,248,.95);
+  --gold:#d98e00;
+  --gold2:#a96e00;
+  --teal:#178d80;
+  --text:#2f2a22;
+  --sub:#6c6355;
+  --dim:#9d9284;
+  --mark-bg:#ffd97a;
+  --mark-fg:#5a3a00;
+  --radius:14px;
+  --shadow:0 10px 32px rgba(120,95,40,.18);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1100px 520px at 88% -8%, rgba(240,161,0,.16), transparent 60%),
+    radial-gradient(900px 480px at -6% 18%, rgba(23,141,128,.08), transparent 55%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.8;
+  min-height:100vh;
+}
+
+/* ===== 顶栏 ===== */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(240,161,0,.14);
+}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brand-logo{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(217,142,0,.22),rgba(23,141,128,.16));border:1px solid rgba(217,142,0,.3)}
+.brand-name{font-size:14px;font-weight:700;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-sub{font-size:11px;color:var(--sub);white-space:nowrap}
+.topbar-spacer{flex:1}
+.btn{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;
+  border:1px solid var(--line);background:rgba(240,161,0,.08);color:var(--gold2);font-size:13px;cursor:pointer;
+  transition:background .2s,border-color .2s}
+.btn:hover{background:rgba(240,161,0,.16)}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .08s linear}
+
+/* ===== Hero ===== */
+.hero{padding:30px 18px 22px;max-width:980px;margin:0 auto}
+.hero h1{font-size:24px;line-height:1.4;color:var(--text);font-weight:800;letter-spacing:.5px}
+.hero h1 em{font-style:normal;color:var(--gold2)}
+.hero-date{margin-top:8px;font-size:13px;color:var(--sub)}
+.hero-stats{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:999px;
+  border:1px solid var(--line);color:var(--sub);background:var(--chip-bg)}
+.chip b{color:var(--gold2);font-weight:700}
+
+/* ===== 布局 ===== */
+.layout{max-width:1200px;margin:0 auto;padding:0 14px 90px}
+/* ===== 左侧悬浮目录 ===== */
+.toc{
+  position:fixed;left:0;top:56px;bottom:0;width:240px;z-index:55;
+  padding:14px 12px;border-radius:0 12px 0 0;border-top:none;border-left:none;
+  background:var(--glass);box-shadow:var(--shadow);
+}
+.toc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toc-title{font-size:13px;color:var(--gold2);font-weight:700;letter-spacing:1px}
+.toc-list{list-style:none;max-height:calc(100vh - 120px);overflow-y:auto;padding-right:4px}
+.toc-list li{font-size:13px;line-height:1.5;margin:2px 0}
+.toc-list a{display:block;padding:6px 9px;border-radius:8px;color:var(--sub);text-decoration:none;border-left:2px solid transparent;transition:all .15s}
+.toc-list a:hover{color:var(--gold2);background:rgba(217,142,0,.09)}
+.toc-list a.on{color:var(--gold2);background:rgba(217,142,0,.12);border-left-color:var(--gold)}
+
+/* ===== 记录条目 ===== */
+.entries{display:flex;flex-direction:column;gap:16px;margin-top:4px}
+.entry{position:relative;border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:var(--shadow);overflow:hidden}
+.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--gold),rgba(43,196,175,.55))}
+.entry-head{display:flex;align-items:center;gap:8px;padding:14px 16px 12px;cursor:pointer;user-select:none}
+.entry-head h4{flex:1;font-size:16px;font-weight:700;color:var(--gold2);line-height:1.45;min-width:0}
+.entry-toggle{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);
+  background:var(--chip-bg);color:var(--sub);cursor:pointer;display:grid;place-items:center;transition:all .2s}
+.entry-toggle:hover{color:var(--gold2);border-color:var(--gold)}
+.entry.collapsed .entry-toggle svg{transform:rotate(-90deg)}
+.entry.collapsed .entry-body{display:none}
+.entry-body{padding:2px 16px 16px}
+.entry-body pre{white-space:pre-wrap;word-wrap:break-word;font-size:14px;line-height:1.75;
+  font-family:"Consolas","SFMono-Regular","Microsoft YaHei",monospace;
+  background:var(--pre-bg);border:1px solid rgba(240,161,0,.12);border-radius:10px;
+  padding:14px 16px;color:var(--text);margin:0 0 8px}
+.entry-body p{margin:8px 0;color:var(--text)}
+.entry-body blockquote{margin:8px 0 8px 6px;padding:8px 12px;border-left:3px solid var(--gold);
+  background:rgba(217,142,0,.10);border-radius:0 8px 8px 0;color:var(--sub)}
+.entry-body blockquote p{color:var(--sub);margin:2px 0}
+.entry-body ul{list-style:none;margin:8px 0}
+.entry-body ul li{position:relative;padding-left:16px;margin:5px 0;color:var(--text)}
+.entry-body ul li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;border-radius:50%;
+  background:var(--gold)}
+.entry-body ul ul{margin:4px 0 4px 8px}
+.entry-body ul ul li::before{background:var(--teal);width:5px;height:5px}
+.entry-body strong{color:var(--gold2)}
+mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;padding:0 2px}
+
+/* ===== 回到顶部 ===== */
+#totop{position:fixed;right:16px;bottom:20px;z-index:70;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--float-bg);color:var(--gold2);cursor:pointer;
+  display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s}
+#totop.show{opacity:1;pointer-events:auto}
+#totop:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ===== 桌面 ===== */
+@media(min-width:1100px){
+  .hero h1{font-size:30px}
+  .toc{width:280px}
+  .hero{padding:30px 24px 22px 310px;max-width:none;margin:0}
+  .layout{padding:0 24px 90px 310px;max-width:none;margin:0}
+  .toc-list{max-height:calc(100vh - 140px)}
+}
+/* ===== 打印 ===== */
+@media print{
+  .topbar,#totop,.toc{display:none!important}
+  body{background:#fff;color:#000}
+  .hero h1{color:#000}
+  .hero-date{color:#555}
+  .entry{break-inside:avoid-page;border:1px solid #ccc;background:#fff;box-shadow:none}
+  .entry-head h4{color:#000}
+  .entry-body pre{background:#f6f7f9;color:#222;border:1px solid #ddd;white-space:pre-wrap}
+  .entry-body p,.entry-body ul li{color:#222}
+  .entry-body blockquote{background:#f6f7f9;color:#444}
+  .entry-toggle{display:none}
+}
+</style>
 </head>
 <body>
-  <h1>锦鲤未离的小站研发日志(无特殊说明均指新小站)</h1>
-  <p>创建日期：2022‑09‑23 22:03:45</p>
 
-  <div id="toc">
-    <p>-点击目录以外的部分以隐藏/显示-</p>
-    <ul id="toc-list"></ul>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M3 13c4-6 9-8 13-7-2 5-5 9-10 9H3v-2Z" fill="#f0a100"/>
+        <path d="M6 15c-1 2-1 4 0 5 3-1 5-3 6-6" stroke="#2bc4af" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <circle cx="17.5" cy="8.5" r="1" fill="#2bc4af"/>
+      </svg>
+    </div>
+    <div class="brand-name">锦鲤未离·研发日志</div>
   </div>
+  <div class="topbar-spacer"></div>
+  <div id="progress"></div>
+</div>
 
-  <div>
-<h4>2026年10月28日记录『5.3优化各系统』</h4>
+<header class="hero">
+  <h1>锦鲤未离的小站研发日志(无特殊说明均指新小站)</h1>
+  <p class="hero-date">创建日期：2022‑09‑23 22:03:45</p>
+  <div class="hero-stats" id="heroStats"></div>
+</header>
+
+<div class="layout">
+  <aside class="toc" id="toc">
+    <div class="toc-head"><span class="toc-title">目录</span><button class="btn" id="btnTocClose" type="button">收起</button></div>
+    <ul class="toc-list" id="tocList"></ul>
+  </aside>
+
+  <main class="entries" id="entries">
+  <section class="entry" id="e0" data-title="2026年10月28日记录『5.3优化各系统』" data-date="2026年10月28日">
+    <div class="entry-head">
+      <h4>2026年10月28日记录『5.3优化各系统』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>本次对全能阅读器、404页面、进度条生成器与待办记录工作台进行迭代升级，拓展全新能力并优化存量功能，具体修改如下：
 一、全面迭代升级阅读器
 （一）视觉与交互框架
@@ -253,9 +297,32 @@
 （六）体验与性能
 1.顶栏布局精简：原顶栏多按钮收敛为“管理”入口，各模块内提供分区操作；
 2.日期选择与关键按钮视觉强化，条目操作悬浮展开，移动端新增“更多”折叠菜单；
-另外，新增了主页左右两侧看板娘。</pre>
+五、全面升级研发日志页面
+（一）全新视觉框架
+1.锦鲤未离品牌主题（暖金×青碧）、毛玻璃顶栏与悬浮目录、记录条目卡片化时间轴布局，版本徽章与日期时间线一眼可辨；
+2.锦鲤暖金亮色主题，暖米色背景全量适配；
+3.顶部阅读进度条与实时进度百分比，工具栏滚动自动隐藏；
+（二）阅读与检索能力
+1.目录自动生成并随滚动高亮跟随、点击平滑跳转；
+2.记录条目可折叠收纳，历史记录可一键收起；
+（三）体验与性能优化
+1.新增回到顶部、打印样式优化、减少动效适配、键盘操作与移动端适配；
+另外，新增了主页左右两侧看板娘。
+</pre>
 
-<h4>2026年8月30日记录『5.2修改主页、每日记录与待办系统』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e1" data-title="2026年8月30日记录『5.2修改主页、每日记录与待办系统』" data-date="2026年8月30日">
+    <div class="entry-head">
+      <h4>2026年8月30日记录『5.2修改主页、每日记录与待办系统』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   新增：
     为打造一体化工作台、兼顾日常工作记录与待办规划，本次对原版每日记录系统进行全面迭代升级，整合全新待办体系并优化全量功能，具体修改如下：
@@ -307,7 +374,19 @@
     本次修改了主页页面背景，背景暖黄动态，双鱼游曳，更贴合锦鲤未离风格，取消原有3D动态主页背景。
 </pre>
     
-<h4>2026年8月4日记录『5.1修改每日记录系统』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e2" data-title="2026年8月4日记录『5.1修改每日记录系统』" data-date="2026年8月4日">
+    <div class="entry-head">
+      <h4>2026年8月4日记录『5.1修改每日记录系统』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       为了更好地服务于工作，本次主要修改了“每日记录系统”。
       一、弹窗操作与界面
@@ -337,29 +416,89 @@
       1.页面增加完善手机适配配置，软键盘弹出不会遮挡弹窗输入区域
 </pre>
 
-<h4>2025年6月22日记录『5.0修改主页为新版』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e3" data-title="2025年6月22日记录『5.0修改主页为新版』" data-date="2025年6月22日">
+    <div class="entry-head">
+      <h4>2025年6月22日记录『5.0修改主页为新版』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       - 增加：增设新主页，替代原主页，为3D动态。
       - 修改：对原主页进行修改，将“24年1月1日前的博客”提前并着重显示。
 </pre>
 
-<h4>2025年4月28日记录『4.3.2优化主页文本』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e4" data-title="2025年4月28日记录『4.3.2优化主页文本』" data-date="2025年4月28日">
+    <div class="entry-head">
+      <h4>2025年4月28日记录『4.3.2优化主页文本』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       - 修改：优化了部分文本。
 </pre>
 
-<h4>2025年4月1日记录『4.3.1优化主页头部』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e5" data-title="2025年4月1日记录『4.3.1优化主页头部』" data-date="2025年4月1日">
+    <div class="entry-head">
+      <h4>2025年4月1日记录『4.3.1优化主页头部』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       - 新增：聊天式主页增加头部。为方便工作使用，将部分标点位于头部中央。
 </pre>
 
-<h4>2025年1月14日记录『4.3优化主页』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e6" data-title="2025年1月14日记录『4.3优化主页』" data-date="2025年1月14日">
+    <div class="entry-head">
+      <h4>2025年1月14日记录『4.3优化主页』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   『全新主页，趣味内容』
       - 修改：优化主页布局显示，由原来的直接列表式变为聊天式。原主页相关内容保持不变。
 </pre>
 
-<h4>2024年12月13日记录『4.2.1优化底层逻辑』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e7" data-title="2024年12月13日记录『4.2.1优化底层逻辑』" data-date="2024年12月13日">
+    <div class="entry-head">
+      <h4>2024年12月13日记录『4.2.1优化底层逻辑』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       - 增加：新增点击右上角logo可回到主页功能。
         　　　新增友联模块。现在点触即可展出友联列表，可以增加更多链接了。
@@ -367,7 +506,19 @@
         　　　现在小图标标识全页面显示了。
 </pre>
 
-<h4>2024年8月9日记录『4.2移除旧站 优化新站』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e8" data-title="2024年8月9日记录『4.2移除旧站 优化新站』" data-date="2024年8月9日">
+    <div class="entry-head">
+      <h4>2024年8月9日记录『4.2移除旧站 优化新站』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       - 增加：新增“旧博文”夹层；
         　　　新增“联系我”部分；
@@ -384,17 +535,53 @@
         　　　移除“下拉即可滑进旧主页”提示。
 </pre>
 
-<h4>2024年8月6日记录『4.1.2优化旧站阅读逻辑』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e9" data-title="2024年8月6日记录『4.1.2优化旧站阅读逻辑』" data-date="2024年8月6日">
+    <div class="entry-head">
+      <h4>2024年8月6日记录『4.1.2优化旧站阅读逻辑』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
       -修改：优化在阅读旧博文时进行页面刷新会致使新主页无法查看的问题。
 </pre>
 
-<h4>2024年7月28日记录『4.1.1优化旧站显隐逻辑』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e10" data-title="2024年7月28日记录『4.1.1优化旧站显隐逻辑』" data-date="2024年7月28日">
+    <div class="entry-head">
+      <h4>2024年7月28日记录『4.1.1优化旧站显隐逻辑』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   -增加：新增左上角“按钮”，可以隐藏/显示新主页。
 </pre>
 
-<h4>2024年7月20日记录『4.1简化旧站』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e11" data-title="2024年7月20日记录『4.1简化旧站』" data-date="2024年7月20日">
+    <div class="entry-head">
+      <h4>2024年7月20日记录『4.1简化旧站』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   -增加：新增“小站研发日志”链接，可以点击进入。
   -修改：在旧小站中，精简博文列表，仅保留标题。
@@ -405,7 +592,19 @@
   -删除：在旧小站中，移除掉已无效的链接跳转，如分类、归档；以及站点信息、轮播图、音乐播放器等内容。
 </pre>
 
-<h4>2024年6月21日记录『4.0版本』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e12" data-title="2024年6月21日记录『4.0版本』" data-date="2024年6月21日">
+    <div class="entry-head">
+      <h4>2024年6月21日记录『4.0版本』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   ！锦鲤未离小站4.0版本发布！
   ————为了更好地使用，本站进行了全新的功能与界面升级！计划逐步取消掉旧博文的布局。当前仅在不改变原有结构的基础上，在主页添加新主页。下滑即可进入旧主页。
@@ -416,12 +615,36 @@
   -删除：在保留基础文本、结构的基础上，去除掉关于我页、日志页、链接页，多余的归档页、分类页等页。
 </pre>
 
-<h4>间章 祝3.0版本成功作为毕业设计^-^</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e13" data-title="间章 祝3.0版本成功作为毕业设计^-^" data-date="间章">
+    <div class="entry-head">
+      <h4>间章 祝3.0版本成功作为毕业设计^-^</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <pre>
   -！祝贺锦鲤未离小站3.0版本成功作为毕业设计！-
 </pre>
 
-<h4>2023 年 05 月 01 日记录『3.0版本』</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e14" data-title="2023 年 05 月 01 日记录『3.0版本』" data-date="2023年05月01日">
+    <div class="entry-head">
+      <h4>2023 年 05 月 01 日记录『3.0版本』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <p>锦鲤未离小站3.0版本全新发布。</p>
 <ul>
   <li>[修改&amp;删除]：
@@ -441,7 +664,19 @@
   </li>
 </ul>
 
-<h4>2022 年 11 月 11 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e15" data-title="2022 年 11 月 11 日记录" data-date="2022年11月11日">
+    <div class="entry-head">
+      <h4>2022 年 11 月 11 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[修改]：
     <ul>
@@ -456,7 +691,19 @@
   </li>
 </ul>
 
-<h4>2022 年 11 月 04 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e16" data-title="2022 年 11 月 04 日记录" data-date="2022年11月04日">
+    <div class="entry-head">
+      <h4>2022 年 11 月 04 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -469,7 +716,19 @@
   </li>
 </ul>
 
-<h4>2022 年 10 月 28 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e17" data-title="2022 年 10 月 28 日记录" data-date="2022年10月28日">
+    <div class="entry-head">
+      <h4>2022 年 10 月 28 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -483,7 +742,19 @@
   </li>
 </ul>
 
-<h4>2022 年 10 月 26 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e18" data-title="2022 年 10 月 26 日记录" data-date="2022年10月26日">
+    <div class="entry-head">
+      <h4>2022 年 10 月 26 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -496,7 +767,19 @@
   </li>
 </ul>
 
-<h4>2022 年 10 月 07 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e19" data-title="2022 年 10 月 07 日记录" data-date="2022年10月07日">
+    <div class="entry-head">
+      <h4>2022 年 10 月 07 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[修改]：
     <ul>
@@ -518,7 +801,19 @@
   </li>
 </ul>
 
-<h4>2022 年 10 月 01 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e20" data-title="2022 年 10 月 01 日记录" data-date="2022年10月01日">
+    <div class="entry-head">
+      <h4>2022 年 10 月 01 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -531,7 +826,19 @@
   </li>
 </ul>
 
-<h4>2022 年 09 月 24 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e21" data-title="2022 年 09 月 24 日记录" data-date="2022年09月24日">
+    <div class="entry-head">
+      <h4>2022 年 09 月 24 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -540,7 +847,19 @@
   </li>
 </ul>
 
-<h4>2022 年 09 月 23 日记录</h4>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e22" data-title="2022 年 09 月 23 日记录" data-date="2022年09月23日">
+    <div class="entry-head">
+      <h4>2022 年 09 月 23 日记录</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
 <ul>
   <li>[添加]：
     <ul>
@@ -563,42 +882,119 @@
   </li>
 </ul>
 
-<h4>2022 年 09 月 22 日（含）前已不可考证</h4>
-<h4>2022 年 01 月 16 日创建 Blog</h4>
-  </div>
+
+    </div>
+  </section>
+
+  <section class="entry" id="e23" data-title="2022 年 09 月 22 日（含）前已不可考证" data-date="2022年09月22日">
+    <div class="entry-head">
+      <h4>2022 年 09 月 22 日（含）前已不可考证</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
+
+    </div>
+  </section>
+
+  <section class="entry" id="e24" data-title="2022 年 01 月 16 日创建 Blog" data-date="2022年01月16日">
+    <div class="entry-head">
+      <h4>2022 年 01 月 16 日创建 Blog</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body">
+      
+  
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<button id="totop" type="button" aria-label="回到顶部">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const toc = document.getElementById('toc');
-  const tocList = document.getElementById('toc-list');
-  const headings = document.getElementsByTagName('h4');
-  let tocVisible = true;
+(function(){
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const entries = $$(".entry");
+  const list = $("#tocList");
+  const toc = $("#toc");
+  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function generateToc() {
-    tocList.innerHTML = '';
-    for (let i = 0; i < headings.length; i++) {
-      const heading = headings[i];
-      const id = 'heading-' + i;
-      heading.id = id;
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = '#' + id;
-      a.textContent = heading.textContent.trim();
+  /* 自动生成目录与统计 */
+  function buildToc(){
+    list.innerHTML = "";
+    entries.forEach((e, i) => {
+      const title = e.dataset.title || ("记录 " + (i + 1));
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "#e" + i;
+      a.textContent = title;
       li.appendChild(a);
-      tocList.appendChild(li);
-    }
+      list.appendChild(li);
+    });
   }
-  generateToc();
+  function buildStats(){
+    const now = entries[0].dataset.date || "";
+    $("#heroStats").innerHTML =
+      '<span class="chip">共 <b>' + entries.length + '</b> 条记录</span>' +
+      '<span class="chip">最新 <b>' + now + '</b></span>';
+  }
 
-  // 点击页面空白切换目录显示，阻止目录内部冒泡
-  document.addEventListener('click', function (event) {
-    if (!toc.contains(event.target)) {
-      tocVisible = !tocVisible;
-      toc.style.display = tocVisible ? 'block' : 'none';
+  /* 条目折叠 */
+  function toggle(e){ e.classList.toggle("collapsed"); }
+  $$(".entry-head").forEach(h => h.addEventListener("click", () => toggle(h.parentNode)));
+
+  /* 目录：左侧悬浮，点目录外开/关（同旧版），点目录内不关 */
+  const tocLinks = () => $$(".toc-list a");
+  let tocOpen = true;
+  function setToc(open){
+    tocOpen = open;
+    toc.style.display = open ? "" : "none";
+  }
+  $("#btnTocClose").addEventListener("click", () => setToc(false));
+  document.addEventListener("click", e => {
+    const t = e.target;
+    if(toc.contains(t)) return;
+    if(t && t.nodeType === 1){
+      if(t.closest(".topbar") || t.closest("#totop") || t.closest(".entry-head")) return;
     }
+    setToc(!tocOpen);
   });
-  toc.addEventListener('click', e => e.stopPropagation());
-});
+  list.addEventListener("click", e => {
+    const a = e.target.closest("a");
+    if(!a) return;
+    const idx = Number(a.getAttribute("href").slice(1));
+    const entry = entries[idx];
+    if(entry && entry.classList.contains("collapsed")) entry.classList.remove("collapsed");
+  });
+  function onScroll(){
+    const top = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    $("#progress").style.width = (max > 0 ? Math.min(100, top / max * 100) : 0) + "%";
+    $("#totop").classList.toggle("show", top > 600);
+    let cur = 0;
+    entries.forEach((e, i) => {
+      if(e.getBoundingClientRect().top <= 140) cur = i;
+    });
+    tocLinks().forEach((a, i) => a.classList.toggle("on", i === cur));
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* 回到顶部 */
+  $("#totop").addEventListener("click", () => window.scrollTo({top:0, behavior: REDUCED ? "auto" : "smooth"}));
+
+  buildToc(); buildStats();
+})();
 </script>
 </body>
 </html>
