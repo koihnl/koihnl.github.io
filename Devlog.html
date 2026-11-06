@@ -5,176 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>锦鲤未离的小站研发日志 | 锦鲤未离</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1017'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f0a100' font-family='serif' font-weight='bold'%3E鲤%3C/text%3E%3C/svg%3E">
-<style>
-/* ===== 基础 ===== */
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#f7f1e5;
-  --bg2:#efe6d3;
-  --panel:#fffdf7;
-  --line:rgba(217,142,0,.30);
-  --line-soft:rgba(140,120,80,.35);
-  --glass:rgba(255,253,248,.86);
-  --card1:#fffdf7;
-  --card2:#f6efe0;
-  --pre-bg:#f3ebd9;
-  --chip-bg:rgba(217,142,0,.08);
-  --float-bg:rgba(255,253,248,.95);
-  --gold:#d98e00;
-  --gold2:#a96e00;
-  --teal:#178d80;
-  --text:#2f2a22;
-  --sub:#6c6355;
-  --dim:#9d9284;
-  --mark-bg:#ffd97a;
-  --mark-fg:#5a3a00;
-  --radius:14px;
-  --shadow:0 10px 32px rgba(120,95,40,.18);
-}
-html{scroll-behavior:smooth}
-body{
-  background:
-    radial-gradient(1100px 520px at 88% -8%, rgba(240,161,0,.16), transparent 60%),
-    radial-gradient(900px 480px at -6% 18%, rgba(23,141,128,.08), transparent 55%),
-    linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
-  background-attachment:fixed;
-  color:var(--text);
-  font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  line-height:1.8;
-  min-height:100vh;
-}
-
-/* ===== 顶栏 ===== */
-.topbar{
-  position:sticky;top:0;z-index:60;
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;
-  background:var(--glass);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(240,161,0,.14);
-}
-.brand{display:flex;align-items:center;gap:9px;min-width:0}
-.brand-logo{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
-  background:linear-gradient(135deg,rgba(217,142,0,.22),rgba(23,141,128,.16));border:1px solid rgba(217,142,0,.3)}
-.brand-name{font-size:14px;font-weight:700;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.brand-sub{font-size:11px;color:var(--sub);white-space:nowrap}
-.topbar-spacer{flex:1}
-.btn{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;
-  border:1px solid var(--line);background:rgba(240,161,0,.08);color:var(--gold2);font-size:13px;cursor:pointer;
-  transition:background .2s,border-color .2s}
-.btn:hover{background:rgba(240,161,0,.16)}
-.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-#progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .08s linear}
-
-/* ===== Hero ===== */
-.hero{padding:30px 18px 22px;max-width:980px;margin:0 auto}
-.hero h1{font-size:24px;line-height:1.4;color:var(--text);font-weight:800;letter-spacing:.5px}
-.hero h1 em{font-style:normal;color:var(--gold2)}
-.hero-date{margin-top:8px;font-size:13px;color:var(--sub)}
-.hero-stats{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:999px;
-  border:1px solid var(--line);color:var(--sub);background:var(--chip-bg)}
-.chip b{color:var(--gold2);font-weight:700}
-
-/* ===== 布局 ===== */
-.layout{max-width:1200px;margin:0 auto;padding:0 14px 90px}
-/* ===== 左侧悬浮目录 ===== */
-.toc{
-  position:fixed;left:0;top:56px;bottom:0;width:240px;z-index:55;
-  padding:14px 12px;border-radius:0 12px 0 0;border-top:none;border-left:none;
-  background:var(--glass);box-shadow:var(--shadow);
-}
-.toc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.toc-title{font-size:13px;color:var(--gold2);font-weight:700;letter-spacing:1px}
-.toc-list{list-style:none;max-height:calc(100vh - 120px);overflow-y:auto;padding-right:4px}
-.toc-list li{font-size:13px;line-height:1.5;margin:2px 0}
-.toc-list a{display:block;padding:6px 9px;border-radius:8px;color:var(--sub);text-decoration:none;border-left:2px solid transparent;transition:all .15s}
-.toc-list a:hover{color:var(--gold2);background:rgba(217,142,0,.09)}
-.toc-list a.on{color:var(--gold2);background:rgba(217,142,0,.12);border-left-color:var(--gold)}
-
-/* ===== 记录条目 ===== */
-.entries{display:flex;flex-direction:column;gap:16px;margin-top:4px}
-.entry{position:relative;border:1px solid var(--line);border-radius:var(--radius);
-  background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:var(--shadow);overflow:hidden}
-.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:linear-gradient(180deg,var(--gold),rgba(43,196,175,.55))}
-.entry-head{display:flex;align-items:center;gap:8px;padding:14px 16px 12px;cursor:pointer;user-select:none}
-.entry-head h4{flex:1;font-size:16px;font-weight:700;color:var(--gold2);line-height:1.45;min-width:0}
-.entry-toggle{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);
-  background:var(--chip-bg);color:var(--sub);cursor:pointer;display:grid;place-items:center;transition:all .2s}
-.entry-toggle:hover{color:var(--gold2);border-color:var(--gold)}
-.entry.collapsed .entry-toggle svg{transform:rotate(-90deg)}
-.entry.collapsed .entry-body{display:none}
-.entry-body{padding:2px 16px 16px}
-.entry-body pre{white-space:pre-wrap;word-wrap:break-word;font-size:14px;line-height:1.75;
-  font-family:"Consolas","SFMono-Regular","Microsoft YaHei",monospace;
-  background:var(--pre-bg);border:1px solid rgba(240,161,0,.12);border-radius:10px;
-  padding:14px 16px;color:var(--text);margin:0 0 8px}
-.entry-body p{margin:8px 0;color:var(--text)}
-.entry-body blockquote{margin:8px 0 8px 6px;padding:8px 12px;border-left:3px solid var(--gold);
-  background:rgba(217,142,0,.10);border-radius:0 8px 8px 0;color:var(--sub)}
-.entry-body blockquote p{color:var(--sub);margin:2px 0}
-.entry-body ul{list-style:none;margin:8px 0}
-.entry-body ul li{position:relative;padding-left:16px;margin:5px 0;color:var(--text)}
-.entry-body ul li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;border-radius:50%;
-  background:var(--gold)}
-.entry-body ul ul{margin:4px 0 4px 8px}
-.entry-body ul ul li::before{background:var(--teal);width:5px;height:5px}
-.entry-body strong{color:var(--gold2)}
-mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;padding:0 2px}
-
-/* ===== 回到顶部 ===== */
-#totop{position:fixed;right:16px;bottom:20px;z-index:70;width:42px;height:42px;border-radius:50%;
-  border:1px solid var(--line);background:var(--float-bg);color:var(--gold2);cursor:pointer;
-  display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s}
-#totop.show{opacity:1;pointer-events:auto}
-#totop:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-
-/* ===== 桌面 ===== */
-@media(min-width:1100px){
-  .hero h1{font-size:30px}
-  .toc{width:280px}
-  .hero{padding:30px 24px 22px 310px;max-width:none;margin:0}
-  .layout{padding:0 24px 90px 310px;max-width:none;margin:0}
-  .toc-list{max-height:calc(100vh - 140px)}
-}
-/* ===== 打印 ===== */
-@media print{
-  .topbar,#totop,.toc{display:none!important}
-  body{background:#fff;color:#000}
-  .hero h1{color:#000}
-  .hero-date{color:#555}
-  .entry{break-inside:avoid-page;border:1px solid #ccc;background:#fff;box-shadow:none}
-  .entry-head h4{color:#000}
-  .entry-body pre{background:#f6f7f9;color:#222;border:1px solid #ddd;white-space:pre-wrap}
-  .entry-body p,.entry-body ul li{color:#222}
-  .entry-body blockquote{background:#f6f7f9;color:#444}
-  .entry-toggle{display:none}
-}
-</style>
+<style>/* ===== 基础 ===== */*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#f7f1e5;--bg2:#efe6d3;--panel:#fffdf7;--line:rgba(217,142,0,.30);--line-soft:rgba(140,120,80,.35);--glass:rgba(255,253,248,.86);--card1:#fffdf7;--card2:#f6efe0;--pre-bg:#f3ebd9;--chip-bg:rgba(217,142,0,.08);--float-bg:rgba(255,253,248,.95);--gold:#d98e00;--gold2:#a96e00;--teal:#178d80;--text:#2f2a22;--sub:#6c6355;--dim:#9d9284;--mark-bg:#ffd97a;--mark-fg:#5a3a00;--radius:14px;--shadow:0 10px 32px rgba(120,95,40,.18);}html{scroll-behavior:smooth}body{background:radial-gradient(1100px 520px at 88% -8%, rgba(240,161,0,.16), transparent 60%),radial-gradient(900px 480px at -6% 18%, rgba(23,141,128,.08), transparent 55%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);background-attachment:fixed;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8;min-height:100vh;}/* ===== 顶栏 ===== */.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(240,161,0,.14);}.brand{display:flex;align-items:center;gap:9px;min-width:0}.brand-logo{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(217,142,0,.22),rgba(23,141,128,.16));border:1px solid rgba(217,142,0,.3)}.brand-name{font-size:14px;font-weight:700;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand-sub{font-size:11px;color:var(--sub);white-space:nowrap}.topbar-spacer{flex:1}.btn{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:rgba(240,161,0,.08);color:var(--gold2);font-size:13px;cursor:pointer;transition:background .2s,border-color .2s}.btn:hover{background:rgba(240,161,0,.16)}.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}#progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .08s linear}/* ===== Hero ===== */.hero{padding:30px 18px 22px;max-width:980px;margin:0 auto}.hero h1{font-size:24px;line-height:1.4;color:var(--text);font-weight:800;letter-spacing:.5px}.hero h1 em{font-style:normal;color:var(--gold2)}.hero-date{margin-top:8px;font-size:13px;color:var(--sub)}.hero-stats{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--sub);background:var(--chip-bg)}.chip b{color:var(--gold2);font-weight:700}/* ===== 布局 ===== */.layout{max-width:1200px;margin:0 auto;padding:0 14px 90px}/* ===== 左侧悬浮目录 ===== */.toc{position:fixed;left:0;top:56px;bottom:0;width:240px;z-index:55;padding:14px 12px;border-radius:0 12px 0 0;border-top:none;border-left:none;background:var(--glass);box-shadow:var(--shadow);}.toc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.toc-title{font-size:13px;color:var(--gold2);font-weight:700;letter-spacing:1px}.toc-list{list-style:none;max-height:calc(100vh - 120px);overflow-y:auto;padding-right:4px}.toc-list li{font-size:13px;line-height:1.5;margin:2px 0}.toc-list a{display:block;padding:6px 9px;border-radius:8px;color:var(--sub);text-decoration:none;border-left:2px solid transparent;transition:all .15s}.toc-list a:hover{color:var(--gold2);background:rgba(217,142,0,.09)}.toc-list a.on{color:var(--gold2);background:rgba(217,142,0,.12);border-left-color:var(--gold)}/* ===== 记录条目 ===== */.entries{display:flex;flex-direction:column;gap:16px;margin-top:4px}.entry{position:relative;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:var(--shadow);overflow:hidden}.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),rgba(43,196,175,.55))}.entry-head{display:flex;align-items:center;gap:8px;padding:14px 16px 12px;cursor:pointer;user-select:none}.entry-head h4{flex:1;font-size:16px;font-weight:700;color:var(--gold2);line-height:1.45;min-width:0}.entry-toggle{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--chip-bg);color:var(--sub);cursor:pointer;display:grid;place-items:center;transition:all .2s}.entry-toggle:hover{color:var(--gold2);border-color:var(--gold)}.entry.collapsed .entry-toggle svg{transform:rotate(-90deg)}.entry.collapsed .entry-body{display:none}.entry-body{padding:2px 16px 16px}.entry-body pre{white-space:pre-wrap;word-wrap:break-word;font-size:14px;line-height:1.75;font-family:"Consolas","SFMono-Regular","Microsoft YaHei",monospace;background:var(--pre-bg);border:1px solid rgba(240,161,0,.12);border-radius:10px;padding:14px 16px;color:var(--text);margin:0 0 8px}.entry-body p{margin:8px 0;color:var(--text)}.entry-body blockquote{margin:8px 0 8px 6px;padding:8px 12px;border-left:3px solid var(--gold);background:rgba(217,142,0,.10);border-radius:0 8px 8px 0;color:var(--sub)}.entry-body blockquote p{color:var(--sub);margin:2px 0}.entry-body ul{list-style:none;margin:8px 0}.entry-body ul li{position:relative;padding-left:16px;margin:5px 0;color:var(--text)}.entry-body ul li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;border-radius:50%;background:var(--gold)}.entry-body ul ul{margin:4px 0 4px 8px}.entry-body ul ul li::before{background:var(--teal);width:5px;height:5px}.entry-body strong{color:var(--gold2)}mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;padding:0 2px}/* ===== 回到顶部 ===== */#totop{position:fixed;right:16px;bottom:20px;z-index:70;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--float-bg);color:var(--gold2);cursor:pointer;display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s}#totop.show{opacity:1;pointer-events:auto}#totop:focus-visible{outline:2px solid var(--gold);outline-offset:2px}/* ===== 桌面 ===== */@media(min-width:1100px){.hero h1{font-size:30px}.toc{width:280px}.hero{padding:30px 24px 22px 310px;max-width:none;margin:0}.layout{padding:0 24px 90px 310px;max-width:none;margin:0}.toc-list{max-height:calc(100vh - 140px)}}/* ===== 打印 ===== */@media print{.topbar,#totop,.toc{display:none!important}body{background:#fff;color:#000}.hero h1{color:#000}.hero-date{color:#555}.entry{break-inside:avoid-page;border:1px solid #ccc;background:#fff;box-shadow:none}.entry-head h4{color:#000}.entry-body pre{background:#f6f7f9;color:#222;border:1px solid #ddd;white-space:pre-wrap}.entry-body p,.entry-body ul li{color:#222}.entry-body blockquote{background:#f6f7f9;color:#444}.entry-toggle{display:none}}</style>
 </head>
-<body>
-
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-logo">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M3 13c4-6 9-8 13-7-2 5-5 9-10 9H3v-2Z" fill="#f0a100"/>
-        <path d="M6 15c-1 2-1 4 0 5 3-1 5-3 6-6" stroke="#2bc4af" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-        <circle cx="17.5" cy="8.5" r="1" fill="#2bc4af"/>
-      </svg>
-    </div>
-    <div class="brand-name">锦鲤未离·研发日志</div>
-  </div>
-  <div class="topbar-spacer"></div>
-  <div id="progress"></div>
-</div>
-
-<header class="hero">
-  <h1>锦鲤未离的小站研发日志(无特殊说明均指新小站)</h1>
-  <p class="hero-date">创建日期：2022‑09‑23 22:03:45</p>
-  <div class="hero-stats" id="heroStats"></div>
-</header>
+<body><div class="topbar"><div class="brand"><div class="brand-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 13c4-6 9-8 13-7-2 5-5 9-10 9H3v-2Z" fill="#f0a100"/><path d="M6 15c-1 2-1 4 0 5 3-1 5-3 6-6" stroke="#2bc4af" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="17.5" cy="8.5" r="1" fill="#2bc4af"/></svg></div><div class="brand-name">锦鲤未离·研发日志</div></div><div class="topbar-spacer"></div><div id="progress"></div></div><header class="hero"><h1>锦鲤未离的小站研发日志(无特殊说明均指新小站)</h1><p class="hero-date">创建日期：2022‑09‑23 22:03:45</p><div class="hero-stats" id="heroStats"></div></header>
 
 <div class="layout">
   <aside class="toc" id="toc">
@@ -183,6 +16,45 @@ mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;padding:0 
   </aside>
 
   <main class="entries" id="entries">
+
+ <!-- <section class="entry" id="e0" data-title="2026年11月1日记录『5.3优化待办记录工作台APP』" data-date="2026年11月1日">
+    <div class="entry-head">
+      <h4>2026年11月1日记录『5.3优化待办记录工作台APP』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body"><pre>
+
+</pre> </div> </section> -->
+
+ <section class="entry" id="e0" data-title="2026年11月6日记录『5.3.1优化待办记录工作台APP』" data-date="2026年11月6日">
+    <div class="entry-head">
+      <h4>2026年11月6日记录『5.3.1优化待办记录工作台APP』</h4>
+      <button class="entry-toggle" type="button" aria-label="展开或收起">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="entry-body"><pre>
+一、新增功能
+支持在输入时把内容实时同步到对应条目块，并且每隔 10ms 将内容写入本地数据库和快照，在 1 秒内关闭应用或终止进程也不会丢失内容。
+支持从头部 “管理” 按钮打开管理工作台弹窗；弹窗打开期间主页固定，数据管理升级为管理工作台。
+支持在全览时间线中按年、月、日折叠展示；长期待办默认折叠，也可以展开；每条内容都标注是待办还是记录并显示时间。
+支持在全览中用记录、待办、长期待办三个复选框筛选，并用 “全展”“全收” 一键展开或收起所有层级。
+支持在全览中点击年、月、日或任一条目，返回主页对应位置并高亮该条目。
+支持本地存储配额溢出检测与导出提醒、显示最近一次备份时间，并在删除后提供 5 秒撤销。
+支持操作习惯扩展：新增待办默认设为长期待办、输入时立即写入本地、列表密度可切换、恢复默认。
+
+二、体验优化
+优化管理工作台的页签，使其固定为 “日历 → 全览 → 草稿 → 回收站 → 搜索 → 标签与类型 → 日志 → 统计 → 备份与安全”；总览并入统计，页签支持左右滑动、滚轮横向移动与拖拽。
+优化完成态排序：完成与取消完成都保持原位，刷新后才重排；取消完成的内容按操作时间排到所属分区最前。
+明确优先级为 “置顶 > 星标 > 手动排序”，新增内容不再打乱已经手动排好的顺序。
+统一时间口径：待办取新增或最后一次修改时间；记录只取新增时间，编辑不改；手动指定的时间优先。
+优化全览视觉：吸顶筛选条、年份分块、月层缩进、白卡条目与青色时间标签。
+优化标签芯片，超过 5 个自动折叠；搜索结果支持键盘上下跳转。
+优化弹窗键盘操作：Enter 保存、Shift + Enter 换行、Esc 关闭。
+扩大 JSON 备份覆盖范围：待办、记录、长期、回收站、草稿、日志、标签、类型、短语、搜索历史、历史修改全文、界面设置等，导入时校验必含字段。
+</pre> </div> </section>
 
 
   <section class="entry" id="e0" data-title="2026年11月1日记录『5.3优化待办记录工作台APP』" data-date="2026年11月1日">
@@ -194,8 +66,7 @@ mark{background:var(--mark-bg);color:var(--mark-fg);border-radius:3px;padding:0 
     </div>
     <div class="entry-body">
       
-<pre>v3.0.1更新说明：
-一、命名与排序
+<pre>v3.0.1版本：一、命名与排序
 （一）命名更名
 1.全局将「永久待办」更名为「长期待办」。
 （二）排序机制优化
