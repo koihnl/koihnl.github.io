@@ -1,0 +1,286 @@
+﻿<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" ><![endif]-->
+<!DOCTYPE html>
+<html>
+<head>
+    <!--CUSTOM_PARAMETERS - Title, description, etc-->
+    <title>Diagrams Online | draw.io</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
+    <style type="text/css">
+        .geSidebarContainer .geTitle {
+            color: #606060;
+        }
+
+        .geSidebar .geItem:hover {
+            opacity: 1;
+        }
+
+        .geSidebar .geItem {
+            opacity: 0.7;
+        }
+
+        .geSidebarContainer .geTitle input {
+            font-size: 9pt;
+            color: #606060;
+        }
+
+        .geBlock {
+            z-index: -3;
+            margin: 100px;
+            margin-top: 40px;
+            margin-bottom: 30px;
+            padding: 50px;
+            padding-bottom: 40px;
+            padding-top: 20px;
+            border-radius: 10px;
+            -webkit-box-shadow: 0px 0px 4px 4px #e5e5e5;
+            -moz-box-shadow: 0px 0px 4px 4px #e5e5e5;
+            box-shadow: 0px 0px 4px 4px #e5e5e5;
+            _filter: progid:DXImageTransform.Microsoft.DropShadow(OffX=4, OffY=4, Color='#e5e5e5', Positive='true');
+            border: 1px solid gray;
+            background-color: white;
+        }
+
+            .geBlock p {
+                padding-top: 10px;
+            }
+
+        .geEditor {
+            background-color: whiteSmoke;
+        }
+
+            .geEditor ::-webkit-scrollbar {
+                width: 12px;
+                height: 12px;
+            }
+
+            .geEditor ::-webkit-scrollbar-track {
+                background: whiteSmoke;
+                -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+            }
+
+            .geEditor ::-webkit-scrollbar-thumb {
+                background: #c5c5c5;
+                border-radius: 10px;
+                border: whiteSmoke solid 3px;
+            }
+
+                .geEditor ::-webkit-scrollbar-thumb:hover {
+                    background: #b5b5b5;
+                }
+    </style>
+    <script type="text/javascript">
+        var t0 = new Date();
+
+        // Public global variables
+        var MAX_REQUEST_SIZE = 10485760;
+        var MAX_WIDTH = 6000;
+        var MAX_HEIGHT = 6000;
+
+        var SAVE_URL = 'save';
+        var OPEN_URL = 'open';
+
+        // Paths and files
+        var STENCIL_PATH = 'stencils';
+        var IMAGE_PATH = 'images';
+        // Path for images inside the diagram
+        var GRAPH_IMAGE_PATH = 'img';
+        var ICONFINDER_PATH = 'iconfinder';
+        var STYLE_PATH = 'styles';
+        var CSS_PATH = 'styles';
+        var OPEN_FORM = 'open.html';
+
+        // Directory for i18 files and basename for main i18n file
+        var RESOURCES_PATH = 'resources';
+        var RESOURCE_BASE = RESOURCES_PATH + '/dia';
+
+        // Specifies connection mode for touch devices (at least one should be true)
+        var tapAndHoldStartsConnection = true;
+        var showConnectorImg = true;
+        var collab = null;
+
+        var urlParams = (function (url) {
+            var result = new Object();
+            var idx = url.lastIndexOf('?');
+
+            if (idx > 0) {
+                var params = url.substring(idx + 1).split('&');
+
+                for (var i = 0; i < params.length; i++) {
+                    idx = params[i].indexOf('=');
+
+                    if (idx > 0) {
+                        result[params[i].substring(0, idx)] = params[i].substring(idx + 1);
+                    }
+                }
+            }
+
+            return result;
+        })(window.location.href);
+
+        /**
+        * Synchronously adds scripts to the page.
+        */
+        function mxscript(src) {
+            document.write('<script src="' + src + '"></scri' + 'pt>');
+        };
+
+        /**
+        * Asynchronously adds scripts to the page.
+        */
+        function mxinclude(src) {
+            var g = document.createElement('script'); g.type = 'text/javascript'; g.async = true; g.src = src;
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(g, s);
+        };
+        function xmlfromstring(xmlstr) {
+
+            var xmlDocument = null;
+            if (window.DOMParser) {// Mozilla Explorer
+                parser = new DOMParser();
+                xmlDocument = parser.parseFromString(xmlstr, "text/xml");
+            } else {// Internet Explorer
+                xmlDocument = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDocument.async = "false";
+                xmlDocument.loadXML(xmlstr);
+            }
+
+            var shape = xmlDocument.documentElement;
+            return shape;
+        }
+
+        var mxLoadResources = false;
+        var geBasePath = 'js';
+        var mxBasePath = 'mxgraph';
+
+        var umlDomain = window.location.hostname == 'uml.diagram.ly';
+        var driveDomain = window.location.hostname == 'drive.diagram.ly' || urlParams['drive'] == '1';
+
+        mxscript('js/mxgraph/mxClient.js');
+        geBasePath = 'js/mxgraph';
+        mxscript('js/diagramly/Devel.js');
+
+        // Loads JSON for older browsers
+        if (typeof (JSON) == 'undefined') {
+            mxscript('js/json/json2.min.js');
+        }
+
+        // Adds basic error handling
+        window.onerror = function () {
+            var status = document.getElementById('geStatus');
+
+            if (status != null) {
+                status.innerHTML = '加载失败';
+            }
+        };
+        function getResult() {
+            return getXml2(editorUi.editor.getGraphXml());
+        }
+        function getXml2(a, b) {
+            var c = "";
+            if (a != null) {
+                c = a.xml;
+                c = c == null ? a.outerHTML ? a.outerHTML : (new XMLSerializer).serializeToString(a) : c.replace(/\r\n\t[\t]*/g, "").replace(/>\r\n/g, ">").replace(/\r\n/g, "\n")
+            }
+            return c = c.replace(/\n/g, b || "&#xa;")
+        }
+        function setResult(xmlstr) {
+            var docEle = xmlfromstring(xmlstr);
+            editorUi.editor.setGraphXml(docEle);
+            editorUi.editor.modified = false;
+            editorUi.editor.undoManager.clear();
+        }
+        function getFullDesc() {
+            var graph = editorUi.editor.graph;
+            var border = 1;
+            var scale = 1;
+            var bounds = graph.getGraphBounds();
+            var imgExport = new mxImageExport();
+
+            // New image export
+            var xmlDoc = mxUtils.createXmlDocument();
+            var root = xmlDoc.createElement('output');
+            xmlDoc.appendChild(root);
+            var xmlCanvas = new mxXmlCanvas2D(root);
+
+            // Render graph
+            xmlCanvas.scale(scale);
+            xmlCanvas.translate(Math.floor(-bounds.x * scale) + border, Math.floor(-bounds.y * scale) + border);
+            imgExport.drawState(graph.getView().getState(graph.model.root), xmlCanvas);
+
+            var xml = mxUtils.getXml(root);
+            return xml;
+        }
+        function convertToFullDesc(xmlstr) {
+            setResult(xmlstr);
+            return getFullDesc();
+        }
+        function setResultSelf() {
+            //var xmlstr = '<mxGraphModel dx="800" dy="800" scale="0.833" grid="1" guides="1" tooltips="1" connect="1" fold="1" page="1" pageScale="1" pageWidth="826" pageHeight="1169" style="default-style2"><root><mxCell id="0" /><mxCell id="1" parent="0" /><mxCell id="2" value="" style="fontSize=18" parent="1" vertex="1"><mxGeometry x="100" y="100" width="130" height="40" as="geometry" /></mxCell><mxCell id="3" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="40" y="20" width="50" height="50" as="geometry" /></mxCell><mxCell id="6" value="" style="edgeStyle=none;endArrow=none;exitX=0.25;exitY=0;entryX=1;entryY=1;fontSize=18" parent="1" source="2" target="3" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="9" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="100" y="20" width="50" height="50" as="geometry" /></mxCell><mxCell id="10" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="220" y="20" width="50" height="50" as="geometry" /></mxCell><mxCell id="11" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="160" y="20" width="50" height="50" as="geometry" /></mxCell><mxCell id="14" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontSize=18" parent="1" source="2" target="9" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="15" value="" style="edgeStyle=none;endArrow=none;entryX=0.5;entryY=1;fontSize=18" parent="1" target="11" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint x="160" y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="20" value="" style="edgeStyle=none;endArrow=none;exitX=0.75;exitY=0;entryX=0.5;entryY=1;fontStyle=1;fontSize=18" parent="1" source="2" target="10" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="31" value="" style="fontSize=18" parent="1" vertex="1"><mxGeometry x="420" y="110" width="130" height="40" as="geometry" /></mxCell><mxCell id="34" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="420" y="30" width="50" height="50" as="geometry" /></mxCell><mxCell id="36" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="480" y="30" width="50" height="50" as="geometry" /></mxCell><mxCell id="37" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontSize=18" parent="1" source="31" target="34" edge="1"><mxGeometry x="320" y="10" width="100" height="100" as="geometry"><mxPoint x="320" y="110" as="sourcePoint" /><mxPoint x="420" y="10" as="targetPoint" /></mxGeometry></mxCell><mxCell id="38" value="" style="edgeStyle=none;endArrow=none;entryX=0.5;entryY=1;fontSize=18" parent="1" edge="1"><mxGeometry x="325" y="10" width="100" height="100" as="geometry"><mxPoint x="485" y="110" as="sourcePoint" /><mxPoint x="510" y="80" as="targetPoint" /></mxGeometry></mxCell><mxCell id="49" value="" style="fontSize=18" parent="1" vertex="1"><mxGeometry x="127.5" y="380" width="80" height="40" as="geometry" /></mxCell><mxCell id="51" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="92.5" y="440" width="60" height="60" as="geometry" /></mxCell><mxCell id="57" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="177.5" y="440" width="60" height="60" as="geometry" /></mxCell><mxCell id="58" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.25;entryY=1;fontSize=18" parent="1" source="51" target="49" edge="1"><mxGeometry x="42.5" y="150" width="100" height="100" as="geometry"><mxPoint x="42.5" y="250" as="sourcePoint" /><mxPoint x="142.5" y="150" as="targetPoint" /></mxGeometry></mxCell><mxCell id="59" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.75;entryY=1;fontSize=18" parent="1" source="57" target="49" edge="1"><mxGeometry x="42.5" y="150" width="100" height="100" as="geometry"><mxPoint x="42.5" y="250" as="sourcePoint" /><mxPoint x="142.5" y="150" as="targetPoint" /></mxGeometry></mxCell><mxCell id="60" value="" style="fontSize=18" parent="1" vertex="1"><mxGeometry x="440" y="380" width="80" height="40" as="geometry" /></mxCell><mxCell id="61" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="405" y="440" width="60" height="60" as="geometry" /></mxCell><mxCell id="62" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="490" y="440" width="60" height="60" as="geometry" /></mxCell><mxCell id="63" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.25;entryY=1;fontSize=18" parent="1" source="61" target="60" edge="1"><mxGeometry x="355" y="150" width="100" height="100" as="geometry"><mxPoint x="355" y="250" as="sourcePoint" /><mxPoint x="455" y="150" as="targetPoint" /></mxGeometry></mxCell><mxCell id="64" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.75;entryY=1;fontSize=18" parent="1" source="62" target="60" edge="1"><mxGeometry x="355" y="150" width="100" height="100" as="geometry"><mxPoint x="355" y="250" as="sourcePoint" /><mxPoint x="455" y="150" as="targetPoint" /></mxGeometry></mxCell><mxCell id="65" value="T1" style="text;fontColor=#000000;strokeColor=#T1;fontSize=18" parent="1" vertex="1"><mxGeometry x="137.5" y="107" width="82.5" height="26" as="geometry" /></mxCell><mxCell id="67" value="a2" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="105" y="32" width="40" height="26" as="geometry" /></mxCell><mxCell id="69" value="a3" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="170" y="32" width="27.5" height="26" as="geometry" /></mxCell><mxCell id="70" value="a5" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="230" y="36" width="30" height="26" as="geometry" /></mxCell><mxCell id="74" value="a3" style="text;fontStyle=4;fontSize=18" parent="1" vertex="1"><mxGeometry x="425" y="44" width="40" height="26" as="geometry" /></mxCell><mxCell id="75" value="T2" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="465" y="113.99999999999991" width="40" height="26" as="geometry" /></mxCell><mxCell id="77" value="a4" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="490" y="45" width="40" height="26" as="geometry" /></mxCell><mxCell id="81" value="" style="rhombus;fontSize=18" parent="1" vertex="1"><mxGeometry x="280" y="104" width="90" height="40" as="geometry" /></mxCell><mxCell id="82" value="" style="edgeStyle=none;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=18" parent="1" source="2" target="81" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="83" value="" style="edgeStyle=none;endArrow=none;exitX=0;exitY=0.5;entryX=1;entryY=0.5;fontSize=18" parent="1" source="31" target="81" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="96" value="T3" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="143.75" y="386.9999999999999" width="40" height="26" as="geometry" /></mxCell><mxCell id="103" value="a5" style="text;fontStyle=4;fontSize=18" parent="1" vertex="1"><mxGeometry x="109.99999999999994" y="457.0000000000001" width="40" height="26" as="geometry" /></mxCell><mxCell id="104" value="" style="edgeStyle=none;endArrow=none;fontSize=18" parent="1" source="103" target="51" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="105" value="a6" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="190.00000000000003" y="456.99999999999983" width="40" height="26" as="geometry" /></mxCell><mxCell id="107" value="T4" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="460.0000000000001" y="394.00000000000006" width="40" height="26" as="geometry" /></mxCell><mxCell id="108" value="a3" style="text;fontStyle=4;fontSize=18" parent="1" vertex="1"><mxGeometry x="405" y="457.0000000000001" width="40" height="26" as="geometry" /></mxCell><mxCell id="109" value="a5" style="text;fontStyle=4;fontSize=18" parent="1" vertex="1"><mxGeometry x="500" y="457.0000000000001" width="40" height="26" as="geometry" /></mxCell><mxCell id="110" value="" style="ellipse;fontSize=18" parent="1" vertex="1"><mxGeometry x="580" y="427" width="60" height="60" as="geometry" /></mxCell><mxCell id="111" value="" style="edgeStyle=none;endArrow=none;exitX=0;exitY=0;fontSize=18" parent="1" source="110" target="60" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="112" value="a7" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="590" y="450" width="40" height="26" as="geometry" /></mxCell><mxCell id="115" value="a1" style="text;fontStyle=4;fontSize=18" parent="1" vertex="1"><mxGeometry x="45.00000000000009" y="29.000000000000135" width="40" height="26" as="geometry" /></mxCell><mxCell id="120" value="" style="rhombus;fontSize=18" parent="1" vertex="1"><mxGeometry x="100" y="220" width="120" height="40" as="geometry" /></mxCell><mxCell id="122" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontSize=18" parent="1" source="120" target="2" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="123" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=1;fontSize=18" parent="1" source="120" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="170" y="380" as="targetPoint" /></mxGeometry></mxCell><mxCell id="124" value="" style="rhombus;fontSize=18" parent="1" vertex="1"><mxGeometry x="430" y="230" width="120" height="49.99999999999994" as="geometry" /></mxCell><mxCell id="129" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontSize=18" parent="1" source="124" target="31" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="130" value="" style="edgeStyle=none;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=18" parent="1" source="124" target="60" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="131" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="490.00000000000017" y="180.00000000000003" width="40" height="26" as="geometry" /></mxCell><mxCell id="132" value="n" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="500" y="310" width="40" height="26" as="geometry" /></mxCell><mxCell id="136" value="" style="rhombus;fontSize=18" parent="1" vertex="1"><mxGeometry x="269.99999999999994" y="380.00000000000017" width="120.00000000000006" height="40" as="geometry" /></mxCell><mxCell id="137" value="" style="edgeStyle=none;endArrow=none;exitX=0;exitY=0.5;fontSize=18" parent="1" source="60" target="136" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="144" value="" style="edgeStyle=none;endArrow=none;exitX=1;exitY=0.5;fontSize=18" parent="1" source="49" target="136" edge="1"><mxGeometry width="100" height="100" as="geometry"><mxPoint y="100" as="sourcePoint" /><mxPoint x="100" as="targetPoint" /></mxGeometry></mxCell><mxCell id="146" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="225.00000000000009" y="366.99999999999994" width="40" height="26" as="geometry" /></mxCell><mxCell id="148" value="n" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="390" y="367.99999999999994" width="40" height="26" as="geometry" /></mxCell><mxCell id="150" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="237.50000000000003" y="93.99999999999994" width="40" height="26" as="geometry" /></mxCell><mxCell id="152" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="370" y="100" width="40" height="26" as="geometry" /></mxCell><mxCell id="154" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="130" y="180" width="40" height="26" as="geometry" /></mxCell><mxCell id="156" value="1" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="120" y="320" width="40" height="26" as="geometry" /></mxCell><mxCell id="159" value="1-2" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="305.00000000000006" y="110.99999999999994" width="40" height="26" as="geometry" /></mxCell><mxCell id="160" value="3-4" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="305.00000000000006" y="386.99999999999994" width="40" height="26" as="geometry" /></mxCell><mxCell id="161" value="1-3" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="137.50000000000003" y="226.9999999999999" width="40" height="26" as="geometry" /></mxCell><mxCell id="162" value="2-4" style="text;fontSize=18" parent="1" vertex="1"><mxGeometry x="470.00000000000034" y="241.9999999999999" width="40" height="26" as="geometry" /></mxCell></root></mxGraphModel>';
+            //setResult(xmlstr);
+        }
+        function displayResultSelf() {
+            var r = getFullDesc();
+            alert(r);
+            document.getElementById("result").value = r;
+            alert(getResult());
+        }
+        function readonly() {
+            editorUi.readonly();
+        }
+    </script>
+</head>
+<body class="geEditor" onload="setResultSelf();">
+    <div id="graphEditor" class="geEditor" style="padding: 10px;">
+    </div>
+    <div id="fb-root">
+    </div>
+    <div id="geInfo">
+        <div class="geBlock">
+            <h1>
+                图形编辑工具
+            </h1>
+            <p>
+            </p>
+        </div>
+        <div class="geBlock" style="margin-top: 20px; padding: 0px; text-align: center;">
+            <h3 id="geStatus">
+                加载中...请稍候
+            </h3>
+        </div>
+    </div>
+    <div id="geFooter" style="visibility: hidden; padding-top: 6px; padding-left: 6px;">
+        <table width="100%" height="100%" align="right">
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <!-- Main -->
+    <script type="text/javascript">
+        var editorUi = new EditorUi(new Editor());
+    </script>
+    <!-- tinyMCE - LATER: Do not load if touchStyle is true. -->
+    <script type="text/javascript" src="tiny_mce/tiny_mce.js"></script>
+    <script type="text/javascript">
+        if (typeof (tinyMCE) != 'undefined') {
+            tinyMCE.init({
+                // General options
+                mode: "none",
+                theme: "advanced",
+                plugins: "spellchecker,table,inlinepopups,paste,advimage",
+
+                // Theme options
+                theme_advanced_buttons1: "hr,|,sub,sup,|,cleanup",
+                theme_advanced_buttons2: "",
+                theme_advanced_buttons3: "",
+                theme_advanced_toolbar_location: "top",
+                theme_advanced_toolbar_align: "left",
+                theme_advanced_statusbar_location: "bottom",
+                theme_advanced_resizing: true
+            });
+        }
+        // Color picker
+        mxscript('js/jscolor/jscolor.js');
+    </script>
+</body>
+</html>
